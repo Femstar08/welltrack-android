@@ -1,0 +1,34 @@
+# Android build artifacts
+WellTrack/app/build/
+WellTrack/build/
+WellTrack/.gradle/
+WellTrack/local.properties
+WellTrack/.idea/
+WellTrack/*.iml
+WellTrack/.DS_Store
+
+# Gradle
+.gradle/
+build/
+*/build/
+
+# IDE files
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Kiro IDE files
+.cursor/
+.superdesign/
+.windsurfrules
