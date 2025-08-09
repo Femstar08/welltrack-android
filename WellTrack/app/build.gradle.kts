@@ -19,6 +19,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Enable 16KB page size support for Android 15+
+        // Temporarily exclude x86_64 due to ML Kit 16KB alignment issues
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+        }
     }
 
     buildTypes {
@@ -39,6 +45,16 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+    
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+        // Handle 16KB page size alignment for native libraries
+        jniLibs {
+            useLegacyPackaging = false
+        }
     }
 }
 

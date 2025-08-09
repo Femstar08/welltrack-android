@@ -19,9 +19,16 @@ import com.beaconledger.welltrack.data.database.dao.*
         HabitCompletion::class,
         UserProfile::class,
         Workout::class,
-        ExerciseTemplate::class
+        ExerciseTemplate::class,
+        CookingSession::class,
+        MealPlan::class,
+        PlannedMeal::class,
+        PlannedSupplement::class,
+        IngredientPreference::class,
+        PantryItem::class,
+        IngredientUsageHistory::class
     ],
-    version = 3,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -34,6 +41,11 @@ abstract class WellTrackDatabase : RoomDatabase() {
     abstract fun healthMetricDao(): HealthMetricDao
     abstract fun profileDao(): ProfileDao
     abstract fun workoutDao(): WorkoutDao
+    abstract fun cookingSessionDao(): CookingSessionDao
+    abstract fun mealPlanDao(): MealPlanDao
+    abstract fun ingredientPreferenceDao(): IngredientPreferenceDao
+    abstract fun pantryDao(): PantryDao
+    abstract fun ingredientUsageDao(): IngredientUsageDao
 
     companion object {
         const val DATABASE_NAME = "welltrack_database"
