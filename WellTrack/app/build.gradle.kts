@@ -20,11 +20,18 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
+        // Supabase configuration
+        buildConfigField("String", "SUPABASE_URL", "\"https://nppjffhzkzfduulbbcih.supabase.co\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wcGpmZmh6a3pmZHV1bGJiY2loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyMjQ2MTAsImV4cCI6MjA2NTgwMDYxMH0.OrwLcR8sXcsyMUVEAXgw2WNureeAKrwgrhrPGT6lgTU\"")
+        
         // Enable 16KB page size support for Android 15+
-        // Temporarily exclude x86_64 due to ML Kit 16KB alignment issues
+        // Exclude x86_64 due to ML Kit 16KB alignment issues
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a")
         }
+        
+        // Add 16KB page size support flag
+        manifestPlaceholders["supportsLargeHeap"] = "true"
     }
 
     buildTypes {
@@ -45,6 +52,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     
     packaging {
@@ -54,6 +62,8 @@ android {
         // Handle 16KB page size alignment for native libraries
         jniLibs {
             useLegacyPackaging = false
+            // Ensure proper alignment for 16KB page sizes
+            pickFirsts += listOf("**/libc++_shared.so", "**/libimage_processing_util_jni.so")
         }
     }
 }
@@ -91,10 +101,15 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
 // Supabase SDK
-    implementation("io.github.jan-tennert.supabase:postgrest-kt:2.0.4")
-    implementation("io.github.jan-tennert.supabase:gotrue-kt:2.0.4")
-    implementation("io.github.jan-tennert.supabase:storage-kt:2.0.4")
-    implementation("io.github.jan-tennert.supabase:realtime-kt:2.0.4")
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:2.6.0")
+    implementation("io.github.jan-tennert.supabase:gotrue-kt:2.6.0")
+    implementation("io.github.jan-tennert.supabase:storage-kt:2.6.0")
+    implementation("io.github.jan-tennert.supabase:realtime-kt:2.6.0")
+    
+    // Ktor HTTP Client (required for Supabase)
+    implementation("io.ktor:ktor-client-android:2.3.12")
+    implementation("io.ktor:ktor-client-core:2.3.12")
+    implementation("io.ktor:ktor-client-okhttp:2.3.12")
 
 // Health Connect
     implementation("androidx.health.connect:connect-client:1.1.0-rc03")
@@ -112,6 +127,8 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.5.0")
 
     // ML Kit for OCR
+    // Note: ML Kit has known 16KB page size alignment issues on x86_64
+    // We've excluded x86_64 architecture above to address this
     implementation("com.google.mlkit:text-recognition:16.0.0")
     
     // CameraX for image capture
