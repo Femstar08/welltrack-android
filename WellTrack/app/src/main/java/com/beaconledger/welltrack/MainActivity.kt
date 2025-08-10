@@ -27,6 +27,8 @@ import com.beaconledger.welltrack.presentation.profile.ProfileManagementScreen
 import com.beaconledger.welltrack.presentation.profile.ProfileSettingsScreen
 import com.beaconledger.welltrack.presentation.recipe.RecipeListScreen
 import com.beaconledger.welltrack.presentation.recipe.RecipeDetailScreen
+import com.beaconledger.welltrack.presentation.recipe.CookingGuidanceScreenSimple
+import com.beaconledger.welltrack.presentation.mealplan.MealPlanScreen
 import com.beaconledger.welltrack.data.model.UserProfile
 import com.beaconledger.welltrack.data.model.ActivityLevel
 import com.beaconledger.welltrack.data.model.Recipe
@@ -70,7 +72,8 @@ fun WellTrackApp() {
         when (authState) {
             AuthState.AUTHENTICATED -> {
                 if (currentUser != null) {
-                    currentScreen = "dashboard"
+                    // TODO: Check if user has a profile, for now go to profile creation
+                    currentScreen = "profile"
                 }
             }
             AuthState.UNAUTHENTICATED -> {
@@ -198,17 +201,20 @@ fun WellTrackApp() {
             "profile" -> {
                 ProfileCreationScreen(
                     onProfileCreate = { request ->
-                        demoMode = true
+                        // TODO: Save profile to database
+                        // For now, go to dashboard
+                        currentScreen = "dashboard"
                     },
                     onSkip = {
-                        demoMode = true
+                        // Allow users to skip profile creation and go to dashboard
+                        currentScreen = "dashboard"
                     },
                     isLoading = false,
                     errorMessage = null
                 )
             }
             "dashboard" -> {
-                MainDashboard(
+                AuthenticatedApp(
                     currentUser = currentUser,
                     onSignOut = {
                         authViewModel.signOut()
@@ -229,6 +235,8 @@ fun DemoApp(
     var currentDemoScreen by remember { mutableStateOf("dashboard") }
     var showProfileSwitcher by remember { mutableStateOf(false) }
     var selectedRecipeId by remember { mutableStateOf<String?>(null) }
+    var cookingRecipeId by remember { mutableStateOf<String?>(null) }
+    var cookingTargetServings by remember { mutableStateOf(1) }
     
     val activeProfile = profiles.find { it.userId == activeProfileId }
     
@@ -316,6 +324,7 @@ fun DemoApp(
                 onNavigateToProfileManagement = { currentDemoScreen = "profile_management" },
                 onNavigateToProfileSettings = { currentDemoScreen = "profile_settings" },
                 onNavigateToRecipes = { currentDemoScreen = "recipes" },
+                onNavigateToMealPlan = { currentDemoScreen = "meal_plan" },
                 onExitDemo = onExitDemo
             )
         }
@@ -368,10 +377,35 @@ fun DemoApp(
                         onEditClick = { /* Demo: Show message */ },
                         onShareClick = { /* Demo: Show message */ },
                         onFavoriteClick = { /* Demo: Show message */ },
+                        onStartCooking = { targetServings ->
+                            cookingRecipeId = recipeId
+                            cookingTargetServings = targetServings
+                            currentDemoScreen = "cooking_guidance"
+                        },
                         isFavorite = false
                     )
                 }
             }
+        }
+        "cooking_guidance" -> {
+            cookingRecipeId?.let { recipeId ->
+                CookingGuidanceScreenSimple(
+                    recipeId = recipeId,
+                    targetServings = cookingTargetServings,
+                    onNavigateBack = { 
+                        currentDemoScreen = "recipe_detail"
+                        cookingRecipeId = null
+                    }
+                )
+            }
+        }
+        "meal_plan" -> {
+            MealPlanScreen(
+                onNavigateToRecipe = { recipeId ->
+                    selectedRecipeId = recipeId
+                    currentDemoScreen = "recipe_detail"
+                }
+            )
         }
     }
     
@@ -418,6 +452,7 @@ fun DemoDashboard(
     onNavigateToProfileManagement: () -> Unit,
     onNavigateToProfileSettings: () -> Unit,
     onNavigateToRecipes: () -> Unit,
+    onNavigateToMealPlan: () -> Unit,
     onExitDemo: () -> Unit
 ) {
     Column(
@@ -497,8 +532,14 @@ fun DemoDashboard(
             
             DemoFeatureCard(
                 title = "View Recipes",
-                description = "Browse and view recipe details with ingredients",
+                description = "Browse and view recipe details with step-by-step cooking guidance",
                 onClick = onNavigateToRecipes
+            )
+            
+            DemoFeatureCard(
+                title = "Meal Planning",
+                description = "Create weekly meal plans with calendar view and automated generation",
+                onClick = onNavigateToMealPlan
             )
         }
         
@@ -550,9 +591,59 @@ fun DemoFeatureCard(
 }
 
 @Composable
-fun MainDashboard(
+fun AuthenticatedApp(
     currentUser: com.beaconledger.welltrack.data.model.AuthUser?,
     onSignOut: () -> Unit
+) {
+    var currentScreen by remember { mutableStateOf("dashboard") }
+    var selectedRecipeId by remember { mutableStateOf<String?>(null) }
+    
+    when (currentScreen) {
+        "dashboard" -> {
+            MainDashboard(
+                currentUser = currentUser,
+                onSignOut = onSignOut,
+                onNavigateToMealPlan = { currentScreen = "meal_plan" },
+                onNavigateToRecipes = { currentScreen = "recipes" }
+            )
+        }
+        "meal_plan" -> {
+            MealPlanScreen(
+                onNavigateToRecipe = { recipeId ->
+                    selectedRecipeId = recipeId
+                    currentScreen = "recipe_detail"
+                }
+            )
+        }
+        "recipes" -> {
+            // TODO: Add recipe list screen for authenticated users
+            MainDashboard(
+                currentUser = currentUser,
+                onSignOut = onSignOut,
+                onNavigateToMealPlan = { currentScreen = "meal_plan" },
+                onNavigateToRecipes = { currentScreen = "recipes" }
+            )
+        }
+        "recipe_detail" -> {
+            selectedRecipeId?.let { recipeId ->
+                // TODO: Add recipe detail screen for authenticated users
+                MainDashboard(
+                    currentUser = currentUser,
+                    onSignOut = onSignOut,
+                    onNavigateToMealPlan = { currentScreen = "meal_plan" },
+                    onNavigateToRecipes = { currentScreen = "recipes" }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MainDashboard(
+    currentUser: com.beaconledger.welltrack.data.model.AuthUser?,
+    onSignOut: () -> Unit,
+    onNavigateToMealPlan: () -> Unit,
+    onNavigateToRecipes: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -633,9 +724,9 @@ fun MainDashboard(
         
         Spacer(modifier = Modifier.height(24.dp))
         
-        // Next Steps
+        // App Features
         Text(
-            text = "Next Steps:",
+            text = "WellTrack Features:",
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onBackground
@@ -643,54 +734,46 @@ fun MainDashboard(
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            )
+        // Feature Cards
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
+            DemoFeatureCard(
+                title = "Meal Planning",
+                description = "Create weekly meal plans with calendar view and automated generation",
+                onClick = onNavigateToMealPlan
+            )
+            
+            DemoFeatureCard(
+                title = "Recipe Management",
+                description = "Browse recipes, add new ones, and get step-by-step cooking guidance",
+                onClick = onNavigateToRecipes
+            )
+            
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                )
             ) {
-                Text(
-                    text = "1. Configure Supabase",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = "Update BuildConfig.kt with your actual Supabase URL and anon key",
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                )
-                
-                Spacer(modifier = Modifier.height(12.dp))
-                
-                Text(
-                    text = "2. Set up Database Tables",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = "Create user profiles, recipes, and meals tables in Supabase",
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                )
-                
-                Spacer(modifier = Modifier.height(12.dp))
-                
-                Text(
-                    text = "3. Continue Implementation",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = "Move on to the next tasks in your implementation plan",
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                )
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "More Features Coming Soon",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    
+                    Spacer(modifier = Modifier.height(4.dp))
+                    
+                    Text(
+                        text = "Shopping lists, pantry management, health tracking, and more!",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    )
+                }
             }
         }
     }

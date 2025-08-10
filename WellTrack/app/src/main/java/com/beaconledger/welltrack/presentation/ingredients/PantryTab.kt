@@ -108,9 +108,9 @@ private fun PantryAlertCard(alert: PantryAlert) {
             Icon(
                 imageVector = when (alert.alertType) {
                     AlertType.EXPIRED -> Icons.Default.Warning
-                    AlertType.EXPIRY_WARNING -> Icons.Default.Schedule
-                    AlertType.LOW_STOCK -> Icons.Default.Inventory
-                    AlertType.OUT_OF_STOCK -> Icons.Default.RemoveShoppingCart
+                    AlertType.EXPIRY_WARNING -> Icons.Default.Info
+                    AlertType.LOW_STOCK -> Icons.Default.Info
+                    AlertType.OUT_OF_STOCK -> Icons.Default.ShoppingCart
                 },
                 contentDescription = null,
                 tint = Color(android.graphics.Color.parseColor(alert.severity.color)),
@@ -222,7 +222,7 @@ private fun EmptyPantryState(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            Icons.Default.Kitchen,
+            Icons.Default.Home,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant

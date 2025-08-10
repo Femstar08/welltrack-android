@@ -66,7 +66,7 @@ fun PreferencesTab(
                 item {
                     PreferenceSectionHeader(
                         title = "Disliked Ingredients",
-                        icon = Icons.Default.ThumbDown,
+                        icon = Icons.Default.Close,
                         color = Color(0xFFFF9800)
                     )
                 }
@@ -201,7 +201,7 @@ private fun EmptyPreferencesState(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            Icons.Default.Restaurant,
+            Icons.Default.Star,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant

@@ -136,7 +136,7 @@ private fun AnalyticsSummaryCard(
                 )
                 
                 SummaryItem(
-                    icon = Icons.Default.Kitchen,
+                    icon = Icons.Default.Home,
                     count = pantryCount,
                     label = "In Pantry"
                 )
@@ -193,7 +193,7 @@ private fun EmptyAnalyticsState() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            Icons.Default.Analytics,
+            Icons.Default.Info,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant

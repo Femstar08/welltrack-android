@@ -84,7 +84,7 @@ private fun IngredientSuggestionCard(
                     if (suggestion.isInPantry) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                Icons.Default.Kitchen,
+                                Icons.Default.Home,
                                 contentDescription = null,
                                 modifier = Modifier.size(16.dp),
                                 tint = MaterialTheme.colorScheme.primary
@@ -137,7 +137,7 @@ private fun EmptySuggestionsState() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            Icons.Default.Lightbulb,
+            Icons.Default.Star,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant

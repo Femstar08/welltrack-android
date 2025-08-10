@@ -3,7 +3,7 @@
 -- This provides some initial data to test your app
 
 -- Insert common ingredients
-INSERT INTO ingredients (name, category, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, fiber_per_100g) VALUES
+INSERT INTO wt_ingredients (name, category, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, fiber_per_100g) VALUES
 -- Proteins
 ('Chicken Breast', 'PROTEIN', 165, 31, 0, 3.6, 0),
 ('Salmon', 'PROTEIN', 208, 20, 0, 12, 0),
@@ -44,7 +44,7 @@ INSERT INTO ingredients (name, category, calories_per_100g, protein_per_100g, ca
 ON CONFLICT (name) DO NOTHING;
 
 -- Insert common supplements
-INSERT INTO supplements (name, brand, description, serving_size, nutrition_info) VALUES
+INSERT INTO wt_supplements (name, brand, description, serving_size, nutrition_info) VALUES
 ('Vitamin D3', 'Generic', 'Vitamin D3 supplement for bone health', '1 capsule', '{"vitamin_d": "1000 IU"}'),
 ('Omega-3 Fish Oil', 'Generic', 'EPA and DHA omega-3 fatty acids', '1 softgel', '{"epa": "180mg", "dha": "120mg"}'),
 ('Multivitamin', 'Generic', 'Complete daily multivitamin', '1 tablet', '{"vitamin_a": "5000 IU", "vitamin_c": "60mg", "vitamin_e": "30 IU"}'),

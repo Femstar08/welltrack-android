@@ -2,6 +2,7 @@ package com.beaconledger.welltrack.data.database.dao
 
 import androidx.room.*
 import com.beaconledger.welltrack.data.model.IngredientUsageHistory
+import com.beaconledger.welltrack.data.model.IngredientUsageStats
 import com.beaconledger.welltrack.data.model.UsageType
 import kotlinx.coroutines.flow.Flow
 
@@ -70,9 +71,3 @@ interface IngredientUsageDao {
     suspend fun searchUsedIngredients(userId: String, query: String, limit: Int = 10): List<String>
 }
 
-data class IngredientUsageStats(
-    val ingredientName: String,
-    val usageCount: Int,
-    val lastUsed: String?,
-    val totalQuantity: Double? = null
-)

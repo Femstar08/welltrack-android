@@ -4,6 +4,7 @@ import com.beaconledger.welltrack.data.database.dao.*
 import com.beaconledger.welltrack.data.model.*
 import com.beaconledger.welltrack.domain.repository.IngredientPreferenceRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import java.time.LocalDateTime
 import java.util.*
 import javax.inject.Inject
@@ -257,14 +258,13 @@ class IngredientPreferenceRepositoryImpl @Inject constructor(
         return try {
             val preferences = ingredientPreferenceDao.getPreferredIngredients(userId)
             val usageStats = ingredientUsageDao.getMostUsedIngredients(userId, limit * 2)
-            val pantryItems = pantryDao.getPantryItemsForUser(userId)
             
             val suggestions = mutableListOf<IngredientSuggestion>()
             
             // Add preferred ingredients
             preferences.forEach { pref ->
                 val pantryItem = pantryDao.getPantryItem(userId, pref.ingredientName)
-                val usageStats = ingredientUsageDao.getIngredientUsageStats(userId, pref.ingredientName)
+                val ingredientUsageStats = ingredientUsageDao.getIngredientUsageStats(userId, pref.ingredientName)
                 
                 suggestions.add(
                     IngredientSuggestion(
@@ -274,8 +274,8 @@ class IngredientPreferenceRepositoryImpl @Inject constructor(
                         isInPantry = pantryItem != null,
                         pantryQuantity = pantryItem?.quantity,
                         pantryUnit = pantryItem?.unit,
-                        usageFrequency = usageStats?.usageCount ?: 0,
-                        lastUsed = usageStats?.lastUsed,
+                        usageFrequency = ingredientUsageStats?.usageCount ?: 0,
+                        lastUsed = ingredientUsageStats?.lastUsed,
                         priority = pref.priority
                     )
                 )
@@ -313,60 +313,56 @@ class IngredientPreferenceRepositoryImpl @Inject constructor(
         return try {
             val alerts = mutableListOf<PantryAlert>()
             
-            // Expiring items
-            val expiringItems = pantryDao.getExpiringItems(userId)
-            expiringItems.collect { items ->
-                items.forEach { item ->
-                    val daysUntilExpiry = item.expiryDate?.let { 
-                        // Calculate days until expiry (simplified)
-                        7 // Placeholder - would calculate actual days
-                    }
-                    
-                    alerts.add(
-                        PantryAlert(
-                            id = UUID.randomUUID().toString(),
-                            ingredientName = item.ingredientName,
-                            alertType = if (daysUntilExpiry != null && daysUntilExpiry <= 0) AlertType.EXPIRED else AlertType.EXPIRY_WARNING,
-                            message = if (daysUntilExpiry != null && daysUntilExpiry <= 0) 
-                                "${item.ingredientName} has expired" 
-                            else 
-                                "${item.ingredientName} expires in $daysUntilExpiry days",
-                            severity = when {
-                                daysUntilExpiry != null && daysUntilExpiry <= 0 -> AlertSeverity.CRITICAL
-                                daysUntilExpiry != null && daysUntilExpiry <= 2 -> AlertSeverity.HIGH
-                                daysUntilExpiry != null && daysUntilExpiry <= 5 -> AlertSeverity.MEDIUM
-                                else -> AlertSeverity.LOW
-                            },
-                            expiryDate = item.expiryDate,
-                            daysUntilExpiry = daysUntilExpiry,
-                            currentQuantity = item.quantity,
-                            minimumQuantity = item.minimumQuantity
-                        )
-                    )
+            // Get expiring items (using first() to get current value from Flow)
+            val expiringItems = pantryDao.getExpiringItems(userId).first()
+            expiringItems.forEach { item ->
+                val daysUntilExpiry = item.expiryDate?.let { 
+                    // Calculate days until expiry (simplified)
+                    7 // Placeholder - would calculate actual days
                 }
+                
+                alerts.add(
+                    PantryAlert(
+                        id = UUID.randomUUID().toString(),
+                        ingredientName = item.ingredientName,
+                        alertType = if (daysUntilExpiry != null && daysUntilExpiry <= 0) AlertType.EXPIRED else AlertType.EXPIRY_WARNING,
+                        message = if (daysUntilExpiry != null && daysUntilExpiry <= 0) 
+                            "${item.ingredientName} has expired" 
+                        else 
+                            "${item.ingredientName} expires in $daysUntilExpiry days",
+                        severity = when {
+                            daysUntilExpiry != null && daysUntilExpiry <= 0 -> AlertSeverity.CRITICAL
+                            daysUntilExpiry != null && daysUntilExpiry <= 2 -> AlertSeverity.HIGH
+                            daysUntilExpiry != null && daysUntilExpiry <= 5 -> AlertSeverity.MEDIUM
+                            else -> AlertSeverity.LOW
+                        },
+                        expiryDate = item.expiryDate,
+                        daysUntilExpiry = daysUntilExpiry,
+                        currentQuantity = item.quantity,
+                        minimumQuantity = item.minimumQuantity
+                    )
+                )
             }
             
-            // Low stock items
-            val lowStockItems = pantryDao.getLowStockItems(userId)
-            lowStockItems.collect { items ->
-                items.forEach { item ->
-                    alerts.add(
-                        PantryAlert(
-                            id = UUID.randomUUID().toString(),
-                            ingredientName = item.ingredientName,
-                            alertType = if (item.quantity <= 0) AlertType.OUT_OF_STOCK else AlertType.LOW_STOCK,
-                            message = if (item.quantity <= 0) 
-                                "${item.ingredientName} is out of stock" 
-                            else 
-                                "${item.ingredientName} is running low (${item.quantity} ${item.unit})",
-                            severity = if (item.quantity <= 0) AlertSeverity.HIGH else AlertSeverity.MEDIUM,
-                            expiryDate = null,
-                            daysUntilExpiry = null,
-                            currentQuantity = item.quantity,
-                            minimumQuantity = item.minimumQuantity
-                        )
+            // Get low stock items (using first() to get current value from Flow)
+            val lowStockItems = pantryDao.getLowStockItems(userId).first()
+            lowStockItems.forEach { item ->
+                alerts.add(
+                    PantryAlert(
+                        id = UUID.randomUUID().toString(),
+                        ingredientName = item.ingredientName,
+                        alertType = if (item.quantity <= 0) AlertType.OUT_OF_STOCK else AlertType.LOW_STOCK,
+                        message = if (item.quantity <= 0) 
+                            "${item.ingredientName} is out of stock" 
+                        else 
+                            "${item.ingredientName} is running low (${item.quantity} ${item.unit})",
+                        severity = if (item.quantity <= 0) AlertSeverity.HIGH else AlertSeverity.MEDIUM,
+                        expiryDate = null,
+                        daysUntilExpiry = null,
+                        currentQuantity = item.quantity,
+                        minimumQuantity = item.minimumQuantity
                     )
-                }
+                )
             }
             
             alerts.sortedByDescending { it.severity.ordinal }

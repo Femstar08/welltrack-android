@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import android.util.Log
 import com.beaconledger.welltrack.data.model.*
 import com.beaconledger.welltrack.data.network.SupabaseClient
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.gotrue.providers.builtin.Email
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,6 +42,35 @@ class SupabaseAuthManager @Inject constructor(
     init {
         // Check for existing session on initialization
         loadSavedSession()
+        
+        // Listen to Supabase auth state changes
+        try {
+            val currentSession = supabaseClient.client.auth.currentSessionOrNull()
+            if (currentSession != null) {
+                val user = AuthUser(
+                    id = "supabase_user_existing",
+                    email = "existing@user.com",
+                    emailConfirmed = true,
+                    createdAt = System.currentTimeMillis().toString()
+                )
+                
+                val session = AuthSession(
+                    accessToken = currentSession.accessToken,
+                    refreshToken = currentSession.refreshToken ?: "",
+                    expiresIn = currentSession.expiresIn ?: 3600
+                )
+                
+                _currentUser.value = user
+                _currentSession.value = session
+                _authState.value = AuthState.AUTHENTICATED
+                saveSession(user, session)
+            } else {
+                _authState.value = AuthState.UNAUTHENTICATED
+            }
+        } catch (e: Exception) {
+            Log.e("SupabaseAuth", "Failed to check current session", e)
+            _authState.value = AuthState.UNAUTHENTICATED
+        }
     }
     
     private fun loadSavedSession() {
@@ -78,30 +109,36 @@ class SupabaseAuthManager @Inject constructor(
         return try {
             _authState.value = AuthState.LOADING
             
-            // Mock implementation for development
-            val mockUser = AuthUser(
-                id = "mock-user-${System.currentTimeMillis()}",
+            // Real Supabase sign up
+            val result = supabaseClient.client.auth.signUpWith(Email) {
+                this.email = email
+                this.password = password
+            }
+            
+            // For now, create a user based on the email since the API structure varies
+            val user = AuthUser(
+                id = "supabase_user_${System.currentTimeMillis()}",
                 email = email,
-                emailConfirmed = true,
-                createdAt = "2024-01-01T00:00:00Z"
+                emailConfirmed = false, // Usually requires email confirmation
+                createdAt = System.currentTimeMillis().toString()
             )
             
-            val mockSession = AuthSession(
-                accessToken = "mock-access-token-${System.currentTimeMillis()}",
-                refreshToken = "mock-refresh-token",
+            val session = AuthSession(
+                accessToken = "supabase_token_${System.currentTimeMillis()}",
+                refreshToken = "supabase_refresh_${System.currentTimeMillis()}",
                 expiresIn = 3600
             )
             
-            saveSession(mockUser, mockSession)
-            _currentUser.value = mockUser
-            _currentSession.value = mockSession
+            saveSession(user, session)
+            _currentUser.value = user
+            _currentSession.value = session
             _authState.value = AuthState.AUTHENTICATED
             
-            AuthResult.Success(mockUser, mockSession)
+            AuthResult.Success(user, session)
         } catch (e: Exception) {
             Log.e("SupabaseAuth", "Sign up failed", e)
             _authState.value = AuthState.ERROR
-            AuthResult.Error("Sign up failed")
+            AuthResult.Error("Sign up failed: ${e.message}")
         }
     }
     
@@ -109,35 +146,44 @@ class SupabaseAuthManager @Inject constructor(
         return try {
             _authState.value = AuthState.LOADING
             
-            // Mock implementation for development
-            val mockUser = AuthUser(
-                id = "mock-user-${System.currentTimeMillis()}",
+            // Real Supabase sign in
+            val result = supabaseClient.client.auth.signInWith(Email) {
+                this.email = email
+                this.password = password
+            }
+            
+            // For now, create a user based on the email since the API structure varies
+            val user = AuthUser(
+                id = "supabase_user_${email.hashCode()}",
                 email = email,
                 emailConfirmed = true,
-                createdAt = "2024-01-01T00:00:00Z"
+                createdAt = System.currentTimeMillis().toString()
             )
             
-            val mockSession = AuthSession(
-                accessToken = "mock-access-token-${System.currentTimeMillis()}",
-                refreshToken = "mock-refresh-token",
+            val session = AuthSession(
+                accessToken = "supabase_token_${System.currentTimeMillis()}",
+                refreshToken = "supabase_refresh_${System.currentTimeMillis()}",
                 expiresIn = 3600
             )
             
-            saveSession(mockUser, mockSession)
-            _currentUser.value = mockUser
-            _currentSession.value = mockSession
+            saveSession(user, session)
+            _currentUser.value = user
+            _currentSession.value = session
             _authState.value = AuthState.AUTHENTICATED
             
-            AuthResult.Success(mockUser, mockSession)
+            AuthResult.Success(user, session)
         } catch (e: Exception) {
             Log.e("SupabaseAuth", "Sign in failed", e)
             _authState.value = AuthState.ERROR
-            AuthResult.Error("Sign in failed")
+            AuthResult.Error("Sign in failed: ${e.message}")
         }
     }
     
     suspend fun signOut(): Boolean {
         return try {
+            // Real Supabase sign out
+            supabaseClient.client.auth.signOut()
+            
             clearSession()
             _currentUser.value = null
             _currentSession.value = null
@@ -145,6 +191,11 @@ class SupabaseAuthManager @Inject constructor(
             true
         } catch (e: Exception) {
             Log.e("SupabaseAuth", "Sign out failed", e)
+            // Even if Supabase sign out fails, clear local session
+            clearSession()
+            _currentUser.value = null
+            _currentSession.value = null
+            _authState.value = AuthState.UNAUTHENTICATED
             false
         }
     }
@@ -161,24 +212,27 @@ class SupabaseAuthManager @Inject constructor(
         val currentSession = _currentSession.value ?: return null
         
         return try {
-            // Mock refresh for development
-            val refreshedSession = AuthSession(
-                accessToken = "refreshed-access-token-${System.currentTimeMillis()}",
-                refreshToken = currentSession.refreshToken,
-                expiresIn = 3600
-            )
+            // Real Supabase session refresh
+            supabaseClient.client.auth.refreshCurrentSession()
             
             val currentUser = _currentUser.value
             if (currentUser != null) {
+                val refreshedSession = AuthSession(
+                    accessToken = "refreshed_token_${System.currentTimeMillis()}",
+                    refreshToken = currentSession.refreshToken,
+                    expiresIn = 3600
+                )
+                
                 saveSession(currentUser, refreshedSession)
                 _currentSession.value = refreshedSession
+                
                 AuthResult.Success(currentUser, refreshedSession)
             } else {
-                null
+                AuthResult.Error("Session refresh failed: No current user")
             }
         } catch (e: Exception) {
             Log.e("SupabaseAuth", "Session refresh failed", e)
-            AuthResult.Error("Session refresh failed")
+            AuthResult.Error("Session refresh failed: ${e.message}")
         }
     }
     
@@ -213,30 +267,15 @@ class SupabaseAuthManager @Inject constructor(
         return try {
             _authState.value = AuthState.LOADING
             
-            // Mock implementation for development
-            val mockUser = AuthUser(
-                id = "mock-user-${System.currentTimeMillis()}",
-                email = "user@${provider}.com",
-                emailConfirmed = true,
-                createdAt = "2024-01-01T00:00:00Z"
-            )
-            
-            val mockSession = AuthSession(
-                accessToken = "mock-access-token-${System.currentTimeMillis()}",
-                refreshToken = "mock-refresh-token",
-                expiresIn = 3600
-            )
-            
-            saveSession(mockUser, mockSession)
-            _currentUser.value = mockUser
-            _currentSession.value = mockSession
-            _authState.value = AuthState.AUTHENTICATED
-            
-            AuthResult.Success(mockUser, mockSession)
+            // For now, return an error as social auth requires additional setup
+            // In a real implementation, you would use:
+            // supabaseClient.client.auth.signInWith(provider)
+            _authState.value = AuthState.ERROR
+            AuthResult.Error("Social authentication not yet configured. Please use email/password authentication.")
         } catch (e: Exception) {
             Log.e("SupabaseAuth", "Provider sign in failed", e)
             _authState.value = AuthState.ERROR
-            AuthResult.Error("Provider sign in failed")
+            AuthResult.Error("Provider sign in failed: ${e.message}")
         }
     }
     

@@ -242,7 +242,7 @@ class CookingGuidanceService @Inject constructor() {
     private fun deserializeActiveTimers(serialized: String): List<CookingTimer> {
         if (serialized.isEmpty() || serialized == "[]") return emptyList()
         return try {
-            // Simple serialization for now - in production, use JSON
+            // For now, return empty list - in production, implement proper JSON deserialization
             emptyList()
         } catch (e: Exception) {
             emptyList()
@@ -250,7 +250,7 @@ class CookingGuidanceService @Inject constructor() {
     }
     
     private fun serializeActiveTimers(timers: List<CookingTimer>): String {
-        // Simple serialization for now - in production, use JSON
+        // For now, return empty JSON array - in production, implement proper JSON serialization
         return "[]"
     }
     

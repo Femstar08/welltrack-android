@@ -2,10 +2,10 @@
 -- Run this in your Supabase SQL Editor
 
 -- Create meals table
-CREATE TABLE IF NOT EXISTS meals (
+CREATE TABLE IF NOT EXISTS wt_meals (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-    recipe_id UUID REFERENCES recipes(id) ON DELETE SET NULL,
+    recipe_id UUID REFERENCES wt_recipes(id) ON DELETE SET NULL,
     name TEXT NOT NULL,
     meal_type TEXT CHECK (meal_type IN ('BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'SUPPLEMENT')) NOT NULL,
     timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -22,10 +22,10 @@ CREATE TABLE IF NOT EXISTS meals (
 );
 
 -- Create meal_ingredients table for custom meals (not from recipes)
-CREATE TABLE IF NOT EXISTS meal_ingredients (
+CREATE TABLE IF NOT EXISTS wt_meal_ingredients (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    meal_id UUID REFERENCES meals(id) ON DELETE CASCADE,
-    ingredient_id UUID REFERENCES ingredients(id) ON DELETE CASCADE,
+    meal_id UUID REFERENCES wt_meals(id) ON DELETE CASCADE,
+    ingredient_id UUID REFERENCES wt_ingredients(id) ON DELETE CASCADE,
     quantity REAL NOT NULL,
     unit TEXT NOT NULL,
     notes TEXT,
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS meal_ingredients (
 );
 
 -- Create meal_plans table
-CREATE TABLE IF NOT EXISTS meal_plans (
+CREATE TABLE IF NOT EXISTS wt_meal_plans (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
@@ -46,10 +46,10 @@ CREATE TABLE IF NOT EXISTS meal_plans (
 );
 
 -- Create meal_plan_items table
-CREATE TABLE IF NOT EXISTS meal_plan_items (
+CREATE TABLE IF NOT EXISTS wt_meal_plan_items (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    meal_plan_id UUID REFERENCES meal_plans(id) ON DELETE CASCADE,
-    meal_id UUID REFERENCES meals(id) ON DELETE CASCADE,
+    meal_plan_id UUID REFERENCES wt_meal_plans(id) ON DELETE CASCADE,
+    meal_id UUID REFERENCES wt_meals(id) ON DELETE CASCADE,
     planned_date DATE NOT NULL,
     planned_time TIME,
     is_completed BOOLEAN DEFAULT FALSE,
@@ -58,96 +58,96 @@ CREATE TABLE IF NOT EXISTS meal_plan_items (
 );
 
 -- Enable Row Level Security
-ALTER TABLE meals ENABLE ROW LEVEL SECURITY;
-ALTER TABLE meal_ingredients ENABLE ROW LEVEL SECURITY;
-ALTER TABLE meal_plans ENABLE ROW LEVEL SECURITY;
-ALTER TABLE meal_plan_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wt_meals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wt_meal_ingredients ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wt_meal_plans ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wt_meal_plan_items ENABLE ROW LEVEL SECURITY;
 
 -- Policies for meals
-CREATE POLICY "Users can view own meals" ON meals
+CREATE POLICY "Users can view own meals" ON wt_meals
     FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can insert own meals" ON meals
+CREATE POLICY "Users can insert own meals" ON wt_meals
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update own meals" ON meals
+CREATE POLICY "Users can update own meals" ON wt_meals
     FOR UPDATE USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete own meals" ON meals
+CREATE POLICY "Users can delete own meals" ON wt_meals
     FOR DELETE USING (auth.uid() = user_id);
 
 -- Policies for meal_ingredients
-CREATE POLICY "Users can view meal ingredients for own meals" ON meal_ingredients
+CREATE POLICY "Users can view meal ingredients for own meals" ON wt_meal_ingredients
     FOR SELECT USING (
         EXISTS (
-            SELECT 1 FROM meals 
-            WHERE meals.id = meal_ingredients.meal_id 
-            AND meals.user_id = auth.uid()
+            SELECT 1 FROM wt_meals 
+            WHERE wt_meals.id = wt_meal_ingredients.meal_id 
+            AND wt_meals.user_id = auth.uid()
         )
     );
 
-CREATE POLICY "Users can manage ingredients for own meals" ON meal_ingredients
+CREATE POLICY "Users can manage ingredients for own meals" ON wt_meal_ingredients
     FOR ALL USING (
         EXISTS (
-            SELECT 1 FROM meals 
-            WHERE meals.id = meal_ingredients.meal_id 
-            AND meals.user_id = auth.uid()
+            SELECT 1 FROM wt_meals 
+            WHERE wt_meals.id = wt_meal_ingredients.meal_id 
+            AND wt_meals.user_id = auth.uid()
         )
     );
 
 -- Policies for meal_plans
-CREATE POLICY "Users can view own meal plans" ON meal_plans
+CREATE POLICY "Users can view own meal plans" ON wt_meal_plans
     FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can insert own meal plans" ON meal_plans
+CREATE POLICY "Users can insert own meal plans" ON wt_meal_plans
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update own meal plans" ON meal_plans
+CREATE POLICY "Users can update own meal plans" ON wt_meal_plans
     FOR UPDATE USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete own meal plans" ON meal_plans
+CREATE POLICY "Users can delete own meal plans" ON wt_meal_plans
     FOR DELETE USING (auth.uid() = user_id);
 
 -- Policies for meal_plan_items
-CREATE POLICY "Users can view meal plan items for own plans" ON meal_plan_items
+CREATE POLICY "Users can view meal plan items for own plans" ON wt_meal_plan_items
     FOR SELECT USING (
         EXISTS (
-            SELECT 1 FROM meal_plans 
-            WHERE meal_plans.id = meal_plan_items.meal_plan_id 
-            AND meal_plans.user_id = auth.uid()
+            SELECT 1 FROM wt_meal_plans 
+            WHERE wt_meal_plans.id = wt_meal_plan_items.meal_plan_id 
+            AND wt_meal_plans.user_id = auth.uid()
         )
     );
 
-CREATE POLICY "Users can manage meal plan items for own plans" ON meal_plan_items
+CREATE POLICY "Users can manage meal plan items for own plans" ON wt_meal_plan_items
     FOR ALL USING (
         EXISTS (
-            SELECT 1 FROM meal_plans 
-            WHERE meal_plans.id = meal_plan_items.meal_plan_id 
-            AND meal_plans.user_id = auth.uid()
+            SELECT 1 FROM wt_meal_plans 
+            WHERE wt_meal_plans.id = wt_meal_plan_items.meal_plan_id 
+            AND wt_meal_plans.user_id = auth.uid()
         )
     );
 
 -- Create triggers for updated_at
-CREATE TRIGGER update_meals_updated_at 
-    BEFORE UPDATE ON meals 
+CREATE TRIGGER update_wt_meals_updated_at 
+    BEFORE UPDATE ON wt_meals 
     FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_meal_plans_updated_at 
-    BEFORE UPDATE ON meal_plans 
+CREATE TRIGGER update_wt_meal_plans_updated_at 
+    BEFORE UPDATE ON wt_meal_plans 
     FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
 
 -- Create indexes for better performance
-CREATE INDEX IF NOT EXISTS idx_meals_user_id ON meals(user_id);
-CREATE INDEX IF NOT EXISTS idx_meals_recipe_id ON meals(recipe_id);
-CREATE INDEX IF NOT EXISTS idx_meals_timestamp ON meals(timestamp);
-CREATE INDEX IF NOT EXISTS idx_meals_meal_type ON meals(meal_type);
-CREATE INDEX IF NOT EXISTS idx_meals_status ON meals(status);
-CREATE INDEX IF NOT EXISTS idx_meals_score ON meals(score);
-CREATE INDEX IF NOT EXISTS idx_meals_is_favorite ON meals(is_favorite);
-CREATE INDEX IF NOT EXISTS idx_meal_ingredients_meal_id ON meal_ingredients(meal_id);
-CREATE INDEX IF NOT EXISTS idx_meal_plans_user_id ON meal_plans(user_id);
-CREATE INDEX IF NOT EXISTS idx_meal_plans_dates ON meal_plans(start_date, end_date);
-CREATE INDEX IF NOT EXISTS idx_meal_plan_items_plan_id ON meal_plan_items(meal_plan_id);
-CREATE INDEX IF NOT EXISTS idx_meal_plan_items_planned_date ON meal_plan_items(planned_date);
+CREATE INDEX IF NOT EXISTS idx_wt_meals_user_id ON wt_meals(user_id);
+CREATE INDEX IF NOT EXISTS idx_wt_meals_recipe_id ON wt_meals(recipe_id);
+CREATE INDEX IF NOT EXISTS idx_wt_meals_timestamp ON wt_meals(timestamp);
+CREATE INDEX IF NOT EXISTS idx_wt_meals_meal_type ON wt_meals(meal_type);
+CREATE INDEX IF NOT EXISTS idx_wt_meals_status ON wt_meals(status);
+CREATE INDEX IF NOT EXISTS idx_wt_meals_score ON wt_meals(score);
+CREATE INDEX IF NOT EXISTS idx_wt_meals_is_favorite ON wt_meals(is_favorite);
+CREATE INDEX IF NOT EXISTS idx_wt_meal_ingredients_meal_id ON wt_meal_ingredients(meal_id);
+CREATE INDEX IF NOT EXISTS idx_wt_meal_plans_user_id ON wt_meal_plans(user_id);
+CREATE INDEX IF NOT EXISTS idx_wt_meal_plans_dates ON wt_meal_plans(start_date, end_date);
+CREATE INDEX IF NOT EXISTS idx_wt_meal_plan_items_plan_id ON wt_meal_plan_items(meal_plan_id);
+CREATE INDEX IF NOT EXISTS idx_wt_meal_plan_items_planned_date ON wt_meal_plan_items(planned_date);

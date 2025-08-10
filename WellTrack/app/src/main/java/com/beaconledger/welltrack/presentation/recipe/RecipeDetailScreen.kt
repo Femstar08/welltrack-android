@@ -32,10 +32,12 @@ fun RecipeDetailScreen(
     onEditClick: () -> Unit,
     onShareClick: () -> Unit,
     onFavoriteClick: () -> Unit,
+    onStartCooking: ((Int) -> Unit)? = null,
     isFavorite: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     var selectedTab by remember { mutableStateOf(0) }
+    var showScalingDialog by remember { mutableStateOf(false) }
     val tabs = listOf("Ingredients", "Instructions", "Nutrition")
 
     Column(
@@ -150,6 +152,25 @@ fun RecipeDetailScreen(
                         )
                     }
                 }
+                
+                // Start Cooking Button
+                if (onStartCooking != null) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    Button(
+                        onClick = { showScalingDialog = true },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Text(
+                            text = "Start Cooking Guide",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
             }
         }
 
@@ -189,6 +210,19 @@ fun RecipeDetailScreen(
                 modifier = Modifier.fillMaxSize()
             )
         }
+    }
+    
+    // Recipe Scaling Dialog
+    if (showScalingDialog && onStartCooking != null) {
+        RecipeScalingDialog(
+            recipe = recipe,
+            ingredients = ingredients,
+            onDismiss = { showScalingDialog = false },
+            onStartCooking = { targetServings ->
+                onStartCooking(targetServings)
+                showScalingDialog = false
+            }
+        )
     }
 }
 

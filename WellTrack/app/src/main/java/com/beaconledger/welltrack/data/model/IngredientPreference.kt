@@ -130,3 +130,15 @@ enum class AlertSeverity(val displayName: String, val color: String) {
     HIGH("High", "#F44336"), // Red
     CRITICAL("Critical", "#D32F2F") // Dark Red
 }
+
+data class IngredientUsageStats(
+    val ingredientName: String,
+    val usageCount: Int,
+    val lastUsed: String? = null,
+    val totalQuantity: Double? = null,
+    val totalQuantityUsed: Double? = null,
+    val averageQuantityPerUse: Double? = null,
+    val firstUsed: String? = null,
+    val mostCommonUnit: String? = null,
+    val usageFrequency: Double? = null // Uses per day/week
+)

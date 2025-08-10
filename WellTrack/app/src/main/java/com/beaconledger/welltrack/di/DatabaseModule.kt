@@ -59,4 +59,14 @@ object DatabaseModule {
     fun provideWorkoutDao(database: WellTrackDatabase): WorkoutDao {
         return database.workoutDao()
     }
+
+    @Provides
+    fun provideCookingSessionDao(database: WellTrackDatabase): CookingSessionDao {
+        return database.cookingSessionDao()
+    }
+
+    @Provides
+    fun provideMealPlanDao(database: WellTrackDatabase): MealPlanDao {
+        return database.mealPlanDao()
+    }
 }

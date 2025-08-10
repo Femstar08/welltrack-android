@@ -209,7 +209,7 @@ class IngredientPreferenceViewModel @Inject constructor(
     fun setShowPantryDialog(show: Boolean) {
         _uiState.update { it.copy(showPantryDialog = show) }
     }
-}}
+}
 
 
 data class IngredientPreferenceUiState(
