@@ -29,4 +29,13 @@ interface RecipeDao {
 
     @Query("DELETE FROM recipes WHERE id = :recipeId")
     suspend fun deleteRecipeById(recipeId: String)
+    
+    @Query("""
+        SELECT DISTINCT r.* FROM recipes r 
+        INNER JOIN recipe_ingredients ri ON r.id = ri.recipeId 
+        WHERE ri.name LIKE '%' || :ingredientName || '%' 
+        ORDER BY r.rating DESC, r.createdAt DESC 
+        LIMIT :limit
+    """)
+    suspend fun getRecipesByIngredient(ingredientName: String, limit: Int = 10): List<Recipe>
 }

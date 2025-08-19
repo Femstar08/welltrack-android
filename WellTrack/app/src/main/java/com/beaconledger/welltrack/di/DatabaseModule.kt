@@ -69,4 +69,38 @@ object DatabaseModule {
     fun provideMealPlanDao(database: WellTrackDatabase): MealPlanDao {
         return database.mealPlanDao()
     }
+
+    @Provides
+    fun provideMealPrepDao(database: WellTrackDatabase): MealPrepDao {
+        return database.mealPrepDao()
+    }
+
+    @Provides
+    fun provideSupplementDao(database: WellTrackDatabase): com.beaconledger.welltrack.data.database.dao.SupplementDao {
+        return database.supplementDao()
+    }
+
+    @Provides
+    fun providePantryDao(database: WellTrackDatabase): com.beaconledger.welltrack.data.database.dao.PantryDao {
+        return database.pantryDao()
+    }
+
+    @Provides
+    fun provideIngredientUsageDao(database: WellTrackDatabase): com.beaconledger.welltrack.data.database.dao.IngredientUsageDao {
+        return database.ingredientUsageDao()
+    }
+
+    @Provides
+    fun provideShoppingListDao(database: WellTrackDatabase): com.beaconledger.welltrack.data.database.dao.ShoppingListDao {
+        return database.shoppingListDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMealPrepRepository(
+        mealPrepDao: MealPrepDao,
+        gson: com.google.gson.Gson
+    ): com.beaconledger.welltrack.domain.repository.MealPrepRepository {
+        return com.beaconledger.welltrack.data.repository.MealPrepRepositoryImpl(mealPrepDao, gson)
+    }
 }

@@ -61,17 +61,31 @@ enum class RecipeSource {
     OCR_SCAN
 }
 
-enum class IngredientCategory(val displayName: String) {
-    PROTEIN("Protein"),
-    VEGETABLES("Vegetables"),
-    FRUITS("Fruits"),
-    GRAINS("Grains & Starches"),
-    DAIRY("Dairy"),
-    SPICES("Herbs & Spices"),
-    OILS("Oils & Fats"),
-    CONDIMENTS("Condiments & Sauces"),
-    BEVERAGES("Beverages"),
-    OTHER("Other")
+enum class IngredientCategory {
+    PROTEIN,
+    VEGETABLES,
+    FRUITS,
+    GRAINS,
+    DAIRY,
+    SPICES,
+    OILS,
+    CONDIMENTS,
+    BEVERAGES,
+    OTHER;
+    
+    val displayName: String
+        get() = when (this) {
+            PROTEIN -> "Protein"
+            VEGETABLES -> "Vegetables"
+            FRUITS -> "Fruits"
+            GRAINS -> "Grains & Starches"
+            DAIRY -> "Dairy"
+            SPICES -> "Herbs & Spices"
+            OILS -> "Oils & Fats"
+            CONDIMENTS -> "Condiments & Sauces"
+            BEVERAGES -> "Beverages"
+            OTHER -> "Other"
+        }
 }
 
 data class RecipeStep(

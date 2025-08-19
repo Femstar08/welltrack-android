@@ -26,9 +26,21 @@ import com.beaconledger.welltrack.data.database.dao.*
         PlannedSupplement::class,
         IngredientPreference::class,
         PantryItem::class,
-        IngredientUsageHistory::class
+        IngredientUsageHistory::class,
+        MealPrepInstruction::class,
+        StorageRecommendation::class,
+        Leftover::class,
+        LeftoverCombination::class,
+        ShoppingList::class,
+        ShoppingListItem::class,
+        Supplement::class,
+        UserSupplement::class,
+        SupplementIntake::class,
+        BloodTestReminder::class,
+        BiomarkerEntry::class,
+        BiomarkerTestSession::class
     ],
-    version = 6,
+    version = 10,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -46,6 +58,10 @@ abstract class WellTrackDatabase : RoomDatabase() {
     abstract fun ingredientPreferenceDao(): IngredientPreferenceDao
     abstract fun pantryDao(): PantryDao
     abstract fun ingredientUsageDao(): IngredientUsageDao
+    abstract fun mealPrepDao(): MealPrepDao
+    abstract fun shoppingListDao(): ShoppingListDao
+    abstract fun supplementDao(): SupplementDao
+    abstract fun biomarkerDao(): BiomarkerDao
 
     companion object {
         const val DATABASE_NAME = "welltrack_database"

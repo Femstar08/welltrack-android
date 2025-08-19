@@ -135,10 +135,8 @@ data class IngredientUsageStats(
     val ingredientName: String,
     val usageCount: Int,
     val lastUsed: String? = null,
-    val totalQuantity: Double? = null,
+    val firstUsed: String? = null,
     val totalQuantityUsed: Double? = null,
     val averageQuantityPerUse: Double? = null,
-    val firstUsed: String? = null,
-    val mostCommonUnit: String? = null,
-    val usageFrequency: Double? = null // Uses per day/week
+    val mostCommonUnit: String? = null
 )

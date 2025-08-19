@@ -4,7 +4,7 @@
 
 ```bash
 # Add the remote repository (replace YOUR_USERNAME with your GitHub username)
-git remote add origin https://github.com/YOUR_USERNAME/welltrack-android.git
+git remote add origin https://github.com/Femstar08/welltrack-android.git
 
 # Rename the default branch to main (GitHub standard)
 git branch -M main
