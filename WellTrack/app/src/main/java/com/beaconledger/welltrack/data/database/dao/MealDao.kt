@@ -27,6 +27,24 @@ interface MealDao {
 
     @Query("SELECT COUNT(*) FROM meals WHERE userId = :userId")
     suspend fun getMealCountByUser(userId: String): Int
+    
+    @Query("SELECT * FROM meals WHERE userId = :userId")
+    suspend fun getMealsForUser(userId: String): List<Meal>
+    
+    @Query("SELECT * FROM meals WHERE id = :mealId")
+    suspend fun getMealById(mealId: String): Meal?
+    
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMeal(meal: Meal)
+    
+    @Update
+    suspend fun updateMeal(meal: Meal)
+    
+    @Delete
+    suspend fun deleteMeal(meal: Meal)
+    
+    @Query("DELETE FROM meals WHERE id = :mealId")
+    suspend fun deleteMealById(mealId: String)
 
     @Query("SELECT COUNT(*) FROM meals WHERE userId = :userId AND DATE(timestamp) = DATE(:date)")
     suspend fun getMealCountByDate(userId: String, date: String): Int

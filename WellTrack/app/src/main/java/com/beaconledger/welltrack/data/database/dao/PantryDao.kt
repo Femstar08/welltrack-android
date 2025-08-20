@@ -23,11 +23,17 @@ interface PantryDao {
     @Query("SELECT * FROM pantry_items WHERE userId = :userId AND expiryDate IS NOT NULL AND date(expiryDate) <= date('now', '+7 days') ORDER BY expiryDate ASC")
     fun getExpiringItems(userId: String): Flow<List<PantryItem>>
     
+    @Query("SELECT * FROM pantry_items WHERE userId = :userId AND expiryDate IS NOT NULL AND date(expiryDate) <= date('now', '+' || :daysAhead || ' days') ORDER BY expiryDate ASC")
+    fun getExpiringItemsWithinDays(userId: String, daysAhead: Int): Flow<List<PantryItem>>
+    
     @Query("SELECT * FROM pantry_items WHERE userId = :userId AND expiryDate IS NOT NULL AND date(expiryDate) < date('now') ORDER BY expiryDate ASC")
     fun getExpiredItems(userId: String): Flow<List<PantryItem>>
     
     @Query("SELECT * FROM pantry_items WHERE userId = :userId AND ingredientName LIKE :query || '%' ORDER BY ingredientName ASC LIMIT :limit")
     suspend fun searchPantryItems(userId: String, query: String, limit: Int = 10): List<PantryItem>
+    
+    @Query("SELECT * FROM pantry_items WHERE userId = :userId")
+    suspend fun getPantryItemsForUser(userId: String): List<PantryItem>
     
     @Query("SELECT DISTINCT location FROM pantry_items WHERE userId = :userId AND location IS NOT NULL ORDER BY location ASC")
     suspend fun getPantryLocations(userId: String): List<String>

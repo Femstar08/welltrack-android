@@ -167,6 +167,10 @@ class PantryRepositoryImpl @Inject constructor(
         return pantryDao.getExpiringItems(userId)
     }
     
+    override fun getExpiringItems(userId: String, daysAhead: Int): Flow<List<PantryItem>> {
+        return pantryDao.getExpiringItemsWithinDays(userId, daysAhead)
+    }
+    
     override fun getExpiredItems(userId: String): Flow<List<PantryItem>> {
         return pantryDao.getExpiredItems(userId)
     }

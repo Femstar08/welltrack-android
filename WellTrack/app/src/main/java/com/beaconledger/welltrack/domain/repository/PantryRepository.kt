@@ -25,6 +25,7 @@ interface PantryRepository {
     // Expiry and alerts
     fun getLowStockItems(userId: String): Flow<List<PantryItem>>
     fun getExpiringItems(userId: String): Flow<List<PantryItem>>
+    fun getExpiringItems(userId: String, daysAhead: Int): Flow<List<PantryItem>>
     fun getExpiredItems(userId: String): Flow<List<PantryItem>>
     suspend fun getPantryAlerts(userId: String): List<PantryAlert>
     suspend fun getExpiringItemsWithRecipeSuggestions(userId: String): List<ExpiringItemWithSuggestions>

@@ -50,6 +50,17 @@
             android:enabled="true"
             android:exported="false" />
             
+        <!-- Notification Receivers -->
+        <receiver
+            android:name=".data.notification.NotificationTriggerReceiver"
+            android:enabled="true"
+            android:exported="false" />
+            
+        <receiver
+            android:name=".data.notification.NotificationActionReceiver"
+            android:enabled="true"
+            android:exported="false" />
+            
         <!-- Health Connect integration -->
         <activity-alias
             android:name="ViewPermissionUsageActivity"

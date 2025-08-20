@@ -28,6 +28,9 @@ interface MacronutrientDao {
     @Query("SELECT * FROM macronutrient_intake WHERE userId = :userId AND date = :date ORDER BY timestamp DESC")
     fun getIntakeForDate(userId: String, date: LocalDate): Flow<List<MacronutrientIntake>>
     
+    @Query("SELECT * FROM macronutrient_targets WHERE userId = :userId")
+    suspend fun getMacronutrientsForUser(userId: String): List<MacronutrientTarget>
+    
     @Query("SELECT * FROM macronutrient_intake WHERE userId = :userId AND date BETWEEN :startDate AND :endDate ORDER BY date DESC, timestamp DESC")
     fun getIntakeForDateRange(userId: String, startDate: LocalDate, endDate: LocalDate): Flow<List<MacronutrientIntake>>
     

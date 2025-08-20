@@ -29,6 +29,9 @@ interface SupplementDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSupplements(supplements: List<Supplement>)
     
+    @Query("SELECT s.* FROM supplements s INNER JOIN user_supplements us ON s.id = us.supplementId WHERE us.userId = :userId")
+    suspend fun getSupplementsForUser(userId: String): List<Supplement>
+    
     @Update
     suspend fun updateSupplement(supplement: Supplement)
     

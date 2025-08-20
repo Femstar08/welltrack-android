@@ -29,6 +29,9 @@ interface MealPlanDao {
     @Query("DELETE FROM meal_plans WHERE id = :mealPlanId")
     suspend fun deleteMealPlan(mealPlanId: String)
     
+    @Query("SELECT * FROM meal_plans WHERE userId = :userId")
+    suspend fun getMealPlansForUser(userId: String): List<MealPlan>
+    
     @Query("UPDATE meal_plans SET isActive = 0 WHERE userId = :userId")
     suspend fun deactivateAllMealPlans(userId: String)
     

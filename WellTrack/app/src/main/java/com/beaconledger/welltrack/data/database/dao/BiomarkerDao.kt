@@ -29,6 +29,9 @@ interface BiomarkerDao {
     @Delete
     suspend fun deleteReminder(reminder: BloodTestReminder)
     
+    @Query("SELECT * FROM biomarker_entries WHERE userId = :userId")
+    suspend fun getBiomarkersForUser(userId: String): List<BiomarkerEntry>
+    
     @Query("UPDATE blood_test_reminders SET skipCount = skipCount + 1, nextDueDate = :newDueDate WHERE id = :reminderId")
     suspend fun skipReminder(reminderId: String, newDueDate: String)
     

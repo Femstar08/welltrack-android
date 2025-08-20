@@ -49,6 +49,27 @@ interface HealthMetricDao {
         type: HealthMetricType
     ): HealthMetric?
     
+    @Query("SELECT * FROM health_metrics WHERE userId = :userId")
+    suspend fun getHealthMetricsForUser(userId: String): List<HealthMetric>
+    
+    @Query("SELECT * FROM health_metrics WHERE id = :metricId")
+    suspend fun getHealthMetricById(metricId: String): HealthMetric?
+    
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertHealthMetric(healthMetric: HealthMetric)
+    
+    @Update
+    suspend fun updateHealthMetric(healthMetric: HealthMetric)
+    
+    @Delete
+    suspend fun deleteHealthMetric(healthMetric: HealthMetric)
+    
+    @Query("DELETE FROM health_metrics WHERE id = :metricId")
+    suspend fun deleteHealthMetricById(metricId: String)
+    
+    @Query("SELECT * FROM custom_habits WHERE userId = :userId")
+    suspend fun getCustomHabitsForUser(userId: String): List<com.beaconledger.welltrack.data.model.CustomHabit>
+    
     @Query("SELECT * FROM health_metrics WHERE id = :id")
     suspend fun getHealthMetricById(id: String): HealthMetric?
     

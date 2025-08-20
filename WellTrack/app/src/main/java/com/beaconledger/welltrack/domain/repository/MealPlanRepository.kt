@@ -41,6 +41,7 @@ interface MealPlanRepository {
     
     // Weekly Meal Plan operations
     suspend fun getWeeklyMealPlan(userId: String, weekStartDate: LocalDate): Result<WeeklyMealPlan?>
+    suspend fun getWeeklyMealPlan(mealPlanId: String): Flow<WeeklyMealPlan?>
     suspend fun createWeeklyMealPlan(weeklyMealPlan: WeeklyMealPlan): Result<String>
     suspend fun updateWeeklyMealPlan(weeklyMealPlan: WeeklyMealPlan): Result<Unit>
     

@@ -115,8 +115,9 @@ enum class Gender {
     MALE, FEMALE, OTHER
 }
 
+@Entity(tableName = "custom_nutrients")
 data class CustomNutrient(
-    val id: String,
+    @PrimaryKey val id: String,
     val userId: String,
     val name: String,
     val unit: String,
@@ -148,3 +149,11 @@ data class MacronutrientBalance(
     val isBalanced: Boolean,
     val recommendations: List<String>
 )
+
+enum class TrendDirection {
+    INCREASING, DECREASING, STABLE
+}
+
+enum class FitnessGoal {
+    WEIGHT_LOSS, MUSCLE_GAIN, MAINTENANCE, ENDURANCE, STRENGTH, VO2_MAX_IMPROVEMENT
+}

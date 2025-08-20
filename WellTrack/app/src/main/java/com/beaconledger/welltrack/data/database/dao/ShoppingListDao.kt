@@ -29,6 +29,9 @@ interface ShoppingListDao {
     @Query("DELETE FROM shopping_lists WHERE id = :shoppingListId")
     suspend fun deleteShoppingList(shoppingListId: String)
     
+    @Query("SELECT * FROM shopping_lists WHERE userId = :userId")
+    suspend fun getShoppingListsForUser(userId: String): List<ShoppingList>
+    
     @Query("UPDATE shopping_lists SET isActive = :isActive WHERE id = :shoppingListId")
     suspend fun updateShoppingListActiveStatus(shoppingListId: String, isActive: Boolean)
     

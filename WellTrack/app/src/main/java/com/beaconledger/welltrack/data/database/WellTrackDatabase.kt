@@ -38,9 +38,29 @@ import com.beaconledger.welltrack.data.database.dao.*
         SupplementIntake::class,
         BloodTestReminder::class,
         BiomarkerEntry::class,
-        BiomarkerTestSession::class
+        BiomarkerTestSession::class,
+        MacronutrientTarget::class,
+        MacronutrientIntake::class,
+        CustomNutrient::class,
+        SyncStatus::class,
+        NotificationEntity::class,
+        UserDietaryRestriction::class,
+        UserAllergy::class,
+        UserFoodPreference::class,
+        MealDietaryTag::class,
+        RecipeDietaryTag::class,
+        // Social entities
+        FamilyGroup::class,
+        FamilyMember::class,
+        SharedMealPlan::class,
+        SharedRecipe::class,
+        CollaborativeMealPrep::class,
+        Achievement::class,
+        SharedAchievement::class,
+        SharedShoppingList::class,
+        SharedShoppingListItem::class
     ],
-    version = 10,
+    version = 15,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -62,6 +82,26 @@ abstract class WellTrackDatabase : RoomDatabase() {
     abstract fun shoppingListDao(): ShoppingListDao
     abstract fun supplementDao(): SupplementDao
     abstract fun biomarkerDao(): BiomarkerDao
+    abstract fun macronutrientDao(): MacronutrientDao
+    abstract fun syncStatusDao(): SyncStatusDao
+    abstract fun notificationDao(): NotificationDao
+    abstract fun dietaryRestrictionsDao(): DietaryRestrictionsDao
+    
+    // Social DAOs
+    abstract fun familyGroupDao(): FamilyGroupDao
+    abstract fun familyMemberDao(): FamilyMemberDao
+    abstract fun sharedMealPlanDao(): SharedMealPlanDao
+    abstract fun sharedRecipeDao(): SharedRecipeDao
+    abstract fun collaborativeMealPrepDao(): CollaborativeMealPrepDao
+    abstract fun achievementDao(): AchievementDao
+    abstract fun sharedAchievementDao(): SharedAchievementDao
+    abstract fun sharedShoppingListDao(): SharedShoppingListDao
+    abstract fun sharedShoppingListItemDao(): SharedShoppingListItemDao
+
+    suspend fun clearAllTables() {
+        // This would clear all tables - implementation depends on specific requirements
+        // For now, this is a placeholder
+    }
 
     companion object {
         const val DATABASE_NAME = "welltrack_database"
