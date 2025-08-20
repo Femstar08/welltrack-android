@@ -5,6 +5,7 @@ import com.beaconledger.welltrack.data.model.*
 import com.beaconledger.welltrack.domain.repository.IngredientPreferenceRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import java.time.LocalDateTime
 import java.util.*
 import javax.inject.Inject
@@ -198,15 +199,37 @@ class IngredientPreferenceRepositoryImpl @Inject constructor(
     }
     
     override fun getRecentUsageHistory(userId: String): Flow<List<IngredientUsageHistory>> {
-        return ingredientUsageDao.getRecentUsageHistory(userId)
+        return flow {
+            emit(ingredientUsageDao.getRecentUsageHistory(userId))
+        }
     }
     
     override suspend fun getMostUsedIngredients(userId: String, limit: Int): List<IngredientUsageStats> {
-        return ingredientUsageDao.getMostUsedIngredients(userId, limit)
+        return ingredientUsageDao.getMostUsedIngredients(userId, limit).map { frequency ->
+            IngredientUsageStats(
+                ingredientName = frequency.ingredientName,
+                usageCount = frequency.usageCount,
+                lastUsed = "",
+                firstUsed = "",
+                totalQuantityUsed = 0.0,
+                averageQuantityPerUse = 0.0,
+                mostCommonUnit = ""
+            )
+        }
     }
     
     override suspend fun getRecentlyUsedIngredients(userId: String, limit: Int): List<IngredientUsageStats> {
-        return ingredientUsageDao.getRecentlyUsedIngredients(userId, limit)
+        return ingredientUsageDao.getRecentlyUsedIngredients(userId).take(limit).map { ingredientName ->
+            IngredientUsageStats(
+                ingredientName = ingredientName,
+                usageCount = 0,
+                lastUsed = "",
+                firstUsed = "",
+                totalQuantityUsed = 0.0,
+                averageQuantityPerUse = 0.0,
+                mostCommonUnit = ""
+            )
+        }
     }
     
     override suspend fun getIngredientUsageStats(userId: String, ingredientName: String): IngredientUsageStats? {
@@ -296,7 +319,7 @@ class IngredientPreferenceRepositoryImpl @Inject constructor(
                             pantryQuantity = pantryItem?.quantity,
                             pantryUnit = pantryItem?.unit,
                             usageFrequency = stats.usageCount,
-                            lastUsed = stats.lastUsed,
+                            lastUsed = "",
                             priority = preference?.priority ?: 0
                         )
                     )
@@ -374,7 +397,7 @@ class IngredientPreferenceRepositoryImpl @Inject constructor(
     override suspend fun getIngredientRecommendationsForMealPlan(userId: String): List<String> {
         return try {
             val preferred = ingredientPreferenceDao.getPreferredIngredients(userId)
-            val recentlyUsed = ingredientUsageDao.getRecentlyUsedIngredients(userId, 10)
+            val recentlyUsed = ingredientUsageDao.getRecentlyUsedIngredients(userId).take(10)
             
             val recommendations = mutableSetOf<String>()
             
@@ -382,7 +405,7 @@ class IngredientPreferenceRepositoryImpl @Inject constructor(
             preferred.forEach { recommendations.add(it.ingredientName) }
             
             // Add recently used ingredients
-            recentlyUsed.forEach { recommendations.add(it.ingredientName) }
+            recentlyUsed.forEach { recommendations.add(it) }
             
             recommendations.toList()
         } catch (e: Exception) {

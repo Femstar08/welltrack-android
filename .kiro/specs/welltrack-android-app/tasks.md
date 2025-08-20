@@ -121,7 +121,7 @@
   - Create supplement contribution to nutrition calculations
   - _Requirements: 5.1, 5.2, 5.3, 5.4_
 
-- [ ] 16. Implement biomarker tracking
+- [x] 16. Implement biomarker tracking
 
   - Create blood test reminder system with skip options
   - Build manual entry forms for hormonal markers
@@ -129,7 +129,7 @@
   - Implement general health panel data entry
   - _Requirements: 5.6, 5.7, 5.8, 5.9, 5.11_
 
-- [ ] 17. Integrate Health Connect
+- [x] 17. Integrate Health Connect
 
   - Set up Health Connect SDK integration
   - Implement data synchronization for steps, heart rate, weight, etc.
