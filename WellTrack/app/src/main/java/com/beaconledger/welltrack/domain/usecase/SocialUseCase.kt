@@ -21,7 +21,7 @@ class SocialUseCase @Inject constructor(
         }
     }
     
-    fun getFamilyGroupsForUser(userId: String): Flow<List<FamilyGroupWithMembers>> {
+    suspend fun getFamilyGroupsForUser(userId: String): Flow<List<FamilyGroupWithMembers>> {
         return socialRepository.getFamilyGroupsForUser(userId)
     }
     
@@ -54,7 +54,7 @@ class SocialUseCase @Inject constructor(
         return socialRepository.removeFamilyMember(familyGroupId, userId)
     }
     
-    fun getFamilyMembers(familyGroupId: String): Flow<List<FamilyMemberInfo>> {
+    suspend fun getFamilyMembers(familyGroupId: String): Flow<List<FamilyMemberInfo>> {
         return socialRepository.getFamilyMembers(familyGroupId)
     }
     
@@ -79,7 +79,7 @@ class SocialUseCase @Inject constructor(
         }
     }
     
-    fun getSharedMealPlans(familyGroupId: String): Flow<List<SharedMealPlanWithDetails>> {
+    suspend fun getSharedMealPlans(familyGroupId: String): Flow<List<SharedMealPlanWithDetails>> {
         return socialRepository.getSharedMealPlans(familyGroupId)
     }
     
@@ -101,7 +101,7 @@ class SocialUseCase @Inject constructor(
         return socialRepository.shareRecipe(familyGroupId, recipeId, sharedBy, message?.trim())
     }
     
-    fun getSharedRecipes(familyGroupId: String): Flow<List<SharedRecipeWithDetails>> {
+    suspend fun getSharedRecipes(familyGroupId: String): Flow<List<SharedRecipeWithDetails>> {
         return socialRepository.getSharedRecipes(familyGroupId)
     }
     
@@ -140,11 +140,11 @@ class SocialUseCase @Inject constructor(
         }
     }
     
-    fun getCollaborativeMealPrep(familyGroupId: String): Flow<List<CollaborativeMealPrepWithDetails>> {
+    suspend fun getCollaborativeMealPrep(familyGroupId: String): Flow<List<CollaborativeMealPrepWithDetails>> {
         return socialRepository.getCollaborativeMealPrep(familyGroupId)
     }
     
-    fun getMealPrepAssignedToUser(userId: String): Flow<List<CollaborativeMealPrepWithDetails>> {
+    suspend fun getMealPrepAssignedToUser(userId: String): Flow<List<CollaborativeMealPrepWithDetails>> {
         return socialRepository.getMealPrepAssignedToUser(userId)
     }
     
@@ -183,7 +183,7 @@ class SocialUseCase @Inject constructor(
         return socialRepository.shareAchievement(achievementId, familyGroupId, shareMessage?.trim())
     }
     
-    fun getSharedAchievements(familyGroupId: String): Flow<List<SharedAchievement>> {
+    suspend fun getSharedAchievements(familyGroupId: String): Flow<List<SharedAchievement>> {
         return socialRepository.getSharedAchievements(familyGroupId)
     }
     
@@ -204,7 +204,7 @@ class SocialUseCase @Inject constructor(
         }
     }
     
-    fun getSharedShoppingLists(familyGroupId: String): Flow<List<SharedShoppingList>> {
+    suspend fun getSharedShoppingLists(familyGroupId: String): Flow<List<SharedShoppingList>> {
         return socialRepository.getSharedShoppingLists(familyGroupId)
     }
     
@@ -238,7 +238,7 @@ class SocialUseCase @Inject constructor(
         return socialRepository.updateShoppingListItemPurchaseStatus(itemId, isPurchased, purchasedBy)
     }
     
-    fun getSharedShoppingListItems(shoppingListId: String): Flow<List<SharedShoppingListItem>> {
+    suspend fun getSharedShoppingListItems(shoppingListId: String): Flow<List<SharedShoppingListItem>> {
         return socialRepository.getSharedShoppingListItems(shoppingListId)
     }
     

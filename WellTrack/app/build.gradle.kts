@@ -85,6 +85,36 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    
+    // Additional Testing Dependencies
+    testImplementation("org.mockito:mockito-core:5.7.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("androidx.room:room-testing:2.6.1")
+    testImplementation("io.mockk:mockk:1.13.8")
+    testImplementation("org.robolectric:robolectric:4.11.1")
+    
+    // Android Test Dependencies
+    androidTestImplementation("androidx.room:room-testing:2.6.1")
+    androidTestImplementation("androidx.test:core:1.5.0")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation("androidx.test.ext:truth:1.5.0")
+    androidTestImplementation("org.mockito:mockito-android:5.7.0")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    
+    // Hilt Testing
+    testImplementation("com.google.dagger:hilt-android-testing:2.48")
+    kspTest("com.google.dagger:hilt-compiler:2.48")
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.48")
+    kspAndroidTest("com.google.dagger:hilt-compiler:2.48")
+    
+    // Performance Testing
+    androidTestImplementation("androidx.benchmark:benchmark-junit4:1.2.2")
+    
+    // Security Testing
+    testImplementation("org.bouncycastle:bcprov-jdk15on:1.70")
     // Hilt for Dependency Injection
     implementation("com.google.dagger:hilt-android:2.48")
     ksp("com.google.dagger:hilt-compiler:2.48")

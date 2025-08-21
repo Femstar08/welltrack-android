@@ -58,9 +58,14 @@ import com.beaconledger.welltrack.data.database.dao.*
         Achievement::class,
         SharedAchievement::class,
         SharedShoppingList::class,
-        SharedShoppingListItem::class
+        SharedShoppingListItem::class,
+        // Cost Budget entities
+        IngredientPrice::class,
+        MealCost::class,
+        BudgetSettings::class,
+        BudgetTracking::class
     ],
-    version = 15,
+    version = 16,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -97,6 +102,9 @@ abstract class WellTrackDatabase : RoomDatabase() {
     abstract fun sharedAchievementDao(): SharedAchievementDao
     abstract fun sharedShoppingListDao(): SharedShoppingListDao
     abstract fun sharedShoppingListItemDao(): SharedShoppingListItemDao
+    
+    // Cost Budget DAO
+    abstract fun costBudgetDao(): CostBudgetDao
 
     suspend fun clearAllTables() {
         // This would clear all tables - implementation depends on specific requirements

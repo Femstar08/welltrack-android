@@ -221,7 +221,7 @@ fun BarcodeScannerDialog(
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             Icon(
-                                Icons.Default.CameraAlt,
+                                Icons.Default.CameraEnhance,
                                 contentDescription = null,
                                 modifier = Modifier.size(64.dp),
                                 tint = MaterialTheme.colorScheme.primary

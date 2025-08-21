@@ -312,4 +312,66 @@ class Converters {
             )
         }
     }
+
+    // Cost Budget converters
+    @TypeConverter
+    fun fromBudgetPeriod(period: BudgetPeriod): String {
+        return period.name
+    }
+
+    @TypeConverter
+    fun toBudgetPeriod(periodString: String): BudgetPeriod {
+        return BudgetPeriod.valueOf(periodString)
+    }
+
+    @TypeConverter
+    fun fromOptimizationType(type: OptimizationType): String {
+        return type.name
+    }
+
+    @TypeConverter
+    fun toOptimizationType(typeString: String): OptimizationType {
+        return OptimizationType.valueOf(typeString)
+    }
+
+    @TypeConverter
+    fun fromSuggestionPriority(priority: SuggestionPriority): String {
+        return priority.name
+    }
+
+    @TypeConverter
+    fun toSuggestionPriority(priorityString: String): SuggestionPriority {
+        return SuggestionPriority.valueOf(priorityString)
+    }
+
+    @TypeConverter
+    fun fromAlertType(type: AlertType): String {
+        return type.name
+    }
+
+    @TypeConverter
+    fun toAlertType(typeString: String): AlertType {
+        return AlertType.valueOf(typeString)
+    }
+
+    @TypeConverter
+    fun fromIngredientCostBreakdownList(costs: List<IngredientCostBreakdown>): String {
+        return costs.joinToString(";") { "${it.ingredientName}:${it.quantity}:${it.unit}:${it.unitPrice}:${it.totalCost}:${it.isEstimated}" }
+    }
+
+    @TypeConverter
+    fun toIngredientCostBreakdownList(costsString: String): List<IngredientCostBreakdown> {
+        if (costsString.isEmpty()) return emptyList()
+        return costsString.split(";").map { entry ->
+            val parts = entry.split(":")
+            IngredientCostBreakdown(
+                ingredientName = parts[0],
+                quantity = parts[1].toDouble(),
+                unit = parts[2],
+                unitPrice = parts[3].toDouble(),
+                totalCost = parts[4].toDouble(),
+                isEstimated = parts[5].toBoolean()
+            )
+        }
+    }
 }

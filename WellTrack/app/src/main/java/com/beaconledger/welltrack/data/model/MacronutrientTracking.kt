@@ -96,7 +96,7 @@ data class ProteinTarget(
     val totalTargetGrams: Double
 )
 
-enum class ActivityLevel {
+enum class ProteinActivityLevel {
     SEDENTARY, // 1.2g/kg
     LIGHTLY_ACTIVE, // 1.4g/kg
     MODERATELY_ACTIVE, // 1.6g/kg

@@ -99,9 +99,8 @@ class SupabaseClient @Inject constructor() {
         // Implementation for getting entities changed since timestamp
         return emptyList() // Placeholder
     }
-}    
-  
-  // Social Features - Family Groups
+    
+    // Social Features - Family Groups
     suspend fun insertFamilyGroup(familyGroup: FamilyGroup) {
         // Implementation for inserting family group to Supabase
     }

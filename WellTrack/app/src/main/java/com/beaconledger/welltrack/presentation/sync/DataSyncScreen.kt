@@ -126,7 +126,7 @@ private fun SyncStatusCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = if (summary.isOnline) Icons.Default.CloudDone else Icons.Default.CloudOff,
+                            imageVector = if (summary.isOnline) Icons.Default.Cloud else Icons.Default.CloudOff,
                             contentDescription = null,
                             tint = if (summary.isOnline) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(16.dp)
@@ -161,7 +161,7 @@ private fun SyncStatusCard(
                         )
                     } else {
                         Icon(
-                            imageVector = Icons.Default.Sync,
+                            imageVector = Icons.Default.Refresh,
                             contentDescription = null,
                             modifier = Modifier.size(16.dp)
                         )
@@ -251,7 +251,7 @@ private fun BackupExportSection(
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Backup,
+                        imageVector = Icons.Default.CloudUpload,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
                     )
@@ -265,7 +265,7 @@ private fun BackupExportSection(
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Download,
+                        imageVector = Icons.Default.CloudDownload,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
                     )
@@ -382,7 +382,7 @@ private fun CacheManagementSection(
                 )
             ) {
                 Icon(
-                    imageVector = Icons.Default.DeleteSweep,
+                    imageVector = Icons.Default.Delete,
                     contentDescription = null,
                     modifier = Modifier.size(16.dp)
                 )

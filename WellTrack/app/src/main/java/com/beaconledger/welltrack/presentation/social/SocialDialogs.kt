@@ -469,7 +469,7 @@ fun ShareAchievementDialog(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = Icons.Default.EmojiEvents,
+                            imageVector = Icons.Default.Star,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary
                         )

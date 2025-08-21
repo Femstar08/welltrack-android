@@ -107,7 +107,7 @@ data class FitnessOptimization(
     val progressPrediction: String
 )
 
-enum class ActivityLevel {
+enum class AIActivityLevel {
     SEDENTARY,
     LIGHTLY_ACTIVE,
     MODERATELY_ACTIVE,

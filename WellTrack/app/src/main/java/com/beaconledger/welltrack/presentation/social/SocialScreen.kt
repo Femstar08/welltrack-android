@@ -173,7 +173,7 @@ fun FamilyTab(
                     onClick = { /* Show invite dialog */ }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.PersonAdd,
+                        imageVector = Icons.Default.Add,
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.width(8.dp))

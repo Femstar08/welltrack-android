@@ -171,7 +171,7 @@ private fun PantryOverviewCards(
         OverviewCard(
             title = "Total Items",
             value = overview.totalItems.toString(),
-            icon = Icons.Default.Kitchen,
+            icon = Icons.Default.Restaurant,
             modifier = Modifier.weight(1f)
         )
         
@@ -253,7 +253,7 @@ private fun EmptyPantryState(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            Icons.Default.Kitchen,
+            Icons.Default.Restaurant,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant
@@ -281,7 +281,7 @@ private fun EmptyPantryState(
                 onClick = onScanBarcode,
                 modifier = Modifier.weight(1f)
             ) {
-                Icon(Icons.Default.CameraAlt, contentDescription = null)
+                Icon(Icons.Default.CameraEnhance, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Scan Barcode")
             }

@@ -1,0 +1,252 @@
+// Comprehensive test runner configuration for WellTrack
+// This script provides different test execution profiles
+
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.8"
+}
+
+// Test execution profiles
+task runUnitTests(type: Test) {
+    description = 'Runs all unit tests'
+    group = 'verification'
+    
+    useJUnitPlatform()
+    
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    
+    // Include only unit tests
+    include '**/*Test.class'
+    exclude '**/*IntegrationTest.class'
+    exclude '**/*UITest.class'
+    exclude '**/*PerformanceTest.class'
+    
+    // Test execution settings
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    forkEvery = 100
+    
+    // JVM settings for tests
+    jvmArgs '-Xmx2g', '-XX:MaxMetaspaceSize=512m'
+    
+    // System properties for tests
+    systemProperty 'junit.jupiter.execution.parallel.enabled', 'true'
+    systemProperty 'junit.jupiter.execution.parallel.mode.default', 'concurrent'
+    
+    // Test reporting
+    reports {
+        html.enabled = true
+        junitXml.enabled = true
+    }
+    
+    // Test event logging
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+        showStandardStreams = false
+        showCauses = true
+        showExceptions = true
+        showStackTraces = true
+    }
+    
+    finalizedBy jacocoTestReport
+}
+
+task runIntegrationTests(type: Test) {
+    description = 'Runs integration tests'
+    group = 'verification'
+    
+    useJUnitPlatform()
+    
+    // Include only integration tests
+    include '**/*IntegrationTest.class'
+    include '**/*DaoTest.class'
+    
+    // Longer timeout for integration tests
+    timeout = Duration.ofMinutes(10)
+    
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
+}
+
+task runPerformanceTests(type: Test) {
+    description = 'Runs performance tests'
+    group = 'verification'
+    
+    useJUnitPlatform()
+    
+    // Include only performance tests
+    include '**/*PerformanceTest.class'
+    
+    // Performance test specific settings
+    maxHeapSize = '4g'
+    timeout = Duration.ofMinutes(15)
+    
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+        showStandardStreams = true
+    }
+}
+
+task runSecurityTests(type: Test) {
+    description = 'Runs security tests'
+    group = 'verification'
+    
+    useJUnitPlatform()
+    
+    // Include only security tests
+    include '**/*SecurityTest.class'
+    include '**/security/**/*Test.class'
+    
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
+}
+
+task runAllTests {
+    description = 'Runs all test suites'
+    group = 'verification'
+    
+    dependsOn runUnitTests, runIntegrationTests, runPerformanceTests, runSecurityTests
+    
+    doLast {
+        println """
+        
+        🎉 All WellTrack tests completed!
+        
+        📊 Test Reports Available:
+        - Unit Tests: build/reports/tests/runUnitTests/index.html
+        - Integration Tests: build/reports/tests/runIntegrationTests/index.html
+        - Performance Tests: build/reports/tests/runPerformanceTests/index.html
+        - Security Tests: build/reports/tests/runSecurityTests/index.html
+        - Coverage Report: build/reports/jacoco/test/html/index.html
+        
+        """
+    }
+}
+
+// Jacoco coverage configuration
+jacocoTestReport {
+    dependsOn test
+    
+    reports {
+        xml.enabled = true
+        html.enabled = true
+        csv.enabled = false
+    }
+    
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                '**/R.class',
+                '**/R$*.class',
+                '**/BuildConfig.*',
+                '**/Manifest*.*',
+                '**/*Test*.*',
+                'android/**/*.*',
+                '**/di/**/*.*', // Exclude DI modules from coverage
+                '**/model/**/*.*' // Exclude data models from coverage
+            ])
+        }))
+    }
+}
+
+// Coverage verification
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+    
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.80 // 80% minimum coverage
+            }
+        }
+        
+        rule {
+            enabled = true
+            element = 'CLASS'
+            includes = ['com.beaconledger.welltrack.domain.usecase.*']
+            
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.90 // 90% coverage for use cases
+            }
+        }
+        
+        rule {
+            enabled = true
+            element = 'CLASS'
+            includes = ['com.beaconledger.welltrack.data.repository.*']
+            
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.85 // 85% coverage for repositories
+            }
+        }
+    }
+}
+
+// Custom task for continuous testing during development
+task testWatch {
+    description = 'Runs tests continuously during development'
+    group = 'verification'
+    
+    doLast {
+        println "Starting continuous test execution..."
+        println "Tests will run automatically when source files change."
+        println "Press Ctrl+C to stop."
+    }
+}
+
+// Test result summary task
+task testSummary {
+    description = 'Displays test execution summary'
+    group = 'verification'
+    
+    doLast {
+        def testResultsDir = file("$buildDir/test-results")
+        if (testResultsDir.exists()) {
+            def totalTests = 0
+            def passedTests = 0
+            def failedTests = 0
+            def skippedTests = 0
+            
+            testResultsDir.eachFileRecurse { file ->
+                if (file.name.endsWith('.xml')) {
+                    def xml = new XmlSlurper().parse(file)
+                    totalTests += xml.@tests.toInteger()
+                    failedTests += xml.@failures.toInteger()
+                    skippedTests += xml.@skipped.toInteger()
+                }
+            }
+            
+            passedTests = totalTests - failedTests - skippedTests
+            
+            println """
+            
+            📊 WellTrack Test Summary
+            ========================
+            Total Tests: $totalTests
+            ✅ Passed: $passedTests
+            ❌ Failed: $failedTests
+            ⏭️ Skipped: $skippedTests
+            📈 Success Rate: ${totalTests > 0 ? (passedTests * 100 / totalTests) : 0}%
+            
+            """
+        } else {
+            println "No test results found. Run tests first."
+        }
+    }
+}
+
+// Make test tasks depend on compilation
+tasks.withType(Test) {
+    dependsOn 'compileTestKotlin'
+}

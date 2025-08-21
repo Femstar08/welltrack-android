@@ -360,13 +360,3 @@ class SyncService @Inject constructor(
     }
 }
 
-/**
- * Sync statistics
- */
-data class SyncStats(
-    val pendingUpload: Int,
-    val pendingDownload: Int,
-    val conflicts: Int,
-    val failed: Int,
-    val synced: Int
-)

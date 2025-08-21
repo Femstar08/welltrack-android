@@ -156,26 +156,26 @@ private fun TodaysSummaryCard(
                 SummaryItem(
                     label = "Meals",
                     value = "${summary.mealsLogged}",
-                    icon = Icons.Default.Restaurant
+                    icon = Icons.Default.Fastfood
                 )
 
                 SummaryItem(
                     label = "Calories",
                     value = "${summary.totalCalories}",
-                    icon = Icons.Default.LocalFireDepartment
+                    icon = Icons.Default.Whatshot
                 )
 
                 SummaryItem(
                     label = "Water",
                     value = "${summary.waterIntakeMl}ml",
-                    icon = Icons.Default.WaterDrop
+                    icon = Icons.Default.Water
                 )
 
                 summary.stepsCount?.let { steps ->
                     SummaryItem(
                         label = "Steps",
                         value = "$steps",
-                        icon = Icons.Default.DirectionsWalk
+                        icon = Icons.Default.DirectionsRun
                     )
                 }
             }
@@ -461,7 +461,7 @@ private fun AchievementItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            imageVector = Icons.Default.EmojiEvents,
+            imageVector = Icons.Default.Star,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary
         )

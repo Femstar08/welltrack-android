@@ -284,10 +284,10 @@ class MacronutrientUseCase @Inject constructor(
     ): Double {
         val baseGramsPerKg = when (activityLevel) {
             ActivityLevel.SEDENTARY -> 1.2
-            ActivityLevel.LIGHTLY_ACTIVE -> 1.4
-            ActivityLevel.MODERATELY_ACTIVE -> 1.6
-            ActivityLevel.VERY_ACTIVE -> 1.8
-            ActivityLevel.EXTREMELY_ACTIVE -> 2.0
+            ActivityLevel.LIGHT -> 1.4
+            ActivityLevel.MODERATE -> 1.6
+            ActivityLevel.ACTIVE -> 1.8
+            ActivityLevel.VERY_ACTIVE -> 2.0
         }
         
         val adjustedGramsPerKg = when (goal) {
@@ -296,6 +296,7 @@ class MacronutrientUseCase @Inject constructor(
             FitnessGoal.MAINTENANCE -> baseGramsPerKg
             FitnessGoal.ENDURANCE -> baseGramsPerKg * 1.1
             FitnessGoal.STRENGTH -> baseGramsPerKg * 1.15
+            FitnessGoal.VO2_MAX_IMPROVEMENT -> baseGramsPerKg * 1.1
         }
         
         return bodyWeight * adjustedGramsPerKg
@@ -315,10 +316,10 @@ class MacronutrientUseCase @Inject constructor(
         val baseWaterMl = (bodyWeight * 35).toInt()
         val activityMultiplier = when (activityLevel) {
             ActivityLevel.SEDENTARY -> 1.0
-            ActivityLevel.LIGHTLY_ACTIVE -> 1.1
-            ActivityLevel.MODERATELY_ACTIVE -> 1.2
-            ActivityLevel.VERY_ACTIVE -> 1.3
-            ActivityLevel.EXTREMELY_ACTIVE -> 1.4
+            ActivityLevel.LIGHT -> 1.1
+            ActivityLevel.MODERATE -> 1.2
+            ActivityLevel.ACTIVE -> 1.3
+            ActivityLevel.VERY_ACTIVE -> 1.4
         }
         return (baseWaterMl * activityMultiplier).toInt()
     }

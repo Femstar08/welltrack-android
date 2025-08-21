@@ -311,10 +311,10 @@ class MacronutrientRepositoryImpl @Inject constructor(
     ): ProteinTarget {
         val gramsPerKg = when (activityLevel) {
             ActivityLevel.SEDENTARY -> 1.2
-            ActivityLevel.LIGHTLY_ACTIVE -> 1.4
-            ActivityLevel.MODERATELY_ACTIVE -> 1.6
-            ActivityLevel.VERY_ACTIVE -> 1.8
-            ActivityLevel.EXTREMELY_ACTIVE -> 2.0
+            ActivityLevel.LIGHT -> 1.4
+            ActivityLevel.MODERATE -> 1.6
+            ActivityLevel.ACTIVE -> 1.8
+            ActivityLevel.VERY_ACTIVE -> 2.0
         }
         
         // Adjust based on fitness goal
@@ -323,6 +323,8 @@ class MacronutrientRepositoryImpl @Inject constructor(
             FitnessGoal.WEIGHT_LOSS -> gramsPerKg * 1.1
             FitnessGoal.MAINTENANCE -> gramsPerKg
             FitnessGoal.ENDURANCE -> gramsPerKg * 1.1
+            FitnessGoal.STRENGTH -> gramsPerKg * 1.15
+            FitnessGoal.VO2_MAX_IMPROVEMENT -> gramsPerKg * 1.1
             FitnessGoal.STRENGTH -> gramsPerKg * 1.15
         }
         
@@ -364,10 +366,10 @@ class MacronutrientRepositoryImpl @Inject constructor(
         // Adjust for activity level
         val activityMultiplier = when (activityLevel) {
             ActivityLevel.SEDENTARY -> 1.0
-            ActivityLevel.LIGHTLY_ACTIVE -> 1.1
-            ActivityLevel.MODERATELY_ACTIVE -> 1.2
-            ActivityLevel.VERY_ACTIVE -> 1.3
-            ActivityLevel.EXTREMELY_ACTIVE -> 1.4
+            ActivityLevel.LIGHT -> 1.1
+            ActivityLevel.MODERATE -> 1.2
+            ActivityLevel.ACTIVE -> 1.3
+            ActivityLevel.VERY_ACTIVE -> 1.4
         }
         
         return (baseWaterMl * activityMultiplier).toInt()

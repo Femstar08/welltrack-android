@@ -211,7 +211,7 @@ private fun NotificationTypeSettings(
             NotificationToggleItem(
                 title = "Meal Prep Reminders",
                 subtitle = "Get reminded about meal preparation",
-                icon = Icons.Default.Schedule,
+                icon = Icons.Default.AccessTime,
                 checked = preferences.mealPrepRemindersEnabled,
                 onCheckedChange = onMealPrepRemindersChanged
             )

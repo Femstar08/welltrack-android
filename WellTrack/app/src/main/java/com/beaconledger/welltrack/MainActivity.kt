@@ -182,47 +182,8 @@ fun AuthenticatedApp(
     currentUser: com.beaconledger.welltrack.data.model.AuthUser?,
     onSignOut: () -> Unit
 ) {
-    var currentScreen by remember { mutableStateOf("dashboard") }
-    var selectedRecipeId by remember { mutableStateOf<String?>(null) }
-    
-    when (currentScreen) {
-        "dashboard" -> {
-            MainDashboard(
-                currentUser = currentUser,
-                onSignOut = onSignOut,
-                onNavigateToMealPlan = { currentScreen = "meal_plan" },
-                onNavigateToRecipes = { currentScreen = "recipes" }
-            )
-        }
-        "meal_plan" -> {
-            MealPlanScreen(
-                onNavigateToRecipe = { recipeId ->
-                    selectedRecipeId = recipeId
-                    currentScreen = "recipe_detail"
-                }
-            )
-        }
-        "recipes" -> {
-            // TODO: Add recipe list screen for authenticated users
-            MainDashboard(
-                currentUser = currentUser,
-                onSignOut = onSignOut,
-                onNavigateToMealPlan = { currentScreen = "meal_plan" },
-                onNavigateToRecipes = { currentScreen = "recipes" }
-            )
-        }
-        "recipe_detail" -> {
-            selectedRecipeId?.let { recipeId ->
-                // TODO: Add recipe detail screen for authenticated users
-                MainDashboard(
-                    currentUser = currentUser,
-                    onSignOut = onSignOut,
-                    onNavigateToMealPlan = { currentScreen = "meal_plan" },
-                    onNavigateToRecipes = { currentScreen = "recipes" }
-                )
-            }
-        }
-    }
+    // Use the new navigation system
+    com.beaconledger.welltrack.presentation.navigation.WellTrackNavigation()
 }
 
 @Composable

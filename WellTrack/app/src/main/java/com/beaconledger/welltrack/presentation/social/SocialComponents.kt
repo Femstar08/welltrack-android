@@ -79,7 +79,7 @@ fun FamilyGroupCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Default.People,
+                    imageVector = Icons.Default.Group,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(16.dp)
@@ -246,7 +246,7 @@ fun SharedMealPlanCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Default.CalendarToday,
+                    imageVector = Icons.Default.DateRange,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(16.dp)
@@ -375,7 +375,7 @@ fun CollaborativeMealPrepCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Default.Schedule,
+                    imageVector = Icons.Default.AccessTime,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(16.dp)
@@ -451,7 +451,7 @@ fun SharedAchievementCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Default.EmojiEvents,
+                    imageVector = Icons.Default.Star,
                     contentDescription = null,
                     tint = Color(0xFFFFD700),
                     modifier = Modifier.size(24.dp)

@@ -104,7 +104,7 @@ enum class Priority {
     LOW, MEDIUM, HIGH
 }
 
-data class Achievement(
+data class AnalyticsAchievement(
     val id: String,
     val title: String,
     val description: String,

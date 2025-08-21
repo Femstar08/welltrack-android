@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.beaconledger.welltrack.data.model.*
+import com.beaconledger.welltrack.data.model.ActivityLevel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
