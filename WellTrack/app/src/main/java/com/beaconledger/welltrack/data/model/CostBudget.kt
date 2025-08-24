@@ -147,13 +147,7 @@ data class BudgetAlert(
     val isRead: Boolean = false
 )
 
-enum class AlertType {
-    BUDGET_WARNING, // 80% threshold
-    BUDGET_EXCEEDED,
-    WEEKLY_SUMMARY,
-    MONTHLY_SUMMARY,
-    COST_SPIKE_DETECTED
-}
+// AlertType enum moved to CommonEnums.kt
 
 // Additional data classes for cost analysis
 data class RecipeCostSummary(
@@ -179,5 +173,41 @@ data class RecipeCostComparison(
     val costPerServing: Double,
     val totalCost: Double,
     val servings: Int,
+    val isEstimated: Boolean
+)
+
+// Additional data classes for UI state
+data class BudgetStatus(
+    val hasSettings: Boolean,
+    val weeklyBudget: Double?,
+    val monthlyBudget: Double?,
+    val weeklyTracking: BudgetTracking?,
+    val monthlyTracking: BudgetTracking?,
+    val currency: String
+)
+
+data class CostAnalysis(
+    val totalSpent: Double,
+    val averageCostPerServing: Double,
+    val averageDailySpending: Double,
+    val cheapestRecipes: List<RecipeCostSummary>,
+    val mostExpensiveRecipes: List<RecipeCostSummary>,
+    val costByMealType: List<MealTypeCostSummary>,
+    val dailySpendingTrend: List<DailySpending>,
+    val periodDays: Int
+)
+
+data class ShoppingListCostEstimate(
+    val totalCost: Double,
+    val itemBreakdown: List<ShoppingListItemCost>,
+    val hasEstimatedPrices: Boolean
+)
+
+data class ShoppingListItemCost(
+    val itemName: String,
+    val quantity: Double,
+    val unit: String,
+    val unitPrice: Double,
+    val totalCost: Double,
     val isEstimated: Boolean
 )

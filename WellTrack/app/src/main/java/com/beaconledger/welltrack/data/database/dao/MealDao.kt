@@ -52,15 +52,6 @@ interface MealDao {
     @Query("DELETE FROM meals WHERE userId = :userId")
     suspend fun deleteAllMealsByUser(userId: String)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMeal(meal: Meal)
-
-    @Update
-    suspend fun updateMeal(meal: Meal)
-
-    @Delete
-    suspend fun deleteMeal(meal: Meal)
-
     @Query("UPDATE meals SET status = :status WHERE id = :mealId AND userId = :userId")
     suspend fun updateMealStatus(mealId: String, userId: String, status: MealStatus)
 

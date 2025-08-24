@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -245,7 +246,9 @@ fun PerformanceMonitor(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = key.replace("_", " ").capitalize(),
+                            text = key.replace("_", " ").replaceFirstChar { 
+                                if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() 
+                            },
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

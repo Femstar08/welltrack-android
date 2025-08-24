@@ -195,7 +195,7 @@ private fun NotificationTypeSettings(
             NotificationToggleItem(
                 title = "Water Reminders",
                 subtitle = "Stay hydrated throughout the day",
-                icon = Icons.Default.WaterDrop,
+                icon = Icons.Default.LocalDrinkDrop,
                 checked = preferences.waterRemindersEnabled,
                 onCheckedChange = onWaterRemindersChanged
             )

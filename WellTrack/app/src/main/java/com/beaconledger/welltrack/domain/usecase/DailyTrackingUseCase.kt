@@ -3,6 +3,7 @@ package com.beaconledger.welltrack.domain.usecase
 import com.beaconledger.welltrack.data.model.*
 import com.beaconledger.welltrack.domain.repository.DailyTrackingRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -74,7 +75,7 @@ class DailyTrackingUseCase @Inject constructor(
 
     fun getWaterIntakeProgress(userId: String, date: LocalDate): Flow<Float> {
         return dailyTrackingRepository.getDailyTrackingSummary(userId, date)
-            .kotlinx.coroutines.flow.map { it.waterIntakeProgress }
+            .map { it.waterIntakeProgress }
     }
 
     suspend fun getRecommendedWaterIntake(userWeight: Double?): Int {

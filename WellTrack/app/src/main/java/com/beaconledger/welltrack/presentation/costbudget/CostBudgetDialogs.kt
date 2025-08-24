@@ -12,7 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.beaconledger.welltrack.domain.usecase.ShoppingListCostEstimate
+import com.beaconledger.welltrack.data.model.ShoppingListCostEstimate
 
 @Composable
 fun BudgetSettingsDialog(
@@ -295,7 +295,7 @@ fun IngredientPriceUpdateDialog(
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Default.QrCode,
+                            imageVector = Icons.Default.QrCode2,
                             contentDescription = null
                         )
                     }

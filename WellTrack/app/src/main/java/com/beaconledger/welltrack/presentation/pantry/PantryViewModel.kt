@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.beaconledger.welltrack.data.model.*
 import com.beaconledger.welltrack.domain.repository.ExpiringItemWithSuggestions
 import com.beaconledger.welltrack.domain.usecase.PantryUseCase
-import com.beaconledger.welltrack.domain.usecase.PantryOverviewData
 import com.beaconledger.welltrack.domain.usecase.ProfileContextUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*

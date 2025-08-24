@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.beaconledger.welltrack.data.model.*
-import com.beaconledger.welltrack.data.repository.TrendDirection
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -557,7 +556,7 @@ fun NutrientTrendCard(
                         imageVector = when (trend.trend) {
                             TrendDirection.INCREASING -> Icons.Default.KeyboardArrowUp
                             TrendDirection.DECREASING -> Icons.Default.KeyboardArrowDown
-                            TrendDirection.STABLE -> Icons.Default.Remove
+                            TrendDirection.STABLE -> Icons.Default.Delete
                         },
                         contentDescription = null,
                         tint = when (trend.trend) {

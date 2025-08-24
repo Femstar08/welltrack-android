@@ -156,6 +156,7 @@ class ExternalPlatformManager @Inject constructor(
             }
             "samsung health" -> {
                 samsungHealthManager.initialize()
+                Result.success(Unit)
             }
             else -> Result.failure(Exception("Unknown platform: $platform"))
         }

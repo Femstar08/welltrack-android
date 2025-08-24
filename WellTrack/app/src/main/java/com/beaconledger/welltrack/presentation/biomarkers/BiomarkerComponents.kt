@@ -74,7 +74,7 @@ fun ReminderCard(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Center
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
                     Text(
@@ -149,7 +149,7 @@ fun OverdueReminderCard(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Center
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     Icons.Default.Warning,
@@ -180,7 +180,6 @@ fun OverdueReminderCard(
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (reminderWithStatus.reminder.canSkip && 
@@ -360,7 +359,7 @@ fun BiomarkerTrendCard(
                                 imageVector = when {
                                     change > 0 -> Icons.Default.KeyboardArrowUp
                                     change < 0 -> Icons.Default.KeyboardArrowDown
-                                    else -> Icons.Default.Remove
+                                    else -> Icons.Default.Delete
                                 },
                                 contentDescription = null,
                                 tint = when {

@@ -182,8 +182,9 @@ fun AuthenticatedApp(
     currentUser: com.beaconledger.welltrack.data.model.AuthUser?,
     onSignOut: () -> Unit
 ) {
+    val navController = androidx.navigation.compose.rememberNavController()
     // Use the new navigation system
-    com.beaconledger.welltrack.presentation.navigation.WellTrackNavigation()
+    com.beaconledger.welltrack.presentation.navigation.WellTrackNavigation(navController = navController)
 }
 
 @Composable

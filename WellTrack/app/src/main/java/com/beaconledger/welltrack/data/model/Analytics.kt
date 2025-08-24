@@ -104,7 +104,7 @@ enum class Priority {
     LOW, MEDIUM, HIGH
 }
 
-data class AnalyticsAchievement(
+data class Achievement(
     val id: String,
     val title: String,
     val description: String,
@@ -121,6 +121,8 @@ enum class AchievementCategory {
     CONSISTENCY,
     GOALS
 }
+
+
 
 data class CalendarActivity(
     val date: LocalDate,
@@ -149,11 +151,7 @@ data class TrendAnalysis(
     val recommendation: String?
 )
 
-enum class TrendDirection {
-    IMPROVING,
-    DECLINING,
-    STABLE
-}
+
 
 data class CorrelationInsight(
     val metric1: String,

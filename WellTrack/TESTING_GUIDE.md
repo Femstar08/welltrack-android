@@ -339,3 +339,6 @@ The `TestReportGenerator` creates detailed HTML reports:
 ---
 
 This testing guide ensures comprehensive coverage of the WellTrack application with maintainable, reliable tests that support continuous development and deployment.
+
+Test user = test@example123.com
+Test password = testtest

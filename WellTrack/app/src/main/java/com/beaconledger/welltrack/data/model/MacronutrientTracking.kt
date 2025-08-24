@@ -150,10 +150,6 @@ data class MacronutrientBalance(
     val recommendations: List<String>
 )
 
-enum class TrendDirection {
-    INCREASING, DECREASING, STABLE
-}
+// TrendDirection enum moved to CommonEnums.kt
 
-enum class FitnessGoal {
-    WEIGHT_LOSS, MUSCLE_GAIN, MAINTENANCE, ENDURANCE, STRENGTH, VO2_MAX_IMPROVEMENT
-}
+// FitnessGoal enum moved to CommonEnums.kt

@@ -29,6 +29,7 @@ enum class ActivityLevel(val displayName: String, val multiplier: Float) {
     SEDENTARY("Sedentary (little/no exercise)", 1.2f),
     LIGHT("Light (light exercise 1-3 days/week)", 1.375f),
     MODERATE("Moderate (moderate exercise 3-5 days/week)", 1.55f),
+    MODERATELY_ACTIVE("Moderately Active (moderate exercise 3-5 days/week)", 1.55f),
     ACTIVE("Active (hard exercise 6-7 days/week)", 1.725f),
     VERY_ACTIVE("Very Active (very hard exercise, physical job)", 1.9f)
 }

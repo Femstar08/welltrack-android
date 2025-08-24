@@ -1,11 +1,14 @@
 package com.beaconledger.welltrack.data.notification
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.beaconledger.welltrack.MainActivity
@@ -94,6 +97,8 @@ class NotificationManager @Inject constructor(
         message: String,
         mealData: MealReminderData
     ) {
+        if (!checkPermission()) return
+        
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             putExtra("navigate_to", "meal_planner")
@@ -125,7 +130,11 @@ class NotificationManager @Inject constructor(
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
         
-        notificationManager.notify(notificationId.hashCode(), notification)
+        try {
+            notificationManager.notify(notificationId.hashCode(), notification)
+        } catch (e: SecurityException) {
+            // Handle permission denied
+        }
     }
     
     fun showSupplementReminderNotification(
@@ -134,6 +143,8 @@ class NotificationManager @Inject constructor(
         message: String,
         supplementData: SupplementReminderData
     ) {
+        if (!checkPermission()) return
+        
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             putExtra("navigate_to", "supplements")
@@ -174,7 +185,11 @@ class NotificationManager @Inject constructor(
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
         
-        notificationManager.notify(notificationId.hashCode(), notification)
+        try {
+            notificationManager.notify(notificationId.hashCode(), notification)
+        } catch (e: SecurityException) {
+            // Handle permission denied
+        }
     }
     
     fun showPantryExpiryNotification(
@@ -183,6 +198,8 @@ class NotificationManager @Inject constructor(
         message: String,
         pantryData: PantryExpiryData
     ) {
+        if (!checkPermission()) return
+        
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             putExtra("navigate_to", "pantry")
@@ -216,7 +233,11 @@ class NotificationManager @Inject constructor(
             notificationBuilder.addAction(R.drawable.ic_recipe, "View Recipes", recipesPendingIntent)
         }
         
-        notificationManager.notify(notificationId.hashCode(), notificationBuilder.build())
+        try {
+            notificationManager.notify(notificationId.hashCode(), notificationBuilder.build())
+        } catch (e: SecurityException) {
+            // Handle permission denied
+        }
     }
     
     fun showMotivationalNotification(
@@ -225,6 +246,8 @@ class NotificationManager @Inject constructor(
         message: String,
         motivationalData: MotivationalData
     ) {
+        if (!checkPermission()) return
+        
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             putExtra("navigate_to", "analytics")
@@ -247,11 +270,26 @@ class NotificationManager @Inject constructor(
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
         
-        notificationManager.notify(notificationId.hashCode(), notification)
+        try {
+            notificationManager.notify(notificationId.hashCode(), notification)
+        } catch (e: SecurityException) {
+            // Handle permission denied
+        }
     }
     
     fun cancelNotification(notificationId: String) {
         notificationManager.cancel(notificationId.hashCode())
+    }
+    
+    private fun checkPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= 33) { // API 33 = TIRAMISU
+            ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
     }
     
     private fun createSnoozeIntent(notificationId: String, type: NotificationType): Intent {

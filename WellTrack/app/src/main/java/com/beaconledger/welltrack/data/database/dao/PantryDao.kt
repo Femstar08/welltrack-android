@@ -33,7 +33,7 @@ interface PantryDao {
     suspend fun searchPantryItems(userId: String, query: String, limit: Int = 10): List<PantryItem>
     
     @Query("SELECT * FROM pantry_items WHERE userId = :userId")
-    suspend fun getPantryItemsForUser(userId: String): List<PantryItem>
+    suspend fun getAllPantryItemsForUser(userId: String): List<PantryItem>
     
     @Query("SELECT DISTINCT location FROM pantry_items WHERE userId = :userId AND location IS NOT NULL ORDER BY location ASC")
     suspend fun getPantryLocations(userId: String): List<String>

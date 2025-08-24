@@ -182,12 +182,7 @@ data class BiomarkerTrend(
     val changePercentage: Double?
 )
 
-enum class TrendDirection {
-    IMPROVING,
-    STABLE,
-    DECLINING,
-    INSUFFICIENT_DATA
-}
+// TrendDirection enum moved to common location
 
 data class BiomarkerInsight(
     val biomarkerType: BiomarkerType,

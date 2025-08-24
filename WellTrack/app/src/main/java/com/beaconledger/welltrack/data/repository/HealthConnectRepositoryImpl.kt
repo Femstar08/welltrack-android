@@ -107,7 +107,7 @@ class HealthConnectRepositoryImpl @Inject constructor(
     
     override suspend fun deleteHealthMetric(metricId: String): Result<Unit> {
         return try {
-            healthMetricDao.deleteHealthMetric(metricId)
+            healthMetricDao.deleteHealthMetricById(metricId)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

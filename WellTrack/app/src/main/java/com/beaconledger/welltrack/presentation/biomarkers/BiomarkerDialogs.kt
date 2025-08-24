@@ -159,9 +159,9 @@ fun CreateReminderDialog(
                 // Buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    Spacer(modifier = Modifier.weight(1f))
                     TextButton(onClick = onDismiss) {
                         Text("Cancel")
                     }
@@ -443,9 +443,9 @@ fun AddBiomarkerEntryDialog(
                 item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
+                        Spacer(modifier = Modifier.weight(1f))
                         TextButton(onClick = onDismiss) {
                             Text("Cancel")
                         }

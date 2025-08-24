@@ -302,40 +302,7 @@ class CostBudgetUseCase @Inject constructor(
     }
 }
 
-data class BudgetStatus(
-    val hasSettings: Boolean,
-    val weeklyBudget: Double?,
-    val monthlyBudget: Double?,
-    val weeklyTracking: BudgetTracking?,
-    val monthlyTracking: BudgetTracking?,
-    val currency: String
-)
-
-data class CostAnalysis(
-    val totalSpent: Double,
-    val averageCostPerServing: Double,
-    val averageDailySpending: Double,
-    val cheapestRecipes: List<RecipeCostSummary>,
-    val mostExpensiveRecipes: List<RecipeCostSummary>,
-    val costByMealType: List<MealTypeCostSummary>,
-    val dailySpendingTrend: List<DailySpending>,
-    val periodDays: Int
-)
-
-data class ShoppingListCostEstimate(
-    val totalCost: Double,
-    val itemBreakdown: List<ShoppingListItemCost>,
-    val hasEstimatedPrices: Boolean
-)
-
-data class ShoppingListItemCost(
-    val itemName: String,
-    val quantity: Double,
-    val unit: String,
-    val unitPrice: Double,
-    val totalCost: Double,
-    val isEstimated: Boolean
-)
+// Note: Data classes moved to data.model.CostBudget to avoid duplicates
 
 // Extension function to convert Recipe to have ingredients list
 fun Recipe.getIngredients(): List<Ingredient> {

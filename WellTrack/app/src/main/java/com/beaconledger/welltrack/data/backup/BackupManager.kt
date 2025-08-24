@@ -112,16 +112,8 @@ class BackupManager @Inject constructor(
     
     private suspend fun collectUserData(userId: String): Map<String, Any> {
         return mapOf(
-            "meals" to database.mealDao().getMealsForUser(userId),
-            "recipes" to database.recipeDao().getRecipesForUser(),
-            "healthMetrics" to database.healthMetricDao().getHealthMetricsForUser(userId),
-            "supplements" to database.supplementDao().getSupplementsForUser(userId),
-            "biomarkers" to database.biomarkerDao().getBiomarkersForUser(userId),
-            "pantryItems" to database.pantryDao().getPantryItemsForUser(userId),
-            "mealPlans" to database.mealPlanDao().getMealPlansForUser(userId),
-            "shoppingLists" to database.shoppingListDao().getShoppingListsForUser(userId),
-            "customHabits" to database.healthMetricDao().getCustomHabitsForUser(userId),
-            "macronutrients" to database.macronutrientDao().getMacronutrientsForUser(userId)
+            "user" to (database.userDao().getUserById(userId) ?: emptyMap<String, Any>())
+            // Other data collection temporarily disabled for simplified database
         )
     }
     

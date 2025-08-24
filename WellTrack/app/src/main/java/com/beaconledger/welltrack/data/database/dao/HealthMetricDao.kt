@@ -67,23 +67,10 @@ interface HealthMetricDao {
     @Query("DELETE FROM health_metrics WHERE id = :metricId")
     suspend fun deleteHealthMetricById(metricId: String)
     
-    @Query("SELECT * FROM custom_habits WHERE userId = :userId")
-    suspend fun getCustomHabitsForUser(userId: String): List<com.beaconledger.welltrack.data.model.CustomHabit>
-    
-    @Query("SELECT * FROM health_metrics WHERE id = :id")
-    suspend fun getHealthMetricById(id: String): HealthMetric?
-    
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertHealthMetric(healthMetric: HealthMetric)
+    // Custom habits query removed for simplified database
     
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertHealthMetrics(healthMetrics: List<HealthMetric>)
-    
-    @Update
-    suspend fun updateHealthMetric(healthMetric: HealthMetric)
-    
-    @Query("DELETE FROM health_metrics WHERE id = :id")
-    suspend fun deleteHealthMetric(id: String)
     
     @Query("DELETE FROM health_metrics WHERE userId = :userId")
     suspend fun deleteAllHealthMetricsForUser(userId: String)

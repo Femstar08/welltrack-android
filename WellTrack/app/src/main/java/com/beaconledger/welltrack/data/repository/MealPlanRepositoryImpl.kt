@@ -434,6 +434,34 @@ class MealPlanRepositoryImpl @Inject constructor(
     }
 
     // Weekly and Daily Meal Plan operations
+    override suspend fun getWeeklyMealPlan(mealPlanId: String): Flow<WeeklyMealPlan?> = flow {
+        try {
+            val mealPlan = mealPlanDao.getMealPlanById(mealPlanId)
+            if (mealPlan == null) {
+                emit(null)
+                return@flow
+            }
+            
+            val plannedMeals = mealPlanDao.getPlannedMealsByPlan(mealPlan.id)
+            val plannedSupplements = mealPlanDao.getPlannedSupplementsByPlan(mealPlan.id)
+            
+            // Get recipes for the planned meals
+            val recipeIds = plannedMeals.mapNotNull { it.recipeId }.distinct()
+            val recipes = recipeIds.mapNotNull { recipeDao.getRecipeById(it) }
+            
+            val weeklyMealPlan = WeeklyMealPlan(
+                mealPlan = mealPlan,
+                plannedMeals = plannedMeals,
+                plannedSupplements = plannedSupplements,
+                recipes = recipes
+            )
+            
+            emit(weeklyMealPlan)
+        } catch (e: Exception) {
+            emit(null)
+        }
+    }
+
     override suspend fun getWeeklyMealPlan(userId: String, weekStartDate: LocalDate): Result<WeeklyMealPlan?> {
         return try {
             val startDate = weekStartDate.format(dateFormatter)

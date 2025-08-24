@@ -222,8 +222,8 @@ class BiomarkerRepositoryImpl @Inject constructor(
             val changePercentage = ((latest - previous) / previous) * 100
             
             when {
-                changePercentage > 5 -> TrendDirection.IMPROVING
-                changePercentage < -5 -> TrendDirection.DECLINING
+                changePercentage > 5 -> TrendDirection.INCREASING
+                changePercentage < -5 -> TrendDirection.DECREASING
                 else -> TrendDirection.STABLE
             }
         } else {

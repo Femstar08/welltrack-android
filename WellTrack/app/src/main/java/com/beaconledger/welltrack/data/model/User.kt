@@ -23,14 +23,7 @@ data class UserPreferences(
     val notificationSettings: NotificationSettings = NotificationSettings()
 )
 
-enum class FitnessGoal {
-    WEIGHT_LOSS,
-    MUSCLE_GAIN,
-    MAINTENANCE,
-    ENDURANCE,
-    STRENGTH,
-    VO2_MAX_IMPROVEMENT
-}
+// FitnessGoal enum moved to CommonEnums.kt
 
 enum class DietaryRestriction {
     VEGETARIAN,

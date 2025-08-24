@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -162,20 +163,20 @@ private fun TodaysSummaryCard(
                 SummaryItem(
                     label = "Calories",
                     value = "${summary.totalCalories}",
-                    icon = Icons.Default.Whatshot
+                    icon = Icons.Default.LocalFireDepartment
                 )
 
                 SummaryItem(
                     label = "Water",
                     value = "${summary.waterIntakeMl}ml",
-                    icon = Icons.Default.Water
+                    icon = Icons.Default.LocalDrink
                 )
 
                 summary.stepsCount?.let { steps ->
                     SummaryItem(
                         label = "Steps",
                         value = "$steps",
-                        icon = Icons.Default.DirectionsRun
+                        icon = Icons.Default.DirectionsWalk
                     )
                 }
             }

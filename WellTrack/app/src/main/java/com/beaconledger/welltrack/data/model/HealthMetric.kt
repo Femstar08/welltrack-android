@@ -20,6 +20,7 @@ data class HealthMetric(
 enum class HealthMetricType {
     // Fitness Data
     STEPS,
+    ACTIVE_MINUTES,
     HEART_RATE,
     WEIGHT,
     CALORIES_BURNED,

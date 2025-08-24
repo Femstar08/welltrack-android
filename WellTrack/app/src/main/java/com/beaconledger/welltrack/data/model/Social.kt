@@ -130,7 +130,7 @@ enum class MealPrepStatus {
     tableName = "achievements",
     indices = [Index(value = ["userId"]), Index(value = ["achievementType"])]
 )
-data class Achievement(
+data class SocialAchievement(
     @PrimaryKey val id: String,
     val userId: String,
     val achievementType: AchievementType,

@@ -117,12 +117,7 @@ data class PantryAlert(
     val minimumQuantity: Double?
 )
 
-enum class AlertType(val displayName: String) {
-    EXPIRY_WARNING("Expiry Warning"),
-    EXPIRED("Expired"),
-    LOW_STOCK("Low Stock"),
-    OUT_OF_STOCK("Out of Stock")
-}
+// AlertType enum moved to CommonEnums.kt
 
 enum class AlertSeverity(val displayName: String, val color: String) {
     LOW("Low", "#FFA726"), // Orange

@@ -324,7 +324,7 @@ fun HealthMetricChart(
 
 private fun getHealthMetricIcon(type: HealthMetricType): ImageVector {
     return when (type) {
-        HealthMetricType.STEPS -> Icons.Default.DirectionsRun
+        HealthMetricType.STEPS -> Icons.Default.DirectionsWalk
         HealthMetricType.HEART_RATE -> Icons.Default.Favorite
         HealthMetricType.WEIGHT -> Icons.Default.Person
         HealthMetricType.CALORIES_BURNED -> Icons.Default.LocalFireDepartment

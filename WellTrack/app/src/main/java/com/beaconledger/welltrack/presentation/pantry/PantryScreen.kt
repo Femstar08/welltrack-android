@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.beaconledger.welltrack.data.model.*
+import com.beaconledger.welltrack.domain.usecase.PantryOverviewData
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +47,7 @@ fun PantryScreen(
             
             Row {
                 IconButton(onClick = { showBarcodeScanner = true }) {
-                    Icon(Icons.Default.Camera, contentDescription = "Scan Barcode")
+                    Icon(Icons.Default.CameraAlt, contentDescription = "Scan Barcode")
                 }
                 IconButton(onClick = { showAddDialog = true }) {
                     Icon(Icons.Default.Add, contentDescription = "Add Item")
@@ -281,7 +282,7 @@ private fun EmptyPantryState(
                 onClick = onScanBarcode,
                 modifier = Modifier.weight(1f)
             ) {
-                Icon(Icons.Default.CameraEnhance, contentDescription = null)
+                Icon(Icons.Default.CameraAltAlt, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Scan Barcode")
             }

@@ -234,7 +234,7 @@ private fun TodaysSummaryCard(summary: HealthSummary) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 HealthMetricItem(
-                    icon = Icons.Default.DirectionsRun,
+                    icon = Icons.Default.DirectionsWalk,
                     label = "Steps",
                     value = "${summary.steps}",
                     modifier = Modifier.weight(1f)
@@ -348,7 +348,7 @@ private fun HealthTrendsCard(trends: HealthTrends) {
                 TrendItem(
                     label = "Average Steps",
                     value = "$avgSteps steps/day",
-                    icon = Icons.Default.DirectionsRun
+                    icon = Icons.Default.DirectionsWalk
                 )
             }
             

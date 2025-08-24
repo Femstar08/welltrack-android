@@ -313,6 +313,7 @@ class MacronutrientRepositoryImpl @Inject constructor(
             ActivityLevel.SEDENTARY -> 1.2
             ActivityLevel.LIGHT -> 1.4
             ActivityLevel.MODERATE -> 1.6
+            ActivityLevel.MODERATELY_ACTIVE -> 1.6
             ActivityLevel.ACTIVE -> 1.8
             ActivityLevel.VERY_ACTIVE -> 2.0
         }
@@ -368,6 +369,7 @@ class MacronutrientRepositoryImpl @Inject constructor(
             ActivityLevel.SEDENTARY -> 1.0
             ActivityLevel.LIGHT -> 1.1
             ActivityLevel.MODERATE -> 1.2
+            ActivityLevel.MODERATELY_ACTIVE -> 1.2
             ActivityLevel.ACTIVE -> 1.3
             ActivityLevel.VERY_ACTIVE -> 1.4
         }

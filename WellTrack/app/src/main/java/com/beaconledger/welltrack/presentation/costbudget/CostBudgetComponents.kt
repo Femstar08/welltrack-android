@@ -180,7 +180,7 @@ fun CostAnalysisCard(
                 CostMetricItem(
                     title = "Total Spent",
                     value = "$${String.format("%.2f", costAnalysis.totalSpent)}",
-                    icon = Icons.Default.AttachMoney
+                    icon = Icons.Default.MonetizationOn
                 )
                 
                 CostMetricItem(

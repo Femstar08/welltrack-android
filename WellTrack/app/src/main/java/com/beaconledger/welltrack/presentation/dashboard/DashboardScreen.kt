@@ -4,11 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -43,109 +39,84 @@ fun DashboardScreen(
         profileViewModel.refreshProfiles()
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Top Bar with Profile Switching
-        TopAppBar(
-            title = {
+    // Error handling
+    errorMessage?.let { error ->
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.errorContainer
+            )
+        ) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = "Error",
+                    tint = MaterialTheme.colorScheme.onErrorContainer
+                )
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "WellTrack",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            actions = {
-                // Profile switching component
-                ProfileSwitchingComponent(
-                    activeProfile = activeProfile,
-                    allProfiles = allProfiles,
-                    onProfileSwitch = { profileId ->
-                        profileViewModel.switchToProfile(profileId)
-                    },
-                    onAddProfile = onNavigateToProfileCreation,
-                    onManageProfiles = onNavigateToProfileManagement,
-                    modifier = Modifier.padding(end = 8.dp)
+                    text = error,
+                    color = MaterialTheme.colorScheme.onErrorContainer
                 )
             }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Error handling
-        errorMessage?.let { error ->
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer
-                )
-            ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Warning,
-                        contentDescription = "Error",
-                        tint = MaterialTheme.colorScheme.onErrorContainer
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = error,
-                        color = MaterialTheme.colorScheme.onErrorContainer
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
         }
+    }
 
-        // Loading state
-        if (isLoading) {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
+    // Loading state
+    if (isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    } else {
+        // Main Dashboard Content using new components
+        LazyColumn(
+            modifier = modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            // Today's Summary Section (matches React dashboard structure)
+            item {
+                TodaysSummarySection(
+                    mealsLogged = 3,
+                    totalMeals = 4,
+                    caloriesConsumed = 1650,
+                    caloriesTarget = 2000,
+                    proteinConsumed = 85.0,
+                    proteinTarget = 100.0,
+                    onLogMealClick = onNavigateToMealPlanner
+                )
             }
-        } else {
-            // Main content
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                item {
-                    // Welcome section
-                    WelcomeSection(
-                        activeProfile = activeProfile,
-                        hasMultipleProfiles = hasMultipleProfiles
-                    )
-                }
 
-                item {
-                    // Quick actions
-                    QuickActionsSection(
-                        onNavigateToMealPlanner = onNavigateToMealPlanner,
-                        onNavigateToRecipes = onNavigateToRecipes,
-                        onNavigateToHealth = onNavigateToHealth
-                    )
-                }
+            // Quick Actions Section (matches React QuickActions)
+            item {
+                QuickActionsSection(
+                    onLogMealClick = onNavigateToMealPlanner,
+                    onAddIngredientClick = onNavigateToRecipes,
+                    onStartPrepClick = { /* Navigate to meal prep */ },
+                    onViewShoppingClick = { /* Navigate to shopping */ }
+                )
+            }
 
+            // Health Insights Section (matches React HealthInsights)
+            item {
+                HealthInsightsSection()
+            }
+
+            // Profile-specific content for multi-user support
+            if (hasMultipleProfiles) {
                 item {
-                    // Today's summary
-                    TodaysSummarySection(
+                    MultiProfileInsightsSection(
+                        allProfiles = allProfiles,
                         activeProfile = activeProfile
                     )
-                }
-
-                if (hasMultipleProfiles) {
-                    item {
-                        // Multi-profile insights
-                        MultiProfileInsightsSection(
-                            allProfiles = allProfiles,
-                            activeProfile = activeProfile
-                        )
-                    }
                 }
             }
         }
