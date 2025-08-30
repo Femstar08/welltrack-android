@@ -69,4 +69,7 @@ interface MealDao {
 
     @Query("SELECT AVG(rating) FROM meals WHERE userId = :userId AND rating IS NOT NULL")
     suspend fun getAverageRating(userId: String): Float?
+    
+    @Query("DELETE FROM meals WHERE userId = :userId")
+    suspend fun deleteAllMealsForUser(userId: String)
 }

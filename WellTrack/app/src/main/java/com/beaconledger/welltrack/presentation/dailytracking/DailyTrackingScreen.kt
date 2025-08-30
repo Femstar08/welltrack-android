@@ -81,7 +81,7 @@ fun DailyTrackingScreen(
             item {
                 TrackingSectionCard(
                     title = "Bedtime Routine",
-                    icon = Icons.Default.Bedtime,
+                    icon = Icons.Default.NightsStay,
                     isCompleted = uiState.dailySummary?.bedtimeCompleted ?: false,
                     onClick = { /* Navigate to bedtime tracking */ }
                 )
@@ -124,7 +124,7 @@ private fun DateSelector(
             IconButton(
                 onClick = { onDateSelected(selectedDate.minusDays(1)) }
             ) {
-                Icon(Icons.Default.ChevronLeft, contentDescription = "Previous day")
+                Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Previous day")
             }
 
             Text(
@@ -136,7 +136,7 @@ private fun DateSelector(
             IconButton(
                 onClick = { onDateSelected(selectedDate.plusDays(1)) }
             ) {
-                Icon(Icons.Default.ChevronRight, contentDescription = "Next day")
+                Icon(Icons.Default.KeyboardArrowRight, contentDescription = "Next day")
             }
         }
     }
@@ -262,7 +262,7 @@ private fun TrackingSectionCard(
                 )
             } else {
                 Icon(
-                    imageVector = Icons.Default.ChevronRight,
+                    imageVector = Icons.Default.KeyboardArrowRight,
                     contentDescription = "Go to section"
                 )
             }

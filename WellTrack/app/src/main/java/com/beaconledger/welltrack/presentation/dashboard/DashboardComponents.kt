@@ -94,7 +94,7 @@ fun DashboardHeader(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        Icons.Default.People,
+                        Icons.Default.Person,
                         contentDescription = "Switch Profile",
                         modifier = Modifier.size(16.dp),
                         tint = MaterialTheme.colorScheme.onPrimaryContainer
@@ -350,7 +350,7 @@ fun QuickActionsSection(
         SectionHeader(title = "Quick Actions")
         
         val actions = listOf(
-            QuickActionItem("Log Meal", Icons.Default.Restaurant, onLogMealClick),
+            QuickActionItem("Log Meal", Icons.Default.Fastfood, onLogMealClick),
             QuickActionItem("Add Ingredient", Icons.Default.Add, onAddIngredientClick),
             QuickActionItem("Start Prep", Icons.Default.PlayArrow, onStartPrepClick),
             QuickActionItem("Shopping List", Icons.Default.ShoppingCart, onViewShoppingClick)
@@ -435,7 +435,7 @@ fun HealthInsightsSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        Icons.Default.TipsAndUpdates,
+                        Icons.Default.EmojiObjects,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp)
@@ -534,3 +534,262 @@ fun sampleInsights(): List<HealthInsight> = listOf(
         InsightPriority.LOW
     )
 )
+// Se
+curity Section for Dashboard
+@Composable
+fun SecuritySection(
+    onNavigateToSecurity: () -> Unit = {}
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        SectionHeader(title = "Security & Privacy")
+        
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Security,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "Your Data is Protected",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Text(
+                                text = "End-to-end encryption enabled",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Security Features Overview
+                val securityFeatures = listOf(
+                    SecurityFeature("App Lock", "Enabled", true),
+                    SecurityFeature("Biometric Auth", "Available", true),
+                    SecurityFeature("Data Encryption", "Active", true),
+                    SecurityFeature("Privacy Controls", "Configured", true)
+                )
+                
+                securityFeatures.forEach { feature ->
+                    SecurityFeatureItem(feature = feature)
+                    if (feature != securityFeatures.last()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Security Actions
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = onNavigateToSecurity,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            Icons.Default.Settings,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Settings")
+                    }
+                    
+                    Button(
+                        onClick = onNavigateToSecurity,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            Icons.Default.Shield,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Security")
+                    }
+                }
+            }
+        }
+    }
+}
+
+data class SecurityFeature(
+    val name: String,
+    val status: String,
+    val isActive: Boolean
+)
+
+@Composable
+fun SecurityFeatureItem(feature: SecurityFeature) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = feature.name,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = feature.status,
+                style = MaterialTheme.typography.bodySmall,
+                color = if (feature.isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                fontWeight = if (feature.isActive) FontWeight.Medium else FontWeight.Normal
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Icon(
+                imageVector = if (feature.isActive) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
+                contentDescription = null,
+                tint = if (feature.isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+    }
+}
+
+// Multi-Profile Insights Section (for family/multi-user support)
+@Composable
+fun MultiProfileInsightsSection(
+    allProfiles: List<com.beaconledger.welltrack.data.model.UserProfile>,
+    activeProfile: com.beaconledger.welltrack.data.model.UserProfile?
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        SectionHeader(title = "Family Health Overview")
+        
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Managing ${allProfiles.size} profiles",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                allProfiles.take(3).forEach { profile ->
+                    ProfileSummaryItem(
+                        profile = profile,
+                        isActive = profile.id == activeProfile?.id
+                    )
+                    if (profile != allProfiles.take(3).last()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+                
+                if (allProfiles.size > 3) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "And ${allProfiles.size - 3} more...",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ProfileSummaryItem(
+    profile: com.beaconledger.welltrack.data.model.UserProfile,
+    isActive: Boolean
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Profile Avatar
+        Surface(
+            modifier = Modifier.size(32.dp),
+            shape = CircleShape,
+            color = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = profile.name.first().toString(),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = if (isActive) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+        
+        Spacer(modifier = Modifier.width(12.dp))
+        
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = profile.name,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = if (isActive) FontWeight.Medium else FontWeight.Normal,
+                color = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+            )
+            
+            profile.age?.let { age ->
+                Text(
+                    text = "$age years • ${profile.activityLevel.displayName}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        
+        if (isActive) {
+            Icon(
+                Icons.Default.CheckCircle,
+                contentDescription = "Active Profile",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+    }
+}

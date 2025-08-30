@@ -180,13 +180,13 @@ fun CostAnalysisCard(
                 CostMetricItem(
                     title = "Total Spent",
                     value = "$${String.format("%.2f", costAnalysis.totalSpent)}",
-                    icon = Icons.Default.MonetizationOn
+                    icon = Icons.Default.AttachMoney
                 )
                 
                 CostMetricItem(
                     title = "Avg/Serving",
                     value = "$${String.format("%.2f", costAnalysis.averageCostPerServing)}",
-                    icon = Icons.Default.Restaurant
+                    icon = Icons.Default.Fastfood
                 )
                 
                 CostMetricItem(

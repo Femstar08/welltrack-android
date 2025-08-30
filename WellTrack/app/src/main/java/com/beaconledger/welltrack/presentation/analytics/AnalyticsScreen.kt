@@ -163,13 +163,13 @@ private fun TodaysSummaryCard(
                 SummaryItem(
                     label = "Calories",
                     value = "${summary.totalCalories}",
-                    icon = Icons.Default.LocalFireDepartment
+                    icon = Icons.Default.Whatshot
                 )
 
                 SummaryItem(
                     label = "Water",
                     value = "${summary.waterIntakeMl}ml",
-                    icon = Icons.Default.LocalDrink
+                    icon = Icons.Default.LocalBar
                 )
 
                 summary.stepsCount?.let { steps ->

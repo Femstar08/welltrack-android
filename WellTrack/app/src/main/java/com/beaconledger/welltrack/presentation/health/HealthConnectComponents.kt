@@ -327,12 +327,12 @@ private fun getHealthMetricIcon(type: HealthMetricType): ImageVector {
         HealthMetricType.STEPS -> Icons.Default.DirectionsWalk
         HealthMetricType.HEART_RATE -> Icons.Default.Favorite
         HealthMetricType.WEIGHT -> Icons.Default.Person
-        HealthMetricType.CALORIES_BURNED -> Icons.Default.LocalFireDepartment
+        HealthMetricType.CALORIES_BURNED -> Icons.Default.Whatshot
         HealthMetricType.BLOOD_PRESSURE -> Icons.Default.Favorite
         HealthMetricType.BLOOD_GLUCOSE -> Icons.Default.Favorite
-        HealthMetricType.SLEEP_DURATION -> Icons.Default.Bedtime
+        HealthMetricType.SLEEP_DURATION -> Icons.Default.NightsStay
         HealthMetricType.EXERCISE_DURATION -> Icons.Default.FitnessCenter
-        HealthMetricType.HYDRATION -> Icons.Default.LocalDrink
+        HealthMetricType.HYDRATION -> Icons.Default.LocalBar
         HealthMetricType.VO2_MAX -> Icons.Default.Speed
         HealthMetricType.BODY_FAT_PERCENTAGE -> Icons.Default.Person
         HealthMetricType.MUSCLE_MASS -> Icons.Default.FitnessCenter

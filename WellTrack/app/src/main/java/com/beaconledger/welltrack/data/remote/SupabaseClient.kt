@@ -1,6 +1,11 @@
 package com.beaconledger.welltrack.data.remote
 
+import com.beaconledger.welltrack.config.EnvironmentConfig
 import com.beaconledger.welltrack.data.model.*
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.gotrue.GoTrue
+import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.storage.Storage
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -8,7 +13,24 @@ import javax.inject.Singleton
  * Client for interacting with Supabase backend for sync operations
  */
 @Singleton
-class SupabaseClient @Inject constructor() {
+class SupabaseClient @Inject constructor(
+    private val environmentConfig: EnvironmentConfig
+) {
+    
+    private val supabase by lazy {
+        createSupabaseClient(
+            supabaseUrl = environmentConfig.supabaseUrl,
+            supabaseKey = environmentConfig.supabaseAnonKey
+        ) {
+            install(GoTrue)
+            install(Postgrest)
+            install(Storage)
+        }
+    }
+    
+    val auth get() = supabase.auth
+    val database get() = supabase.postgrest
+    val storage get() = supabase.storage
     
     // Health Metrics
     suspend fun getHealthMetric(id: String): HealthMetric? {
@@ -199,5 +221,35 @@ class SupabaseClient @Inject constructor() {
     
     suspend fun syncSharedContent(familyGroupId: String) {
         // Implementation for syncing shared content from Supabase
+    }
+    
+    // Data Deletion Operations for Security
+    suspend fun deleteUserAccount(userId: String) {
+        // Implementation for deleting user account and all associated data from Supabase
+        // This should cascade delete all user-related data
+    }
+    
+    suspend fun deleteMealsForUser(userId: String) {
+        // Implementation for deleting all meals for a specific user
+    }
+    
+    suspend fun deleteRecipesForUser(userId: String) {
+        // Implementation for deleting all recipes for a specific user
+    }
+    
+    suspend fun deleteHealthMetricsForUser(userId: String) {
+        // Implementation for deleting all health metrics for a specific user
+    }
+    
+    suspend fun deleteSupplementsForUser(userId: String) {
+        // Implementation for deleting all supplements for a specific user
+    }
+    
+    suspend fun deleteBiomarkersForUser(userId: String) {
+        // Implementation for deleting all biomarkers for a specific user
+    }
+    
+    suspend fun deletePantryItemsForUser(userId: String) {
+        // Implementation for deleting all pantry items for a specific user
     }
 }

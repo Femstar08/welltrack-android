@@ -163,7 +163,7 @@ private fun NotificationTypeSettings(
             NotificationToggleItem(
                 title = "Meal Reminders",
                 subtitle = "Get reminded about planned meals",
-                icon = Icons.Default.Restaurant,
+                icon = Icons.Default.Fastfood,
                 checked = preferences.mealRemindersEnabled,
                 onCheckedChange = onMealRemindersChanged
             )
@@ -171,7 +171,7 @@ private fun NotificationTypeSettings(
             NotificationToggleItem(
                 title = "Supplement Reminders",
                 subtitle = "Never miss your supplements",
-                icon = Icons.Default.Medication,
+                icon = Icons.Default.LocalPharmacy,
                 checked = preferences.supplementRemindersEnabled,
                 onCheckedChange = onSupplementRemindersChanged
             )
@@ -195,7 +195,7 @@ private fun NotificationTypeSettings(
             NotificationToggleItem(
                 title = "Water Reminders",
                 subtitle = "Stay hydrated throughout the day",
-                icon = Icons.Default.LocalDrinkDrop,
+                icon = Icons.Default.LocalBar,
                 checked = preferences.waterRemindersEnabled,
                 onCheckedChange = onWaterRemindersChanged
             )
@@ -211,7 +211,7 @@ private fun NotificationTypeSettings(
             NotificationToggleItem(
                 title = "Meal Prep Reminders",
                 subtitle = "Get reminded about meal preparation",
-                icon = Icons.Default.AccessTime,
+                icon = Icons.Default.Schedule,
                 checked = preferences.mealPrepRemindersEnabled,
                 onCheckedChange = onMealPrepRemindersChanged
             )
@@ -526,7 +526,7 @@ private fun NotificationActionButtons(
                     onClick = onCancelAll,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Icon(Icons.Default.Cancel, contentDescription = null)
+                    Icon(Icons.Default.Clear, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Cancel All")
                 }

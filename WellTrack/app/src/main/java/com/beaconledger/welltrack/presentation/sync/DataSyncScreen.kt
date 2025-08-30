@@ -126,7 +126,7 @@ private fun SyncStatusCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = if (summary.isOnline) Icons.Default.Cloud else Icons.Default.CloudOff,
+                            imageVector = if (summary.isOnline) Icons.Default.CloudDone else Icons.Default.CloudOff,
                             contentDescription = null,
                             tint = if (summary.isOnline) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(16.dp)
@@ -251,7 +251,7 @@ private fun BackupExportSection(
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.CloudUpload,
+                        imageVector = Icons.Default.Upload,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
                     )
@@ -265,7 +265,7 @@ private fun BackupExportSection(
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.CloudDownload,
+                        imageVector = Icons.Default.Download,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
                     )

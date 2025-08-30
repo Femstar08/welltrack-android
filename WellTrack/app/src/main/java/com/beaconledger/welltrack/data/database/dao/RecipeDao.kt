@@ -49,4 +49,7 @@ interface RecipeDao {
         ORDER BY r.rating DESC, r.createdAt DESC
     """)
     suspend fun findRecipesByIngredient(ingredientName: String): List<Recipe>
+    
+    @Query("DELETE FROM recipes WHERE userId = :userId")
+    suspend fun deleteAllRecipesForUser(userId: String)
 }

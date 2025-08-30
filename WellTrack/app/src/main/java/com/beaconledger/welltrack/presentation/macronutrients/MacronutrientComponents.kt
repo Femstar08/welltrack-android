@@ -557,12 +557,18 @@ fun NutrientTrendCard(
                             TrendDirection.INCREASING -> Icons.Default.KeyboardArrowUp
                             TrendDirection.DECREASING -> Icons.Default.KeyboardArrowDown
                             TrendDirection.STABLE -> Icons.Default.Delete
+                            TrendDirection.IMPROVING -> Icons.Default.KeyboardArrowUp
+                            TrendDirection.DECLINING -> Icons.Default.KeyboardArrowDown
+                            TrendDirection.INSUFFICIENT_DATA -> Icons.Default.Info
                         },
                         contentDescription = null,
                         tint = when (trend.trend) {
                             TrendDirection.INCREASING -> Color(0xFF4CAF50)
                             TrendDirection.DECREASING -> Color(0xFFF44336)
                             TrendDirection.STABLE -> Color(0xFF9E9E9E)
+                            TrendDirection.IMPROVING -> Color(0xFF4CAF50)
+                            TrendDirection.DECLINING -> Color(0xFFF44336)
+                            TrendDirection.INSUFFICIENT_DATA -> Color(0xFF9E9E9E)
                         }
                     )
                     Spacer(modifier = Modifier.width(4.dp))

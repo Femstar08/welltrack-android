@@ -172,7 +172,7 @@ private fun PantryOverviewCards(
         OverviewCard(
             title = "Total Items",
             value = overview.totalItems.toString(),
-            icon = Icons.Default.Restaurant,
+            icon = Icons.Default.Fastfood,
             modifier = Modifier.weight(1f)
         )
         
@@ -187,7 +187,7 @@ private fun PantryOverviewCards(
         OverviewCard(
             title = "Expiring",
             value = overview.expiringCount.toString(),
-            icon = Icons.Default.AccessTime,
+            icon = Icons.Default.Schedule,
             color = if (overview.expiringCount > 0) Color(0xFFF44336) else MaterialTheme.colorScheme.primary,
             modifier = Modifier.weight(1f),
             onClick = if (overview.expiringCount > 0) onShowExpiring else null
@@ -254,7 +254,7 @@ private fun EmptyPantryState(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            Icons.Default.Restaurant,
+            Icons.Default.Fastfood,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant
@@ -282,7 +282,7 @@ private fun EmptyPantryState(
                 onClick = onScanBarcode,
                 modifier = Modifier.weight(1f)
             ) {
-                Icon(Icons.Default.CameraAltAlt, contentDescription = null)
+                Icon(Icons.Default.CameraAlt, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Scan Barcode")
             }

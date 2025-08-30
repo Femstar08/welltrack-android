@@ -111,6 +111,11 @@ private fun PantryAlertCard(alert: PantryAlert) {
                     AlertType.EXPIRY_WARNING -> Icons.Default.Info
                     AlertType.LOW_STOCK -> Icons.Default.Info
                     AlertType.OUT_OF_STOCK -> Icons.Default.ShoppingCart
+                    AlertType.BUDGET_WARNING -> Icons.Default.Warning
+                    AlertType.BUDGET_EXCEEDED -> Icons.Default.Error
+                    AlertType.WEEKLY_SUMMARY -> Icons.Default.Info
+                    AlertType.MONTHLY_SUMMARY -> Icons.Default.Info
+                    AlertType.COST_SPIKE_DETECTED -> Icons.Default.TrendingUp
                 },
                 contentDescription = null,
                 tint = Color(android.graphics.Color.parseColor(alert.severity.color)),

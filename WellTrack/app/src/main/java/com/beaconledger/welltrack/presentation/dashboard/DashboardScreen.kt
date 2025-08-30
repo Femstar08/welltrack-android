@@ -21,11 +21,12 @@ import com.beaconledger.welltrack.presentation.profile.ProfileViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
-    onNavigateToMealPlanner: () -> Unit,
-    onNavigateToRecipes: () -> Unit,
-    onNavigateToHealth: () -> Unit,
-    onNavigateToProfileCreation: () -> Unit,
-    onNavigateToProfileManagement: () -> Unit,
+    onNavigateToMealPlanner: () -> Unit = {},
+    onNavigateToRecipes: () -> Unit = {},
+    onNavigateToHealth: () -> Unit = {},
+    onNavigateToProfileCreation: () -> Unit = {},
+    onNavigateToProfileManagement: () -> Unit = {},
+    onNavigateToSecurity: () -> Unit = {},
     modifier: Modifier = Modifier,
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
@@ -108,6 +109,13 @@ fun DashboardScreen(
             // Health Insights Section (matches React HealthInsights)
             item {
                 HealthInsightsSection()
+            }
+
+            // Security & Privacy Section
+            item {
+                SecuritySection(
+                    onNavigateToSecurity = onNavigateToSecurity
+                )
             }
 
             // Profile-specific content for multi-user support

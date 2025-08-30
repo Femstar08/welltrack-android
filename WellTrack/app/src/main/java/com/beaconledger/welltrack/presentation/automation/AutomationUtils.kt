@@ -363,7 +363,7 @@ fun PredictiveTextField(
                 {
                     IconButton(onClick = { showPredictions = !showPredictions }) {
                         Icon(
-                            imageVector = Icons.Default.TipsAndUpdates,
+                            imageVector = Icons.Default.EmojiObjects,
                             contentDescription = "Smart suggestions"
                         )
                     }

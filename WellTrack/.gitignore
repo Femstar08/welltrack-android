@@ -13,3 +13,23 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Environment Configuration
+.env
+.env.local
+.env.production
+.env.staging
+
+# Security Keys
+keystore.properties
+release.keystore
+debug.keystore
+
+# API Keys and Secrets
+secrets.properties
+api-keys.properties
+
+# Temporary files
+*.tmp
+*.temp
+*.log

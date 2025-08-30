@@ -146,6 +146,9 @@ interface ShoppingListDao {
     @Transaction
     @Query("SELECT * FROM shopping_lists WHERE userId = :userId ORDER BY createdAt DESC")
     fun getShoppingListsWithItems(userId: String): Flow<List<ShoppingListWithItemsEntity>>
+    
+    @Query("DELETE FROM shopping_lists WHERE userId = :userId")
+    suspend fun deleteAllShoppingListsForUser(userId: String)
 }
 
 // Entity for Room Transaction query

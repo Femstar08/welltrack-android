@@ -120,6 +120,9 @@ interface SupplementDao {
     @Query("DELETE FROM supplement_intakes WHERE userId = :userId")
     suspend fun deleteAllSupplementIntakes(userId: String)
     
+    @Query("DELETE FROM supplements WHERE userId = :userId")
+    suspend fun deleteAllSupplementsForUser(userId: String)
+    
     // Analytics and Reporting
     @Query("""
         SELECT 

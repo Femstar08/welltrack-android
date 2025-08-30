@@ -20,9 +20,30 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
+        // Load environment variables from .env file
+        val envFile = project.rootProject.file(".env")
+        val envProperties = java.util.Properties()
+        if (envFile.exists()) {
+            envFile.inputStream().use { envProperties.load(it) }
+        }
+        
+        // Helper function to get environment variable with fallback
+        fun getEnvVar(key: String, defaultValue: String = ""): String {
+            return envProperties.getProperty(key) ?: System.getenv(key) ?: defaultValue
+        }
+        
         // Supabase configuration
-        buildConfigField("String", "SUPABASE_URL", "\"https://nppjffhzkzfduulbbcih.supabase.co\"")
-        buildConfigField("String", "SUPABASE_ANON_KEY", "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wcGpmZmh6a3pmZHV1bGJiY2loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyMjQ2MTAsImV4cCI6MjA2NTgwMDYxMH0.OrwLcR8sXcsyMUVEAXgw2WNureeAKrwgrhrPGT6lgTU\"")
+        buildConfigField("String", "SUPABASE_URL", "\"${getEnvVar("SUPABASE_URL", "https://nppjffhzkzfduulbbcih.supabase.co")}\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${getEnvVar("SUPABASE_ANON_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wcGpmZmh6a3pmZHV1bGJiY2loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyMjQ2MTAsImV4cCI6MjA2NTgwMDYxMH0.OrwLcR8sXcsyMUVEAXgw2WNureeAKrwgrhrPGT6lgTU")}\"")
+        
+        // External API configuration
+        buildConfigField("String", "GARMIN_CLIENT_ID", "\"${getEnvVar("GARMIN_CLIENT_ID")}\"")
+        buildConfigField("String", "SAMSUNG_HEALTH_APP_ID", "\"${getEnvVar("SAMSUNG_HEALTH_APP_ID")}\"")
+        buildConfigField("String", "OPENAI_API_KEY", "\"${getEnvVar("OPENAI_API_KEY")}\"")
+        
+        // Environment configuration
+        buildConfigField("String", "ENVIRONMENT", "\"${getEnvVar("ENVIRONMENT", "development")}\"")
+        buildConfigField("boolean", "ENABLE_LOGGING", getEnvVar("ENABLE_LOGGING", "true"))
         
         // Enable 16KB page size support for Android 15+
         // Exclude x86_64 due to ML Kit 16KB alignment issues
@@ -35,12 +56,51 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
+            isDebuggable = true
             isMinifyEnabled = false
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            
+            // Debug-specific configuration
+            buildConfigField("boolean", "DEBUG_MODE", "true")
+            buildConfigField("String", "BUILD_TYPE", "\"debug\"")
+            
+            // Enable logging in debug builds
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        
+        release {
+            isDebuggable = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            
+            // Release-specific configuration
+            buildConfigField("boolean", "DEBUG_MODE", "false")
+            buildConfigField("String", "BUILD_TYPE", "\"release\"")
+            
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            
+            // Signing configuration (add your signing config here)
+            // signingConfig = signingConfigs.getByName("release")
+        }
+        
+        create("staging") {
+            initWith(getByName("debug"))
+            isDebuggable = true
+            applicationIdSuffix = ".staging"
+            versionNameSuffix = "-staging"
+            
+            // Staging-specific configuration
+            buildConfigField("boolean", "DEBUG_MODE", "true")
+            buildConfigField("String", "BUILD_TYPE", "\"staging\"")
+            buildConfigField("String", "ENVIRONMENT", "\"staging\"")
         }
     }
     compileOptions {
@@ -115,6 +175,15 @@ dependencies {
     
     // Security Testing
     testImplementation("org.bouncycastle:bcprov-jdk15on:1.70")
+    
+    // Security - Encrypted SharedPreferences
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    
+    // Biometric Authentication
+    implementation("androidx.biometric:biometric:1.1.0")
+    
+    // Additional Security
+    implementation("androidx.security:security-identity-credential:1.0.0-alpha03")
     // Hilt for Dependency Injection
     implementation("com.google.dagger:hilt-android:2.48")
     ksp("com.google.dagger:hilt-compiler:2.48")
@@ -171,5 +240,10 @@ dependencies {
     
     // Permission handling
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+    
+    // WorkManager for background tasks
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("androidx.hilt:hilt-work:1.1.0")
+    ksp("androidx.hilt:hilt-compiler:1.1.0")
 
 }

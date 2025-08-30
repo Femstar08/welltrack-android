@@ -1,6 +1,8 @@
 package com.beaconledger.welltrack.data.health
 
 import android.content.Context
+import com.beaconledger.welltrack.config.EnvironmentConfig
+import com.beaconledger.welltrack.config.SecureConfigLoader
 import com.beaconledger.welltrack.data.model.DataSource
 import com.beaconledger.welltrack.data.model.HealthMetric
 import com.beaconledger.welltrack.data.model.HealthMetricType
@@ -26,7 +28,9 @@ import kotlin.random.Random
 
 @Singleton
 class GarminConnectManager @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val environmentConfig: EnvironmentConfig,
+    private val secureConfigLoader: SecureConfigLoader
 ) {
     private val client = OkHttpClient()
     private val baseUrl = "https://apis.garmin.com"
@@ -36,9 +40,9 @@ class GarminConnectManager @Inject constructor(
     private var refreshToken: String? = null
     private var tokenExpiryTime: Long = 0
     
-    // Client credentials - these should be stored securely
-    private val clientId = "your_garmin_client_id" // Replace with actual client ID
-    private val redirectUri = "welltrack://garmin/callback"
+    // Client credentials from environment configuration
+    private val clientId = environmentConfig.garminClientId
+    private val redirectUri = environmentConfig.garminRedirectUri
     
     /**
      * Generate OAuth 2.0 PKCE authorization URL

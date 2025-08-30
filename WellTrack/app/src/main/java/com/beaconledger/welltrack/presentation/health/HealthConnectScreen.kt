@@ -241,7 +241,7 @@ private fun TodaysSummaryCard(summary: HealthSummary) {
                 )
                 
                 HealthMetricItem(
-                    icon = Icons.Default.LocalFireDepartment,
+                    icon = Icons.Default.Whatshot,
                     label = "Calories",
                     value = "${summary.caloriesBurned.toInt()}",
                     modifier = Modifier.weight(1f)
@@ -255,14 +255,14 @@ private fun TodaysSummaryCard(summary: HealthSummary) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 HealthMetricItem(
-                    icon = Icons.Default.Bedtime,
+                    icon = Icons.Default.NightsStay,
                     label = "Sleep",
                     value = summary.sleepHours?.let { "${String.format("%.1f", it)}h" } ?: "N/A",
                     modifier = Modifier.weight(1f)
                 )
                 
                 HealthMetricItem(
-                    icon = Icons.Default.LocalDrink,
+                    icon = Icons.Default.LocalBar,
                     label = "Water",
                     value = "${String.format("%.1f", summary.hydrationLiters)}L",
                     modifier = Modifier.weight(1f)
@@ -358,7 +358,7 @@ private fun HealthTrendsCard(trends: HealthTrends) {
                 TrendItem(
                     label = "Average Calories",
                     value = "$avgCalories cal/day",
-                    icon = Icons.Default.LocalFireDepartment
+                    icon = Icons.Default.Whatshot
                 )
             }
             
@@ -368,7 +368,7 @@ private fun HealthTrendsCard(trends: HealthTrends) {
                 TrendItem(
                     label = "Average Sleep",
                     value = "${String.format("%.1f", avgSleep)} hours/night",
-                    icon = Icons.Default.Bedtime
+                    icon = Icons.Default.NightsStay
                 )
             }
             
@@ -378,7 +378,7 @@ private fun HealthTrendsCard(trends: HealthTrends) {
                 TrendItem(
                     label = "Average Hydration",
                     value = "${String.format("%.1f", avgHydration)} L/day",
-                    icon = Icons.Default.LocalDrink
+                    icon = Icons.Default.LocalBar
                 )
             }
         }

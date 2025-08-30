@@ -208,7 +208,7 @@ fun IngredientPriceUpdateDialog(
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Default.Restaurant,
+                            imageVector = Icons.Default.Fastfood,
                             contentDescription = null
                         )
                     }

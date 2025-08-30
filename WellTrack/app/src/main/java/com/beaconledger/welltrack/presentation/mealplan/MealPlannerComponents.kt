@@ -18,6 +18,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import com.beaconledger.welltrack.data.model.MealStatus
+import com.beaconledger.welltrack.data.model.MealType
+import com.beaconledger.welltrack.data.model.PlannedMealStatus
 import com.beaconledger.welltrack.data.model.PlannedMeal
 import com.beaconledger.welltrack.data.model.PlannedMealStatus
 import androidx.compose.ui.Alignment
@@ -185,7 +188,7 @@ fun QuickActionsBar(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            Icons.Default.AutoAwesome,
+                            Icons.Default.Star,
                             contentDescription = null,
                             modifier = Modifier.size(16.dp)
                         )
@@ -300,7 +303,7 @@ fun DayMealPlanCard(
             val mealTypes = listOf("Breakfast", "Lunch", "Dinner", "Snack")
             
             mealTypes.forEach { mealType ->
-                val meal = meals.find { it.mealType == mealType }
+                val meal = meals.find { it.mealType.name == mealType.uppercase() }
                 MealSlot(
                     mealType = mealType,
                     meal = meal,
@@ -377,16 +380,16 @@ fun MealSlot(
                 
                 if (meal != null) {
                     Text(
-                        text = meal.recipeName,
+                        text = meal.recipeId ?: "Unknown Recipe",
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                     
-                    if (mealPrepMode && meal.prepTime != null) {
+                    if (mealPrepMode) {
                         Text(
-                            text = "Prep: ${meal.prepTime} min",
+                            text = "Prep: Ready",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -412,9 +415,9 @@ fun MealSlot(
                             modifier = Modifier.size(16.dp),
                             tint = MaterialTheme.colorScheme.primary
                         )
-                    } else if (mealPrepMode && meal.isPrepared) {
+                    } else if (mealPrepMode && meal.status == PlannedMealStatus.PLANNED) {
                         Icon(
-                            Icons.Default.Kitchen,
+                            Icons.Default.Fastfood,
                             contentDescription = "Prepared",
                             modifier = Modifier.size(16.dp),
                             tint = MaterialTheme.colorScheme.tertiary
@@ -586,10 +589,10 @@ fun getMealTypeColor(mealType: String): Color {
 fun getMealTypeIcon(mealType: String): ImageVector {
     return when (mealType.lowercase()) {
         "breakfast" -> Icons.Default.WbSunny
-        "lunch" -> Icons.Default.Restaurant
-        "dinner" -> Icons.Default.DinnerDining
-        "snack" -> Icons.Default.Cookie
-        else -> Icons.Default.Restaurant
+        "lunch" -> Icons.Default.Fastfood
+        "dinner" -> Icons.Default.Fastfood
+        "snack" -> Icons.Default.Cake
+        else -> Icons.Default.Fastfood
     }
 }
 
@@ -598,18 +601,20 @@ fun getSampleMealsForDate(date: LocalDate): List<PlannedMeal> {
     return listOf(
         PlannedMeal(
             id = "1",
-            mealType = "Breakfast",
-            recipeName = "Overnight Oats with Berries",
-            prepTime = 5,
-            calories = 320,
+            mealPlanId = "plan-1",
+            userId = "user-1",
+            date = date.toString(),
+            mealType = MealType.BREAKFAST,
+            customMealName = "Overnight Oats with Berries",
             isCompleted = date.isBefore(LocalDate.now())
         ),
         PlannedMeal(
             id = "2",
-            mealType = "Lunch",
-            recipeName = "Quinoa Buddha Bowl",
-            prepTime = 25,
-            calories = 450,
+            mealPlanId = "plan-1",
+            userId = "user-1",
+            date = date.toString(),
+            mealType = MealType.LUNCH,
+            customMealName = "Quinoa Buddha Bowl",
             isCompleted = date.isBefore(LocalDate.now())
         )
     )
