@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Garmin Brand Compliance Strings -->
+    <!-- These strings ensure consistent Garmin branding and attribution throughout the app -->
+    
+    <!-- Garmin Connection and Authorization -->
+    <string name="garmin_connect_title">Connect with Garmin</string>
+    <string name="garmin_connect_description">Access your health and fitness data from Garmin devices to get personalized insights and recommendations.</string>
+    <string name="garmin_authorization_button">Connect Garmin Account</string>
+    <string name="garmin_disconnect_button">Disconnect Garmin</string>
+    <string name="garmin_reconnect_button">Reconnect Garmin</string>
+    
+    <!-- Garmin Data Types -->
+    <string name="garmin_data_hrv">Heart Rate Variability (HRV)</string>
+    <string name="garmin_data_recovery">Training Recovery Scores</string>
+    <string name="garmin_data_stress">Stress Levels</string>
+    <string name="garmin_data_vo2max">VO2 Max and Fitness Age</string>
+    <string name="garmin_data_sleep">Sleep Quality Metrics</string>
+    <string name="garmin_data_activity">Activity and Exercise Data</string>
+    
+    <!-- Garmin Attribution (Brand Guidelines Compliance) -->
+    <string name="garmin_attribution_simple">Garmin</string>
+    <string name="garmin_attribution_with_device">Garmin %1$s</string>
+    <string name="garmin_data_source_label">Data provided by %1$s</string>
+    <string name="garmin_combined_sources">Data sources: %1$s</string>
+    
+    <!-- Works with Garmin Badge -->
+    <string name="works_with_garmin_badge">Works with\nGarmin</string>
+    <string name="works_with_garmin_description">This app is compatible with Garmin Connect</string>
+    
+    <!-- Garmin Consent and Permissions -->
+    <string name="garmin_consent_title">Garmin Connect Authorization</string>
+    <string name="garmin_consent_description">WellTrack would like to access your Garmin health and fitness data to provide personalized insights and recommendations.</string>
+    <string name="garmin_permissions_explanation">By connecting your Garmin account, you grant WellTrack permission to:\n\n• Access your health metrics from Garmin devices\n• Combine Garmin data with other health sources for comprehensive analysis\n• Display your Garmin data with proper attribution\n• Store your data securely with encryption\n\nYou can revoke this permission at any time through your Garmin Connect account settings.</string>
+    
+    <!-- Garmin Data Management -->
+    <string name="garmin_last_sync">Last Garmin sync: %1$s</string>
+    <string name="garmin_sync_in_progress">Syncing Garmin data…</string>
+    <string name="garmin_sync_success">Garmin data synced successfully</string>
+    <string name="garmin_sync_error">Failed to sync Garmin data</string>
+    <string name="garmin_no_data">No Garmin data available</string>
+    
+    <!-- Garmin Privacy and Data Control -->
+    <string name="garmin_privacy_title">Garmin Data Privacy</string>
+    <string name="garmin_data_usage_title">How We Use Your Garmin Data</string>
+    <string name="garmin_data_usage_description">Your Garmin data is used to provide personalized health insights, track progress toward fitness goals, and generate comprehensive health reports. We may combine Garmin data with other health sources you\'ve connected to provide more complete analysis.</string>
+    
+    <string name="garmin_data_sharing_title">Garmin Data Sharing</string>
+    <string name="garmin_data_sharing_description">We do not sell or share your Garmin data with third parties for marketing purposes. Data may be shared only with your explicit consent, in aggregated anonymized form for research, or as required by law.</string>
+    
+    <string name="garmin_data_retention_title">Data Retention</string>
+    <string name="garmin_data_retention_description">Your Garmin data is retained until you delete your account or revoke Garmin access. You can delete your Garmin data at any time through the app settings.</string>
+    
+    <!-- Garmin Disconnection Instructions -->
+    <string name="garmin_disconnect_title">Disconnect Garmin Account</string>
+    <string name="garmin_disconnect_warning">Disconnecting your Garmin account will stop new data synchronization. Existing Garmin data will be preserved unless manually deleted.</string>
+    <string name="garmin_disconnect_confirm">Are you sure you want to disconnect your Garmin account?</string>
+    
+    <string name="garmin_revoke_instructions_title">How to Revoke Access</string>
+    <string name="garmin_revoke_instructions">To disconnect WellTrack from your Garmin account:\n\n1. Open the Garmin Connect app or website\n2. Go to Account Settings > App Management\n3. Find WellTrack and select \"Remove Access\"\n\nYou can also disconnect through WellTrack Settings > Connected Apps > Garmin.</string>
+    
+    <!-- Garmin Data Deletion -->
+    <string name="garmin_delete_data_title">Delete Garmin Data</string>
+    <string name="garmin_delete_data_description">This will permanently delete all Garmin health data from WellTrack. This action cannot be undone.</string>
+    <string name="garmin_delete_data_confirm">Are you sure you want to delete all Garmin data? This cannot be undone.</string>
+    <string name="garmin_delete_data_success">Garmin data deleted successfully</string>
+    
+    <!-- Garmin Error Messages -->
+    <string name="garmin_auth_error">Failed to connect to Garmin. Please try again.</string>
+    <string name="garmin_auth_cancelled">Garmin connection cancelled</string>
+    <string name="garmin_token_expired">Garmin connection expired. Please reconnect.</string>
+    <string name="garmin_network_error">Network error. Please check your connection and try again.</string>
+    <string name="garmin_server_error">Garmin service temporarily unavailable. Please try again later.</string>
+    
+    <!-- Garmin Settings -->
+    <string name="garmin_settings_title">Garmin Settings</string>
+    <string name="garmin_connection_status">Connection Status</string>
+    <string name="garmin_connected">Connected</string>
+    <string name="garmin_disconnected">Disconnected</string>
+    <string name="garmin_sync_frequency">Sync Frequency</string>
+    <string name="garmin_auto_sync">Automatic Sync</string>
+    <string name="garmin_manual_sync">Manual Sync Only</string>
+    
+    <!-- Garmin Data Categories -->
+    <string name="garmin_category_fitness">Fitness Metrics</string>
+    <string name="garmin_category_recovery">Recovery Data</string>
+    <string name="garmin_category_stress">Stress Monitoring</string>
+    <string name="garmin_category_sleep">Sleep Analysis</string>
+    <string name="garmin_category_activity">Activity Tracking</string>
+    
+    <!-- Garmin Compliance Messages -->
+    <string name="garmin_attribution_required">Garmin attribution required for this data</string>
+    <string name="garmin_attribution_compliant">Attribution compliant</string>
+    <string name="garmin_attribution_missing">Missing required Garmin attribution</string>
+    
+    <!-- Garmin Export and Sharing -->
+    <string name="garmin_export_attribution">Data provided by Garmin</string>
+    <string name="garmin_social_share_attribution">Garmin %1$s</string>
+    <string name="garmin_report_footer">This report includes data from Garmin devices. For more information about Garmin\'s privacy practices, visit garmin.com/privacy/</string>
+    
+    <!-- Garmin Help and Support -->
+    <string name="garmin_help_title">Garmin Integration Help</string>
+    <string name="garmin_help_connection">Having trouble connecting to Garmin?</string>
+    <string name="garmin_help_sync">Data not syncing from Garmin?</string>
+    <string name="garmin_help_privacy">Questions about Garmin data privacy?</string>
+    <string name="garmin_support_contact">Contact Garmin Support</string>
+    
+    <!-- Garmin Legal and Compliance -->
+    <string name="garmin_privacy_policy_link">View Garmin Privacy Policy</string>
+    <string name="garmin_terms_link">Garmin Terms of Service</string>
+    <string name="garmin_developer_program">This app participates in the Garmin Connect Developer Program</string>
+    
+    <!-- Garmin Device Information -->
+    <string name="garmin_device_model">Device Model: %1$s</string>
+    <string name="garmin_device_unknown">Unknown Garmin Device</string>
+    <string name="garmin_multiple_devices">Multiple Garmin Devices</string>
+    
+    <!-- Garmin Data Quality -->
+    <string name="garmin_data_quality_excellent">Excellent data quality</string>
+    <string name="garmin_data_quality_good">Good data quality</string>
+    <string name="garmin_data_quality_fair">Fair data quality</string>
+    <string name="garmin_data_quality_poor">Poor data quality</string>
+    
+    <!-- Garmin Onboarding -->
+    <string name="garmin_onboarding_title">Connect Your Garmin Device</string>
+    <string name="garmin_onboarding_subtitle">Get comprehensive health insights from your Garmin data</string>
+    <string name="garmin_onboarding_benefits">• Heart rate variability analysis\n• Recovery and stress monitoring\n• Fitness age and VO2 max tracking\n• Sleep quality insights</string>
+    <string name="garmin_onboarding_privacy">Your Garmin data is encrypted and secure. You maintain full control over your data and can disconnect at any time.</string>
+    
+    <!-- Garmin Troubleshooting -->
+    <string name="garmin_troubleshoot_title">Garmin Connection Issues</string>
+    <string name="garmin_troubleshoot_steps">Try these steps:\n\n1. Ensure Garmin Connect app is installed and updated\n2. Check your internet connection\n3. Verify your Garmin account credentials\n4. Try disconnecting and reconnecting</string>
+    
+    <!-- Garmin Feature Descriptions -->
+    <string name="garmin_hrv_description">Heart Rate Variability measures the variation in time between heartbeats, providing insights into your autonomic nervous system and recovery status.</string>
+    <string name="garmin_recovery_description">Training Recovery Score helps you understand when your body is ready for your next workout based on sleep, HRV, and stress data.</string>
+    <string name="garmin_stress_description">Stress Score uses heart rate variability to gauge your body\'s stress levels throughout the day.</string>
+    <string name="garmin_fitness_age_description">Fitness Age compares your fitness level to others of different ages based on your VO2 max and other health metrics.</string>
+    
+    <!-- Trademark Acknowledgments -->
+    <string name="garmin_trademark_notice">Garmin® is a registered trademark of Garmin Ltd. or its subsidiaries</string>
+    <string name="garmin_connect_trademark">Garmin Connect™ is a trademark of Garmin Ltd. or its subsidiaries</string>
+    <string name="connect_iq_trademark">Connect IQ™ is a trademark of Garmin Ltd. or its subsidiaries</string>
+    <string name="garmin_not_affiliated">This app is not affiliated with, endorsed by, or sponsored by Garmin Ltd.</string>
+</resources>

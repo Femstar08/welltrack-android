@@ -14,6 +14,8 @@ import com.beaconledger.welltrack.presentation.dashboard.DashboardScreen
 import com.beaconledger.welltrack.presentation.security.SecuritySettingsScreen
 import com.beaconledger.welltrack.presentation.security.SecurityAuditScreen
 import com.beaconledger.welltrack.presentation.security.AppLockScreen
+import com.beaconledger.welltrack.presentation.goals.GoalScreen
+import com.beaconledger.welltrack.presentation.goals.GoalDetailScreen
 
 // Navigation routes
 object Routes {
@@ -25,6 +27,8 @@ object Routes {
     const val RECIPES = "recipes"
     const val HEALTH = "health"
     const val ANALYTICS = "analytics"
+    const val GOALS = "goals"
+    const val GOAL_DETAIL = "goal_detail/{goalId}"
 }
 
 @Composable
@@ -87,6 +91,24 @@ fun WellTrackNavigation(
         
         composable(Routes.ANALYTICS) {
             PlaceholderScreen("Analytics", navController)
+        }
+        
+        composable(Routes.GOALS) {
+            GoalScreen(
+                onNavigateToGoalDetail = { goalId ->
+                    navController.navigate("goal_detail/$goalId")
+                }
+            )
+        }
+        
+        composable(Routes.GOAL_DETAIL) { backStackEntry ->
+            val goalId = backStackEntry.arguments?.getString("goalId") ?: ""
+            GoalDetailScreen(
+                goalId = goalId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
@@ -181,10 +203,10 @@ fun BottomNavigationBar(
         )
         
         NavigationBarItem(
-            selected = currentRoute == Routes.ANALYTICS,
-            onClick = { onNavigate(Routes.ANALYTICS) },
-            icon = { Icon(Icons.Default.Analytics, contentDescription = null) },
-            label = { Text("Analytics") }
+            selected = currentRoute == Routes.GOALS,
+            onClick = { onNavigate(Routes.GOALS) },
+            icon = { Icon(Icons.Default.Flag, contentDescription = null) },
+            label = { Text("Goals") }
         )
     }
 }

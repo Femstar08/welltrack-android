@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.beaconledger.welltrack.accessibility.rememberAccessibilitySettings
 
 private val WellTrackDarkColorScheme = darkColorScheme(
     primary = HealthGreen80,
@@ -91,14 +92,75 @@ private val WellTrackLightColorScheme = lightColorScheme(
     inversePrimary = HealthGreen80
 )
 
+// High contrast color schemes for accessibility
+private val WellTrackHighContrastDarkColorScheme = darkColorScheme(
+    primary = AccessibleColors.AccessiblePrimary,
+    onPrimary = AccessibleColors.AccessibleOnPrimary,
+    primaryContainer = AccessibleColors.AccessiblePrimaryContainer,
+    onPrimaryContainer = AccessibleColors.AccessibleOnPrimaryContainer,
+    
+    secondary = AccessibleColors.AccessibleSecondary,
+    onSecondary = AccessibleColors.AccessibleOnSecondary,
+    secondaryContainer = AccessibleColors.AccessibleSecondaryContainer,
+    onSecondaryContainer = AccessibleColors.AccessibleOnSecondaryContainer,
+    
+    background = AccessibleColors.HighContrastBackground,
+    onBackground = AccessibleColors.HighContrastOnBackground,
+    surface = AccessibleColors.HighContrastSurface,
+    onSurface = AccessibleColors.HighContrastOnSurface,
+    surfaceVariant = AccessibleColors.HighContrastSurface,
+    onSurfaceVariant = AccessibleColors.HighContrastOnSurface,
+    
+    error = AccessibleColors.AccessibleError,
+    onError = AccessibleColors.AccessibleOnError,
+    errorContainer = AccessibleColors.AccessibleErrorContainer,
+    onErrorContainer = AccessibleColors.AccessibleOnErrorContainer,
+    
+    outline = AccessibleColors.AccessibleOutline,
+    outlineVariant = AccessibleColors.AccessibleOutlineVariant
+)
+
+private val WellTrackHighContrastLightColorScheme = lightColorScheme(
+    primary = AccessibleColors.AccessiblePrimary,
+    onPrimary = AccessibleColors.AccessibleOnPrimary,
+    primaryContainer = AccessibleColors.AccessiblePrimaryContainer,
+    onPrimaryContainer = AccessibleColors.AccessibleOnPrimaryContainer,
+    
+    secondary = AccessibleColors.AccessibleSecondary,
+    onSecondary = AccessibleColors.AccessibleOnSecondary,
+    secondaryContainer = AccessibleColors.AccessibleSecondaryContainer,
+    onSecondaryContainer = AccessibleColors.AccessibleOnSecondaryContainer,
+    
+    background = Neutral99,
+    onBackground = Neutral0,
+    surface = Neutral99,
+    onSurface = Neutral0,
+    surfaceVariant = AccessibleColors.AccessibleSurfaceVariant,
+    onSurfaceVariant = AccessibleColors.AccessibleOnSurfaceVariant,
+    
+    error = AccessibleColors.AccessibleError,
+    onError = AccessibleColors.AccessibleOnError,
+    errorContainer = AccessibleColors.AccessibleErrorContainer,
+    onErrorContainer = AccessibleColors.AccessibleOnErrorContainer,
+    
+    outline = AccessibleColors.AccessibleOutline,
+    outlineVariant = AccessibleColors.AccessibleOutlineVariant
+)
+
 @Composable
 fun WellTrackTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false, // Disabled to maintain consistent branding
+    highContrast: Boolean = false, // Enable high contrast mode for accessibility
     content: @Composable () -> Unit
 ) {
+    val accessibilitySettings = rememberAccessibilitySettings()
+    val useHighContrast = highContrast || accessibilitySettings.isHighContrastEnabled
+    
     val colorScheme = when {
+        useHighContrast && darkTheme -> WellTrackHighContrastDarkColorScheme
+        useHighContrast && !darkTheme -> WellTrackHighContrastLightColorScheme
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -118,7 +180,7 @@ fun WellTrackTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = Typography.toAccessible(accessibilitySettings),
         shapes = Shapes,
         content = content
     )

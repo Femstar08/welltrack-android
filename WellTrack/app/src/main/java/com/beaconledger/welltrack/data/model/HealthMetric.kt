@@ -14,7 +14,9 @@ data class HealthMetric(
     val unit: String,
     val timestamp: String,
     val source: DataSource,
-    val metadata: String? = null // JSON string for additional data
+    val metadata: String? = null, // JSON string for additional data
+    val confidence: Float = 1.0f, // Data quality score for prioritization
+    val isManualEntry: Boolean = false // Whether this was manually entered by user
 )
 
 enum class HealthMetricType {

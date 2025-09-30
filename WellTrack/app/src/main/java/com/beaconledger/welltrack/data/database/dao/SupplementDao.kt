@@ -123,6 +123,16 @@ interface SupplementDao {
     @Query("DELETE FROM supplements WHERE userId = :userId")
     suspend fun deleteAllSupplementsForUser(userId: String)
     
+    @Query("SELECT * FROM supplements WHERE userId = :userId")
+    suspend fun getAllSupplementsForUser(userId: String): List<Supplement>
+
+    // Additional methods for import functionality
+    @Query("SELECT * FROM supplements WHERE userId = :userId AND name = :name AND DATE(createdAt) = DATE(:date)")
+    suspend fun getSupplementByNameAndDate(userId: String, name: String, date: java.time.LocalDateTime): Supplement?
+
+    @Update
+    suspend fun updateSupplement(supplement: Supplement)
+    
     // Analytics and Reporting
     @Query("""
         SELECT 

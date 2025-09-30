@@ -72,4 +72,13 @@ interface MealDao {
     
     @Query("DELETE FROM meals WHERE userId = :userId")
     suspend fun deleteAllMealsForUser(userId: String)
+    
+    @Query("SELECT * FROM meals WHERE userId = :userId")
+    suspend fun getAllMealsForUser(userId: String): List<Meal>
+    
+    @Query("SELECT * FROM meals WHERE userId = :userId AND timestamp BETWEEN :startDate AND :endDate")
+    suspend fun getMealsInDateRange(userId: String, startDate: java.time.LocalDateTime, endDate: java.time.LocalDateTime): List<Meal>
+    
+    @Query("SELECT * FROM meals WHERE userId = :userId AND timestamp = :timestamp")
+    suspend fun getMealByTimestamp(userId: String, timestamp: java.time.LocalDateTime): Meal?
 }

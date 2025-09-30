@@ -109,6 +109,15 @@ interface BiomarkerDao {
         LIMIT 2
     """)
     suspend fun getLastTwoBiomarkerEntries(userId: String, type: BiomarkerType): List<BiomarkerEntry>
+    
+    @Query("SELECT * FROM biomarker_entries WHERE userId = :userId")
+    suspend fun getAllBiomarkersForUser(userId: String): List<BiomarkerEntry>
+    
+    @Query("DELETE FROM biomarker_entries WHERE userId = :userId")
+    suspend fun deleteAllBiomarkersForUser(userId: String)
+    
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertBiomarker(biomarker: BiomarkerEntry)
 }
 
 data class BiomarkerTypeCount(

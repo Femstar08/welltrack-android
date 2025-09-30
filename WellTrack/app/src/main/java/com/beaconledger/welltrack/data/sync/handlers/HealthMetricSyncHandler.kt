@@ -9,7 +9,9 @@ import com.beaconledger.welltrack.data.security.SensitiveFieldsConfig
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.decodeFromString
+import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 /**
@@ -52,7 +54,12 @@ class HealthMetricSyncHandler @Inject constructor(
     }
     
     override fun getEntityVersion(entity: HealthMetric): Long {
-        return entity.timestamp.toEpochSecond(ZoneOffset.UTC)
+        return try {
+            val localDateTime = LocalDateTime.parse(entity.timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            localDateTime.toEpochSecond(ZoneOffset.UTC)
+        } catch (e: Exception) {
+            System.currentTimeMillis() / 1000 // Fallback to current time
+        }
     }
     
     override suspend fun encryptSensitiveData(entity: HealthMetric): HealthMetric {

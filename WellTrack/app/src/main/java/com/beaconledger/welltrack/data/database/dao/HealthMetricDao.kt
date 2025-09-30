@@ -169,4 +169,23 @@ interface HealthMetricDao {
         userId: String,
         source: String
     ): Flow<List<HealthMetric>>
+    
+    @Query("SELECT * FROM health_metrics WHERE userId = :userId")
+    suspend fun getAllMetricsForUser(userId: String): List<HealthMetric>
+    
+    @Query("SELECT * FROM health_metrics WHERE userId = :userId AND timestamp BETWEEN :startDate AND :endDate")
+    suspend fun getMetricsInDateRange(userId: String, startDate: java.time.LocalDateTime, endDate: java.time.LocalDateTime): List<HealthMetric>
+    
+    @Query("SELECT * FROM health_metrics WHERE userId = :userId AND type = :type AND timestamp = :timestamp")
+    suspend fun getMetricByTypeAndTimestamp(userId: String, type: HealthMetricType, timestamp: java.time.LocalDateTime): HealthMetric?
+    
+    @Query("DELETE FROM health_metrics WHERE userId = :userId")
+    suspend fun deleteAllMetricsForUser(userId: String)
+
+    // Additional methods for import functionality
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMetric(healthMetric: HealthMetric)
+
+    @Update
+    suspend fun updateMetric(healthMetric: HealthMetric)
 }

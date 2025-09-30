@@ -7,6 +7,8 @@ import androidx.room.TypeConverters
 import android.content.Context
 import com.beaconledger.welltrack.data.model.*
 import com.beaconledger.welltrack.data.database.dao.*
+import com.beaconledger.welltrack.data.database.migrations.MIGRATION_1_2
+import com.beaconledger.welltrack.data.compliance.DataDeletionRecord
 
 private const val DATABASE_NAME = "welltrack_database"
 
@@ -27,9 +29,15 @@ private const val DATABASE_NAME = "welltrack_database"
         BudgetAlert::class,
         DailyTrackingEntry::class,
         DietaryRestriction::class,
-        AuditLog::class
+        AuditLog::class,
+        Goal::class,
+        GoalProgress::class,
+        GoalMilestone::class,
+        GoalPrediction::class,
+        DataExport::class,
+        com.beaconledger.welltrack.data.compliance.DataDeletionRecord::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -62,6 +70,9 @@ abstract class WellTrackDatabase : RoomDatabase() {
     abstract fun dailyTrackingDao(): DailyTrackingDao
     abstract fun dietaryRestrictionsDao(): DietaryRestrictionsDao
     abstract fun auditLogDao(): AuditLogDao
+    abstract fun goalDao(): GoalDao
+    abstract fun dataExportDao(): DataExportDao
+    abstract fun dataDeletionDao(): DataDeletionDao
     
     // Additional DAO methods
     abstract fun recipeIngredientDao(): RecipeIngredientDao
@@ -83,7 +94,9 @@ abstract class WellTrackDatabase : RoomDatabase() {
                     context.applicationContext,
                     WellTrackDatabase::class.java,
                     DATABASE_NAME
-                ).build()
+                )
+                .addMigrations(MIGRATION_1_2)
+                .build()
                 INSTANCE = instance
                 instance
             }

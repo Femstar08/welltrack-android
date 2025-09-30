@@ -374,4 +374,81 @@ class Converters {
             )
         }
     }
+
+    // Goal tracking converters
+    @TypeConverter
+    fun fromGoalType(type: GoalType): String {
+        return type.name
+    }
+
+    @TypeConverter
+    fun toGoalType(typeString: String): GoalType {
+        return GoalType.valueOf(typeString)
+    }
+
+    @TypeConverter
+    fun fromGoalCategory(category: GoalCategory): String {
+        return category.name
+    }
+
+    @TypeConverter
+    fun toGoalCategory(categoryString: String): GoalCategory {
+        return GoalCategory.valueOf(categoryString)
+    }
+
+    @TypeConverter
+    fun fromGoalPriority(priority: GoalPriority): String {
+        return priority.name
+    }
+
+    @TypeConverter
+    fun toGoalPriority(priorityString: String): GoalPriority {
+        return GoalPriority.valueOf(priorityString)
+    }
+
+    @TypeConverter
+    fun fromProgressSource(source: ProgressSource): String {
+        return source.name
+    }
+
+    @TypeConverter
+    fun toProgressSource(sourceString: String): ProgressSource {
+        return ProgressSource.valueOf(sourceString)
+    }
+
+    @TypeConverter
+    fun fromTrendAnalysis(trend: TrendAnalysis): String {
+        return trend.name
+    }
+
+    @TypeConverter
+    fun toTrendAnalysis(trendString: String): TrendAnalysis {
+        return TrendAnalysis.valueOf(trendString)
+    }
+
+    @TypeConverter
+    fun fromGoalMilestoneList(milestones: List<GoalMilestone>): String {
+        return milestones.joinToString(";") { milestone ->
+            "${milestone.id}:${milestone.goalId}:${milestone.title}:${milestone.targetValue}:${milestone.order}:${milestone.isCompleted}"
+        }
+    }
+
+    @TypeConverter
+    fun toGoalMilestoneList(milestonesString: String): List<GoalMilestone> {
+        if (milestonesString.isEmpty()) return emptyList()
+        return milestonesString.split(";").map { entry ->
+            val parts = entry.split(":")
+            GoalMilestone(
+                id = parts[0],
+                goalId = parts[1],
+                title = parts[2],
+                description = null,
+                targetValue = parts[3].toDouble(),
+                targetDate = null,
+                isCompleted = parts[5].toBoolean(),
+                completedAt = null,
+                order = parts[4].toInt()
+            )
+        }
+    }
 }
