@@ -107,6 +107,23 @@ fun ExportDialog(
                         )
                     }
                 }
+
+                // PDF Preview Option
+                if (exportFormat == ExportFormat.PDF) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedButton(
+                        onClick = { showPdfPreview = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Preview,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Preview PDF Report")
+                    }
+                }
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
