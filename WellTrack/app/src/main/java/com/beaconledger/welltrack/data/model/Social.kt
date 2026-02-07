@@ -155,7 +155,7 @@ enum class AchievementType {
     tableName = "shared_achievements",
     foreignKeys = [
         ForeignKey(
-            entity = Achievement::class,
+            entity = SocialAchievement::class,
             parentColumns = ["id"],
             childColumns = ["achievementId"],
             onDelete = ForeignKey.CASCADE

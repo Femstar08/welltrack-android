@@ -36,9 +36,15 @@ interface MealDao {
     
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMeal(meal: Meal)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllMeals(meals: List<Meal>)
     
     @Update
     suspend fun updateMeal(meal: Meal)
+
+    @Update
+    suspend fun updateAllMeals(meals: List<Meal>)
     
     @Delete
     suspend fun deleteMeal(meal: Meal)

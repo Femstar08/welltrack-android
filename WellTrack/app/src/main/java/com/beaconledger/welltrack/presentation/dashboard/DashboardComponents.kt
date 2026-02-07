@@ -207,7 +207,7 @@ fun TodaysSummarySection(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = if (completed[index]) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
+                            imageVector = if (completed[index]) Icons.Default.CheckCircle else Icons.Default.Circle,
                             contentDescription = null,
                             tint = if (completed[index]) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
                             modifier = Modifier.size(20.dp)
@@ -350,7 +350,7 @@ fun QuickActionsSection(
         SectionHeader(title = "Quick Actions")
         
         val actions = listOf(
-            QuickActionItem("Log Meal", Icons.Default.Fastfood, onLogMealClick),
+            QuickActionItem("Log Meal", Icons.Default.Restaurant, onLogMealClick),
             QuickActionItem("Add Ingredient", Icons.Default.Add, onAddIngredientClick),
             QuickActionItem("Start Prep", Icons.Default.PlayArrow, onStartPrepClick),
             QuickActionItem("Shopping List", Icons.Default.ShoppingCart, onViewShoppingClick)
@@ -435,7 +435,7 @@ fun HealthInsightsSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        Icons.Default.EmojiObjects,
+                        Icons.Default.Lightbulb,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp)
@@ -534,8 +534,7 @@ fun sampleInsights(): List<HealthInsight> = listOf(
         InsightPriority.LOW
     )
 )
-// Se
-curity Section for Dashboard
+// Security Section for Dashboard
 @Composable
 fun SecuritySection(
     onNavigateToSecurity: () -> Unit = {}
@@ -564,7 +563,7 @@ fun SecuritySection(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Security,
+                            imageVector = Icons.Default.Lock,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(24.dp)
@@ -634,7 +633,7 @@ fun SecuritySection(
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(
-                            Icons.Default.Shield,
+                            Icons.Default.Lock,
                             contentDescription = null,
                             modifier = Modifier.size(16.dp)
                         )
@@ -677,7 +676,7 @@ fun SecurityFeatureItem(feature: SecurityFeature) {
             )
             Spacer(modifier = Modifier.width(4.dp))
             Icon(
-                imageVector = if (feature.isActive) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
+                imageVector = if (feature.isActive) Icons.Default.CheckCircle else Icons.Default.Circle,
                 contentDescription = null,
                 tint = if (feature.isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(16.dp)

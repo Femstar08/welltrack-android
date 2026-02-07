@@ -1,3 +1,279 @@
 <resources>
+    <!-- App Name -->
     <string name="app_name">WellTrack</string>
+
+    <!-- Navigation -->
+    <string name="navigation_home">Home</string>
+    <string name="navigation_meals">Meals</string>
+    <string name="navigation_health">Health</string>
+    <string name="navigation_analytics">Analytics</string>
+    <string name="navigation_profile">Profile</string>
+    <string name="navigation_settings">Settings</string>
+    <string name="navigation_back">Go back</string>
+    <string name="navigation_close">Close</string>
+    <string name="navigation_next">Next</string>
+    <string name="navigation_previous">Previous</string>
+
+    <!-- Accessibility -->
+    <string name="accessibility_settings">Accessibility Settings</string>
+    <string name="accessibility_high_contrast">High Contrast</string>
+    <string name="accessibility_high_contrast_description">Enable high contrast mode for better visibility</string>
+    <string name="accessibility_large_text">Large Text</string>
+    <string name="accessibility_large_text_description">Increase text size for better readability</string>
+    <string name="accessibility_reduce_animations">Reduce Animations</string>
+    <string name="accessibility_reduce_animations_description">Minimize motion and animations</string>
+    <string name="accessibility_screen_reader_optimization">Screen Reader Optimization</string>
+    <string name="accessibility_screen_reader_optimization_description">Optimize interface for screen readers</string>
+    <string name="accessibility_audio_descriptions">Audio Descriptions</string>
+    <string name="accessibility_audio_descriptions_description">Enable audio descriptions for visual content</string>
+    <string name="accessibility_large_touch_targets">Large Touch Targets</string>
+    <string name="accessibility_large_touch_targets_description">Make buttons and interactive elements larger</string>
+    <string name="accessibility_reduce_motion">Reduce Motion</string>
+    <string name="accessibility_reduce_motion_description">Minimize UI motion and transitions</string>
+    <string name="accessibility_simplified_ui">Simplified UI</string>
+    <string name="accessibility_simplified_ui_description">Use a simplified interface layout</string>
+    <string name="accessibility_extended_timeouts">Extended Timeouts</string>
+    <string name="accessibility_extended_timeouts_description">Allow more time for interactions</string>
+
+    <!-- Common Actions -->
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_add">Add</string>
+    <string name="action_remove">Remove</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="action_dismiss">Dismiss</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_search">Search</string>
+    <string name="action_filter">Filter</string>
+    <string name="action_sort">Sort</string>
+    <string name="action_share">Share</string>
+    <string name="action_export">Export</string>
+    <string name="action_import">Import</string>
+
+    <!-- Form Elements -->
+    <string name="required_field">Required field</string>
+    <string name="optional_field">Optional field</string>
+    <string name="error_required">This field is required</string>
+    <string name="error_invalid_email">Please enter a valid email address</string>
+    <string name="error_invalid_password">Password must be at least 8 characters</string>
+    <string name="error_passwords_dont_match">Passwords do not match</string>
+    <string name="error_generic">An error occurred. Please try again.</string>
+
+    <!-- Authentication -->
+    <string name="auth_login">Log In</string>
+    <string name="auth_logout">Log Out</string>
+    <string name="auth_register">Register</string>
+    <string name="auth_email">Email</string>
+    <string name="auth_password">Password</string>
+    <string name="auth_confirm_password">Confirm Password</string>
+    <string name="auth_forgot_password">Forgot Password?</string>
+    <string name="auth_reset_password">Reset Password</string>
+    <string name="auth_biometric_login">Use biometric login</string>
+    <string name="auth_face_id">Face ID</string>
+    <string name="auth_fingerprint">Fingerprint</string>
+
+    <!-- Meals -->
+    <string name="meals_title">Meals</string>
+    <string name="meals_breakfast">Breakfast</string>
+    <string name="meals_lunch">Lunch</string>
+    <string name="meals_dinner">Dinner</string>
+    <string name="meals_snacks">Snacks</string>
+    <string name="meals_log_meal">Log Meal</string>
+    <string name="meals_add_food">Add Food</string>
+    <string name="meals_search_food">Search for food</string>
+    <string name="meals_barcode_scan">Scan Barcode</string>
+    <string name="meals_calories">Calories</string>
+    <string name="meals_protein">Protein</string>
+    <string name="meals_carbs">Carbohydrates</string>
+    <string name="meals_fat">Fat</string>
+    <string name="meals_fiber">Fiber</string>
+    <string name="meals_sugar">Sugar</string>
+    <string name="meals_sodium">Sodium</string>
+    <string name="meals_serving_size">Serving Size</string>
+    <string name="meals_portions">Portions</string>
+
+    <!-- Health Metrics -->
+    <string name="health_title">Health</string>
+    <string name="health_weight">Weight</string>
+    <string name="health_height">Height</string>
+    <string name="health_blood_pressure">Blood Pressure</string>
+    <string name="health_heart_rate">Heart Rate</string>
+    <string name="health_blood_sugar">Blood Sugar</string>
+    <string name="health_steps">Steps</string>
+    <string name="health_sleep">Sleep</string>
+    <string name="health_water_intake">Water Intake</string>
+    <string name="health_exercise">Exercise</string>
+    <string name="health_mood">Mood</string>
+    <string name="health_energy_level">Energy Level</string>
+    <string name="health_stress_level">Stress Level</string>
+
+    <!-- Goals -->
+    <string name="goals_title">Goals</string>
+    <string name="goals_weight_loss">Weight Loss</string>
+    <string name="goals_weight_gain">Weight Gain</string>
+    <string name="goals_maintain_weight">Maintain Weight</string>
+    <string name="goals_build_muscle">Build Muscle</string>
+    <string name="goals_improve_health">Improve Health</string>
+    <string name="goals_daily_calories">Daily Calorie Goal</string>
+    <string name="goals_daily_protein">Daily Protein Goal</string>
+    <string name="goals_daily_steps">Daily Step Goal</string>
+    <string name="goals_daily_water">Daily Water Goal</string>
+    <string name="goals_progress">Progress</string>
+    <string name="goals_achieved">Goal Achieved!</string>
+
+    <!-- Analytics -->
+    <string name="analytics_title">Analytics</string>
+    <string name="analytics_trends">Trends</string>
+    <string name="analytics_insights">Insights</string>
+    <string name="analytics_reports">Reports</string>
+    <string name="analytics_daily">Daily</string>
+    <string name="analytics_weekly">Weekly</string>
+    <string name="analytics_monthly">Monthly</string>
+    <string name="analytics_yearly">Yearly</string>
+    <string name="analytics_average">Average</string>
+    <string name="analytics_total">Total</string>
+    <string name="analytics_highest">Highest</string>
+    <string name="analytics_lowest">Lowest</string>
+
+    <!-- Notifications -->
+    <string name="notifications_title">Notifications</string>
+    <string name="notifications_meal_reminder">Meal Reminder</string>
+    <string name="notifications_water_reminder">Water Reminder</string>
+    <string name="notifications_exercise_reminder">Exercise Reminder</string>
+    <string name="notifications_medication_reminder">Medication Reminder</string>
+    <string name="notifications_weigh_in_reminder">Weigh-in Reminder</string>
+    <string name="notifications_goal_achievement">Goal Achievement</string>
+    <string name="notifications_weekly_summary">Weekly Summary</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_profile">Profile</string>
+    <string name="settings_privacy">Privacy</string>
+    <string name="settings_security">Security</string>
+    <string name="settings_data_sync">Data Sync</string>
+    <string name="settings_export_data">Export Data</string>
+    <string name="settings_import_data">Import Data</string>
+    <string name="settings_delete_account">Delete Account</string>
+    <string name="settings_about">About</string>
+    <string name="settings_help">Help</string>
+    <string name="settings_feedback">Feedback</string>
+    <string name="settings_rate_app">Rate App</string>
+    <string name="settings_version">Version</string>
+
+    <!-- Data Export -->
+    <string name="export_title">Export Data</string>
+    <string name="export_description">Export your health data</string>
+    <string name="export_format">Export Format</string>
+    <string name="export_date_range">Date Range</string>
+    <string name="export_all_data">All Data</string>
+    <string name="export_meals_only">Meals Only</string>
+    <string name="export_health_metrics_only">Health Metrics Only</string>
+    <string name="export_pdf">PDF Report</string>
+    <string name="export_csv">CSV Data</string>
+    <string name="export_json">JSON Data</string>
+    <string name="export_success">Data exported successfully</string>
+    <string name="export_error">Failed to export data</string>
+
+    <!-- Time and Date -->
+    <string name="time_today">Today</string>
+    <string name="time_yesterday">Yesterday</string>
+    <string name="time_this_week">This Week</string>
+    <string name="time_last_week">Last Week</string>
+    <string name="time_this_month">This Month</string>
+    <string name="time_last_month">Last Month</string>
+    <string name="time_morning">Morning</string>
+    <string name="time_afternoon">Afternoon</string>
+    <string name="time_evening">Evening</string>
+    <string name="time_night">Night</string>
+
+    <!-- Units -->
+    <string name="unit_kg">kg</string>
+    <string name="unit_lbs">lbs</string>
+    <string name="unit_cm">cm</string>
+    <string name="unit_ft_in">ft/in</string>
+    <string name="unit_calories">calories</string>
+    <string name="unit_grams">g</string>
+    <string name="unit_milligrams">mg</string>
+    <string name="unit_milliliters">ml</string>
+    <string name="unit_liters">L</string>
+    <string name="unit_steps">steps</string>
+    <string name="unit_minutes">minutes</string>
+    <string name="unit_hours">hours</string>
+    <string name="unit_bpm">bpm</string>
+    <string name="unit_mmhg">mmHg</string>
+    <string name="unit_mg_dl">mg/dL</string>
+
+    <!-- Status Messages -->
+    <string name="status_loading">Loading…</string>
+    <string name="status_saving">Saving…</string>
+    <string name="status_syncing">Syncing…</string>
+    <string name="status_success">Success</string>
+    <string name="status_error">Error</string>
+    <string name="status_no_data">No data available</string>
+    <string name="status_no_internet">No internet connection</string>
+    <string name="status_offline">Offline</string>
+    <string name="status_sync_failed">Sync failed</string>
+
+    <!-- Accessibility Content Descriptions -->
+    <string name="cd_menu_button">Open menu</string>
+    <string name="cd_close_button">Close</string>
+    <string name="cd_add_button">Add new item</string>
+    <string name="cd_delete_button">Delete item</string>
+    <string name="cd_edit_button">Edit item</string>
+    <string name="cd_search_button">Search</string>
+    <string name="cd_filter_button">Filter results</string>
+    <string name="cd_sort_button">Sort items</string>
+    <string name="cd_refresh_button">Refresh data</string>
+    <string name="cd_settings_button">Open settings</string>
+    <string name="cd_profile_button">View profile</string>
+    <string name="cd_camera_button">Open camera</string>
+    <string name="cd_gallery_button">Open gallery</string>
+
+    <!-- Progress and States -->
+    <string name="progress_percent">%1$d percent</string>
+    <string name="progress_of">%1$d of %2$d</string>
+    <string name="state_checked">Checked</string>
+    <string name="state_unchecked">Unchecked</string>
+    <string name="state_selected">Selected</string>
+    <string name="state_unselected">Not selected</string>
+    <string name="state_expanded">Expanded</string>
+    <string name="state_collapsed">Collapsed</string>
+    <string name="state_enabled">Enabled</string>
+    <string name="state_disabled">Disabled</string>
+
+    <!-- Confirmations and Dialogs -->
+    <string name="dialog_confirm_delete">Are you sure you want to delete this item?</string>
+    <string name="dialog_confirm_logout">Are you sure you want to log out?</string>
+    <string name="dialog_confirm_reset">Are you sure you want to reset all data?</string>
+    <string name="dialog_unsaved_changes">You have unsaved changes. Do you want to save them?</string>
+    <string name="dialog_permissions_required">This feature requires permission to access your device\'s capabilities.</string>
+
+    <!-- Health Connect Integration -->
+    <string name="health_connect_title">Health Connect</string>
+    <string name="health_connect_description">Sync with Health Connect for comprehensive health tracking</string>
+    <string name="health_connect_permissions">Health Connect Permissions</string>
+    <string name="health_connect_sync">Sync with Health Connect</string>
+    <string name="health_connect_not_available">Health Connect is not available on this device</string>
+
+    <!-- Garmin Integration -->
+    <string name="garmin_title">Garmin Connect</string>
+    <string name="garmin_description">Connect with Garmin devices for fitness tracking</string>
+    <string name="garmin_connect">Connect Garmin</string>
+    <string name="garmin_disconnect">Disconnect Garmin</string>
+    <string name="garmin_sync">Sync Garmin Data</string>
+    <string name="garmin_authorization">Garmin Authorization</string>
+
+    <!-- Backup and Restore -->
+    <string name="backup_title">Backup &amp; Restore</string>
+    <string name="backup_create">Create Backup</string>
+    <string name="backup_restore">Restore from Backup</string>
+    <string name="backup_automatic">Automatic Backup</string>
+    <string name="backup_location">Backup Location</string>
+    <string name="backup_success">Backup created successfully</string>
+    <string name="backup_error">Failed to create backup</string>
+    <string name="restore_success">Data restored successfully</string>
+    <string name="restore_error">Failed to restore data</string>
 </resources>

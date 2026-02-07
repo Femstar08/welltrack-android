@@ -237,7 +237,7 @@ fun ExportDialog(
                                 userId = userId,
                                 exportType = exportType,
                                 format = exportFormat,
-                                dateRange = if (useDateRange) DateRange(startDate, endDate) else null,
+                                dateRange = if (useDateRange) ExportDateRange(startDate, endDate) else null,
                                 includeHealthData = includeHealthData,
                                 includeMealData = includeMealData,
                                 includeSupplementData = includeSupplementData,

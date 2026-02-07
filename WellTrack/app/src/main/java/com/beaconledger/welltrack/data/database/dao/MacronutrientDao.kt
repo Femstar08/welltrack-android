@@ -114,6 +114,9 @@ interface MacronutrientDao {
     
     @Query("UPDATE custom_nutrients SET isActive = 0 WHERE id = :id")
     suspend fun deactivateCustomNutrient(id: String)
+
+    @Query("DELETE FROM macronutrient_intake WHERE userId = :userId")
+    suspend fun deleteAllMacronutrientsForUser(userId: String)
 }
 
 data class DailyNutrientSummary(

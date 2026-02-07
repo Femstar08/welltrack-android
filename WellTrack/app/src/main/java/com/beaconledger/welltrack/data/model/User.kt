@@ -16,12 +16,7 @@ data class User(
     val updatedAt: String = LocalDateTime.now().toString()
 )
 
-data class UserPreferences(
-    val fitnessGoals: List<FitnessGoal> = emptyList(),
-    val dietaryRestrictions: List<DietaryRestriction> = emptyList(),
-    val preferredIngredients: List<String> = emptyList(),
-    val notificationSettings: NotificationSettings = NotificationSettings()
-)
+// UserPreferences moved to separate file
 
 // FitnessGoal enum moved to CommonEnums.kt
 

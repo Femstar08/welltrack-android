@@ -20,4 +20,7 @@ interface SharedShoppingListItemDao {
 
     @Delete
     suspend fun deleteSharedShoppingListItem(sharedShoppingListItem: SharedShoppingListItem)
+
+    @Query("UPDATE shared_shopping_list_items SET isPurchased = :isPurchased WHERE id = :itemId")
+    suspend fun updateItemPurchaseStatus(itemId: String, isPurchased: Boolean)
 }

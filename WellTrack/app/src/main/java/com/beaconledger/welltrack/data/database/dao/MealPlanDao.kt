@@ -151,4 +151,7 @@ interface MealPlanDao {
         insertPlannedMeals(plannedMeals)
         insertPlannedSupplements(plannedSupplements)
     }
+
+    @Query("DELETE FROM meal_plans WHERE userId = :userId")
+    suspend fun deleteAllMealPlansForUser(userId: String)
 }

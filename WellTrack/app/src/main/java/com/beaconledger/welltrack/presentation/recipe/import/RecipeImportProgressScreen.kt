@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.beaconledger.welltrack.data.recipe_import.ImportProgress
 import com.beaconledger.welltrack.data.recipe_import.ImportSource
+import com.beaconledger.welltrack.data.recipe_import.ImportStep
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

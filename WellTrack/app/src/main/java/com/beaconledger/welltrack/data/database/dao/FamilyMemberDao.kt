@@ -20,4 +20,10 @@ interface FamilyMemberDao {
 
     @Delete
     suspend fun deleteFamilyMember(familyMember: FamilyMember)
+
+    @Query("SELECT * FROM family_members WHERE familyGroupId = :groupId AND userId = :userId")
+    suspend fun getFamilyMember(groupId: String, userId: String): FamilyMember?
+
+    @Query("DELETE FROM family_members WHERE familyGroupId = :groupId AND userId = :userId")
+    suspend fun removeFamilyMember(groupId: String, userId: String)
 }

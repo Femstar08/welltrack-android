@@ -206,7 +206,7 @@ private fun QuickActionsSection(
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Download,
+                        imageVector = Icons.Default.CloudDownload,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
                     )
@@ -255,7 +255,7 @@ private fun QuickActionsSection(
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Upload,
+                        imageVector = Icons.Default.CloudUpload,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
                     )

@@ -22,7 +22,7 @@ interface NotificationDao {
     suspend fun getNotificationById(id: String): NotificationEntity?
     
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertNotification(notification: NotificationEntity): Long
+    suspend fun insertNotification(notification: NotificationEntity)
     
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNotifications(notifications: List<NotificationEntity>)

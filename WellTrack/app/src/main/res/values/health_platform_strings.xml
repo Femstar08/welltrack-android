@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Samsung Health Attribution -->
+    <string name="samsung_health_attribution">Samsung Health</string>
+    <string name="works_with_samsung_health">Works with Samsung Health</string>
+    <string name="samsung_health_export_attribution">Data sourced from Samsung Health. Samsung Health is a trademark of Samsung Electronics Co., Ltd.</string>
+    <string name="samsung_health_trademark_acknowledgment">Samsung Health® is a registered trademark of Samsung Electronics Co., Ltd. This app is not affiliated with, endorsed by, or sponsored by Samsung Electronics Co., Ltd.</string>
+    
+    <!-- Google Health Connect Attribution -->
+    <string name="health_connect_attribution">Health Connect</string>
+    <string name="works_with_health_connect">Works with Health Connect</string>
+    <string name="health_connect_export_attribution">Data sourced from Google Health Connect. Health Connect is a trademark of Google LLC.</string>
+    <string name="google_trademark_acknowledgment">Google Health Connect™ is a trademark of Google LLC. This app is not affiliated with, endorsed by, or sponsored by Google LLC.</string>
+    
+    <!-- Multi-Platform Attribution -->
+    <string name="data_sources_label">Data Sources:</string>
+    <string name="works_with_platforms">Works with</string>
+    <string name="data_export_attribution_header">Data Attribution:</string>
+    
+    <!-- Health Platform Integration Messages -->
+    <string name="garmin_integration_description">Connect your Garmin device to access advanced health metrics including HRV, recovery scores, stress levels, and biological age calculations.</string>
+    <string name="samsung_health_integration_description">Connect Samsung Health to access ECG data, body composition measurements, and comprehensive health metrics from Samsung devices.</string>
+    <string name="health_connect_integration_description">Connect Health Connect to access health data from multiple apps and devices in a unified, secure platform.</string>
+    
+    <!-- Privacy and Data Usage -->
+    <string name="health_data_privacy_notice">Your health data is encrypted and stored securely. You maintain full control over data sharing and can revoke access at any time.</string>
+    <string name="data_source_transparency">All health data displays include proper attribution to ensure transparency about data sources.</string>
+    
+    <!-- Connection Status -->
+    <string name="samsung_health_connected">Samsung Health Connected</string>
+    <string name="health_connect_connected">Health Connect Connected</string>
+    <string name="platform_not_connected">Not Connected</string>
+    
+    <!-- Connection Actions -->
+    <string name="connect_garmin">Connect Garmin</string>
+    <string name="connect_samsung_health">Connect Samsung Health</string>
+    <string name="connect_health_connect">Connect Health Connect</string>
+    <string name="disconnect_platform">Disconnect</string>
+    <string name="manage_connection">Manage Connection</string>
+    
+    <!-- Data Sync Status -->
+    <string name="sync_in_progress">Syncing health data…</string>
+    <string name="sync_completed">Health data synced successfully</string>
+    <string name="sync_failed">Health data sync failed</string>
+    <string name="last_sync_time">Last synced: %1$s</string>
+    
+    <!-- Health Metrics -->
+    <string name="hrv_metric_name">Heart Rate Variability</string>
+    <string name="recovery_score_metric_name">Recovery Score</string>
+    <string name="stress_level_metric_name">Stress Level</string>
+    <string name="biological_age_metric_name">Biological Age</string>
+    <string name="vo2_max_metric_name">VO2 Max</string>
+    <string name="sleep_score_metric_name">Sleep Score</string>
+    <string name="body_battery_metric_name">Body Battery</string>
+    <string name="ecg_metric_name">ECG</string>
+    <string name="body_composition_metric_name">Body Composition</string>
+    
+    <!-- Data Source Descriptions -->
+    <string name="garmin_data_description">Advanced fitness and recovery metrics from Garmin devices</string>
+    <string name="samsung_health_data_description">Comprehensive health data from Samsung Health platform</string>
+    <string name="health_connect_data_description">Unified health data from multiple apps and devices</string>
+    <string name="manual_entry_description">Manually entered by user</string>
+    
+    <!-- Legal and Compliance -->
+    <string name="health_data_disclaimer">This app is for informational purposes only and should not be used as a substitute for professional medical advice. Health metrics from connected devices may vary in accuracy. Always consult with qualified healthcare providers regarding health concerns.</string>
+    <string name="data_accuracy_disclaimer">Health data accuracy may vary depending on device calibration, usage conditions, and individual factors. Use this information as a general guide for wellness tracking.</string>
+    <string name="third_party_integration_disclaimer">This app integrates with third-party health platforms to provide comprehensive health insights. Data usage is governed by both this app\'s privacy policy and the respective platform\'s terms of service.</string>
+    
+    <!-- App Store Compliance -->
+    <string name="health_category_description">Comprehensive health and wellness tracking with multi-platform integration</string>
+    <string name="garmin_integration_disclosure">This app integrates with Garmin Connect to access health and fitness data from Garmin devices. Garmin device required for full functionality.</string>
+    <string name="samsung_health_integration_disclosure">This app integrates with Samsung Health to access health data from Samsung devices. Samsung Health app required for full functionality.</string>
+    <string name="health_connect_integration_disclosure">This app integrates with Health Connect to access unified health data from multiple sources. Health Connect required for full functionality.</string>
+    
+    <!-- User Controls -->
+    <string name="revoke_access_title">Revoke Access</string>
+    <string name="revoke_access_description">Remove access to %1$s data and stop future synchronization</string>
+    <string name="delete_platform_data_title">Delete %1$s Data</string>
+    <string name="delete_platform_data_description">Permanently delete all %1$s data from this app. This action cannot be undone.</string>
+    <string name="export_platform_data_title">Export %1$s Data</string>
+    <string name="export_platform_data_description">Export your %1$s data with proper attribution for external use</string>
+    
+    <!-- Error Messages -->
+    <string name="platform_connection_failed">Failed to connect to %1$s. Please check your account settings and try again.</string>
+    <string name="platform_sync_error">Error syncing data from %1$s: %2$s</string>
+    <string name="platform_not_available">%1$s is not available on this device</string>
+    <string name="platform_permission_denied">Permission denied for %1$s. Please grant necessary permissions in device settings.</string>
+    
+    <!-- Success Messages -->
+    <string name="platform_connected_successfully">Successfully connected to %1$s</string>
+    <string name="platform_disconnected_successfully">Successfully disconnected from %1$s</string>
+    <string name="platform_data_deleted_successfully">%1$s data deleted successfully</string>
+    <string name="platform_data_exported_successfully">%1$s data exported successfully</string>
+    
+    <!-- Settings and Preferences -->
+    <string name="health_platform_settings_title">Health Platform Connections</string>
+    <string name="health_platform_settings_description">Manage your connections to health platforms and data synchronization preferences</string>
+    <string name="auto_sync_enabled">Automatic synchronization enabled</string>
+    <string name="auto_sync_disabled">Automatic synchronization disabled</string>
+    <string name="sync_frequency_title">Sync Frequency</string>
+    <string name="sync_frequency_description">How often to sync health data from connected platforms</string>
+    
+    <!-- Sync Frequency Options -->
+    <string name="sync_frequency_real_time">Real-time</string>
+    <string name="sync_frequency_hourly">Every hour</string>
+    <string name="sync_frequency_daily">Daily</string>
+    <string name="sync_frequency_manual">Manual only</string>
+    
+    <!-- Data Attribution Requirements -->
+    <string name="attribution_required_notice">All health platform data displays include proper attribution as required by platform guidelines</string>
+    <string name="brand_compliance_notice">This app complies with all health platform brand guidelines and developer program requirements</string>
+    
+    <!-- Help and Support -->
+    <string name="health_platform_help_title">Health Platform Integration Help</string>
+    <string name="garmin_support_description">For Garmin-specific issues, visit the Garmin Connect support page or contact Garmin support directly</string>
+    <string name="samsung_health_support_description">For Samsung Health issues, visit Samsung Health support or contact Samsung support</string>
+    <string name="health_connect_support_description">For Health Connect issues, visit Google Health Connect support or check your device settings</string>
+    
+    <!-- Onboarding and Setup -->
+    <string name="health_platform_onboarding_title">Connect Your Health Platforms</string>
+    <string name="health_platform_onboarding_description">Connect your favorite health platforms to get comprehensive insights and personalized recommendations</string>
+    <string name="optional_connection_notice">All health platform connections are optional. You can use the app with manual data entry only.</string>
+    <string name="secure_connection_notice">All connections use secure authentication and encryption to protect your health data</string>
+
+    <!-- Brand Compliance Screen -->
+    <string name="brand_compliance_title">Brand Compliance</string>
+    <string name="navigate_back">Navigate back</string>
+    <string name="refresh_compliance">Refresh compliance</string>
+    <string name="validating_brand_compliance">Validating brand compliance…</string>
+    <string name="compliance_status_compliant">Fully Compliant</string>
+    <string name="compliance_status_non_compliant">Non-Compliant</string>
+    <string name="revalidate">Revalidate</string>
+    <string name="critical_issues_warning">Critical compliance issues found - must be resolved before app store submission</string>
+    <string name="health_platform_badges_title">Health Platform Badges</string>
+    <string name="health_platform_badges_description">These badges demonstrate proper brand compliance for all integrated health platforms</string>
+    <string name="compliance_check_details">Details:</string>
+    <string name="recommended_action">Recommended Action:</string>
+    <string name="severity_critical">Critical</string>
+    <string name="severity_high">High</string>
+    <string name="severity_medium">Medium</string>
+    <string name="severity_low">Low</string>
+    <string name="compliance_recommendations">Recommendations</string>
+    <string name="compliance_validation_error">Compliance Validation Error</string>
+    <string name="retry_validation">Retry Validation</string>
+</resources>

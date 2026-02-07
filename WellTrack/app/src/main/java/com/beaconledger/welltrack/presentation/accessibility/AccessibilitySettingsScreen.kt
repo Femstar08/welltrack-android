@@ -4,11 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Accessibility
-import androidx.compose.material.icons.filled.Contrast
-import androidx.compose.material.icons.filled.TextFields
-import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -116,7 +112,7 @@ fun AccessibilitySettingsScreen(
 }
 
 @Composable
-private fun AccessibilityStatusCard(accessibilitySettings: AccessibilitySettings) {
+private fun AccessibilityStatusCard(accessibilitySettings: UIAccessibilitySettings) {
     Card(
         modifier = Modifier
             .fillMaxWidth()

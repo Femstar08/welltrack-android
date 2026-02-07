@@ -16,6 +16,7 @@ import com.beaconledger.welltrack.presentation.security.SecurityAuditScreen
 import com.beaconledger.welltrack.presentation.security.AppLockScreen
 import com.beaconledger.welltrack.presentation.goals.GoalScreen
 import com.beaconledger.welltrack.presentation.goals.GoalDetailScreen
+import com.beaconledger.welltrack.presentation.accessibility.AccessibilitySettingsScreen
 
 // Navigation routes
 object Routes {
@@ -29,6 +30,7 @@ object Routes {
     const val ANALYTICS = "analytics"
     const val GOALS = "goals"
     const val GOAL_DETAIL = "goal_detail/{goalId}"
+    const val ACCESSIBILITY_SETTINGS = "accessibility_settings"
 }
 
 @Composable
@@ -105,6 +107,14 @@ fun WellTrackNavigation(
             val goalId = backStackEntry.arguments?.getString("goalId") ?: ""
             GoalDetailScreen(
                 goalId = goalId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(Routes.ACCESSIBILITY_SETTINGS) {
+            AccessibilitySettingsScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }

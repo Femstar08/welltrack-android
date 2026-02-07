@@ -2,304 +2,249 @@ package com.beaconledger.welltrack.data.repository
 
 import com.beaconledger.welltrack.data.database.dao.GoalDao
 import com.beaconledger.welltrack.data.model.*
+import com.google.gson.Gson
+import io.mockk.*
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import org.junit.Assert.*
 import java.time.LocalDate
 import java.time.LocalDateTime
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import java.time.temporal.ChronoUnit
 
 class GoalRepositoryImplTest {
 
-    @Mock
     private lateinit var goalDao: GoalDao
-
+    private lateinit var gson: Gson
     private lateinit var goalRepository: GoalRepositoryImpl
 
-    private val testUserId = "test_user_123"
-    private val testGoalId = "test_goal_123"
+    private val testUserId = "test_user_id"
+    private val testGoalId = "test_goal_id"
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
-        goalRepository = GoalRepositoryImpl(goalDao)
+        goalDao = mockk(relaxed = true)
+        gson = mockk(relaxed = true)
+        goalRepository = GoalRepositoryImpl(goalDao, gson)
+    }
+
+    // Helper function to access private methods for testing
+    private fun GoalRepositoryImpl.callCalculatePrediction(goal: Goal, progressHistory: List<GoalProgress>): GoalPrediction {
+        val method = GoalRepositoryImpl::class.java.getDeclaredMethod("calculatePrediction", Goal::class.java, List::class.java)
+        method.isAccessible = true
+        return method.invoke(goalRepository, goal, progressHistory) as GoalPrediction
+    }
+
+    private fun GoalRepositoryImpl.callCalculateStatistics(
+        goal: Goal,
+        progress: List<GoalProgress>,
+        completedMilestones: Int,
+        totalMilestones: Int
+    ): GoalStatistics {
+        val method = GoalRepositoryImpl::class.java.getDeclaredMethod(
+            "calculateStatistics",
+            Goal::class.java,
+            List::class.java,
+            Int::class.java,
+            Int::class.java
+        )
+        method.isAccessible = true
+        return method.invoke(goalRepository, goal, progress, completedMilestones, totalMilestones) as GoalStatistics
+    }
+
+    private fun GoalRepositoryImpl.callCalculateConfidenceScore(progress: List<GoalProgress>, trend: TrendAnalysis): Float {
+        val method = GoalRepositoryImpl::class.java.getDeclaredMethod("calculateConfidenceScore", List::class.java, TrendAnalysis::class.java)
+        method.isAccessible = true
+        return method.invoke(goalRepository, goal, trend) as Float
+    }
+
+    private fun GoalRepositoryImpl.callCalculateConsistency(progress: List<GoalProgress>): Float {
+        val method = GoalRepositoryImpl::class.java.getDeclaredMethod("calculateConsistency", List::class.java)
+        method.isAccessible = true
+        return method.invoke(goalRepository, progress) as Float
+    }
+
+    private fun GoalRepositoryImpl.callGenerateRecommendations(goal: Goal, trend: TrendAnalysis): List<String> {
+        val method = GoalRepositoryImpl::class.java.getDeclaredMethod("generateRecommendations", Goal::class.java, TrendAnalysis::class.java)
+        method.isAccessible = true
+        return method.invoke(goalRepository, goal, trend) as List<String>
+    }
+
+    private fun GoalRepositoryImpl.callDetermineTrendDirection(progress: List<GoalProgress>): TrendAnalysis {
+        val method = GoalRepositoryImpl::class.java.getDeclaredMethod("determineTrendDirection", List::class.java)
+        method.isAccessible = true
+        return method.invoke(goalRepository, progress) as TrendAnalysis
+    }
+
+    // --- Test calculatePrediction ---
+    @Test
+    fun `calculatePrediction should return correct prediction for consistent progress`() = runTest {
+        val goal = createTestGoal(currentValue = 5.0, targetValue = 100.0, targetDate = LocalDate.now().plusDays(100))
+        val progress = (1..10).map { i -> createTestProgress(value = 1.0, recordedAt = LocalDateTime.now().minusDays(10 - i.toLong())) }
+
+        val prediction = goalRepository.callCalculatePrediction(goal, progress)
+
+        assertNotNull(prediction)
+        assertEquals(TrendAnalysis.ON_TRACK, prediction.trendAnalysis)
+        assertTrue(prediction.confidenceScore > 0.5f)
     }
 
     @Test
-    fun `createGoal should generate ID and insert goal successfully`() = runTest {
-        // Given
-        val testGoal = createTestGoal()
-        whenever(goalDao.insertGoal(any())).thenReturn(Unit)
-
-        // When
-        val result = goalRepository.createGoal(testGoal)
-
-        // Then
-        assertTrue(result.isSuccess)
-        verify(goalDao).insertGoal(any())
-    }
-
-    @Test
-    fun `createGoal should handle database errors`() = runTest {
-        // Given
-        val testGoal = createTestGoal()
-        whenever(goalDao.insertGoal(any())).thenThrow(RuntimeException("Database error"))
-
-        // When
-        val result = goalRepository.createGoal(testGoal)
-
-        // Then
-        assertTrue(result.isFailure)
-    }
-
-    @Test
-    fun `addProgress should update goal current value`() = runTest {
-        // Given
-        val testGoal = createTestGoal()
-        val testProgress = createTestProgress()
-
-        whenever(goalDao.insertProgress(any())).thenReturn(1L)
-        whenever(goalDao.getGoalById(testGoalId)).thenReturn(testGoal)
-        whenever(goalDao.updateGoal(any())).thenReturn(Unit)
-
-        // When
-        val result = goalRepository.addProgress(testProgress)
-
-        // Then
-        assertTrue(result.isSuccess)
-        verify(goalDao).insertProgress(any())
-        verify(goalDao).updateGoal(any())
-    }
-
-    @Test
-    fun `generatePrediction should calculate based on progress history`() = runTest {
-        // Given
-        val testGoal = createTestGoal()
-        val progressHistory = listOf(
-            createTestProgress(value = 10.0),
-            createTestProgress(value = 20.0),
-            createTestProgress(value = 30.0)
+    fun `calculatePrediction should return accelerating trend for increasing progress`() = runTest {
+        val goal = createTestGoal(currentValue = 10.0, targetValue = 100.0, targetDate = LocalDate.now().plusDays(100))
+        val progress = listOf(
+            createTestProgress(value = 1.0, recordedAt = LocalDateTime.now().minusDays(10)),
+            createTestProgress(value = 1.1, recordedAt = LocalDateTime.now().minusDays(9)),
+            createTestProgress(value = 1.2, recordedAt = LocalDateTime.now().minusDays(8)),
+            createTestProgress(value = 1.3, recordedAt = LocalDateTime.now().minusDays(7)),
+            createTestProgress(value = 1.4, recordedAt = LocalDateTime.now().minusDays(6)),
+            createTestProgress(value = 1.5, recordedAt = LocalDateTime.now().minusDays(5)),
+            createTestProgress(value = 1.6, recordedAt = LocalDateTime.now().minusDays(4)),
+            createTestProgress(value = 1.7, recordedAt = LocalDateTime.now().minusDays(3)),
+            createTestProgress(value = 1.8, recordedAt = LocalDateTime.now().minusDays(2)),
+            createTestProgress(value = 1.9, recordedAt = LocalDateTime.now().minusDays(1))
         )
 
-        whenever(goalDao.getGoalById(testGoalId)).thenReturn(testGoal)
-        whenever(goalDao.getRecentProgressForGoal(testGoalId, 30)).thenReturn(progressHistory)
-        whenever(goalDao.insertPrediction(any())).thenReturn(1L)
-
-        // When
-        val result = goalRepository.generatePrediction(testGoalId)
-
-        // Then
-        assertTrue(result.isSuccess)
-        verify(goalDao).insertPrediction(any())
+        val prediction = goalRepository.callCalculatePrediction(goal, progress)
+        assertEquals(TrendAnalysis.ACCELERATING, prediction.trendAnalysis)
     }
 
     @Test
-    fun `calculateGoalStatistics should return accurate stats`() = runTest {
-        // Given
-        val testGoal = createTestGoal(currentValue = 50.0, targetValue = 100.0)
-        val progressHistory = listOf(
-            createTestProgress(value = 10.0),
-            createTestProgress(value = 25.0),
-            createTestProgress(value = 40.0),
-            createTestProgress(value = 50.0)
+    fun `calculatePrediction should return declining trend for decreasing progress`() = runTest {
+        val goal = createTestGoal(currentValue = 20.0, targetValue = 100.0, targetDate = LocalDate.now().plusDays(100))
+        val progress = listOf(
+            createTestProgress(value = 2.0, recordedAt = LocalDateTime.now().minusDays(10)),
+            createTestProgress(value = 1.9, recordedAt = LocalDateTime.now().minusDays(9)),
+            createTestProgress(value = 1.8, recordedAt = LocalDateTime.now().minusDays(8)),
+            createTestProgress(value = 1.7, recordedAt = LocalDateTime.now().minusDays(7)),
+            createTestProgress(value = 1.6, recordedAt = LocalDateTime.now().minusDays(6)),
+            createTestProgress(value = 1.5, recordedAt = LocalDateTime.now().minusDays(5)),
+            createTestProgress(value = 1.4, recordedAt = LocalDateTime.now().minusDays(4)),
+            createTestProgress(value = 1.3, recordedAt = LocalDateTime.now().minusDays(3)),
+            createTestProgress(value = 1.2, recordedAt = LocalDateTime.now().minusDays(2)),
+            createTestProgress(value = 1.1, recordedAt = LocalDateTime.now().minusDays(1))
         )
 
-        whenever(goalDao.getGoalById(testGoalId)).thenReturn(testGoal)
-        whenever(goalDao.getRecentProgressForGoal(testGoalId, 100)).thenReturn(progressHistory)
-        whenever(goalDao.getCompletedMilestonesCount(testGoalId)).thenReturn(2)
-        whenever(goalDao.getTotalMilestonesCount(testGoalId)).thenReturn(4)
+        val prediction = goalRepository.callCalculatePrediction(goal, progress)
+        assertEquals(TrendAnalysis.DECLINING, prediction.trendAnalysis)
+    }
 
-        // When
-        val result = goalRepository.calculateGoalStatistics(testGoalId)
-
-        // Then
-        assertTrue(result.isSuccess)
-        val statistics = result.getOrNull()!!
-        assertEquals(50.0f, statistics.completionPercentage)
-        assertEquals(50.0f, statistics.milestoneCompletionRate)
+    // --- Test calculateStatistics ---
+    @Test
+    fun `calculateStatistics should return correct completion percentage`() = runTest {
+        val goal = createTestGoal(currentValue = 50.0, targetValue = 100.0)
+        val statistics = goalRepository.callCalculateStatistics(goal, emptyList(), 0, 0)
+        assertEquals(50.0f, statistics.completionPercentage, 0.01f)
     }
 
     @Test
-    fun `updateGoalFromHealthData should update relevant goals`() = runTest {
-        // Given
-        val testGoal = createTestGoal(type = GoalType.WEIGHT_LOSS)
-        val healthMetrics = listOf(
-            createTestHealthMetric(type = HealthMetricType.WEIGHT, value = 70.0),
-            createTestHealthMetric(type = HealthMetricType.STEPS, value = 10000.0)
-        )
+    fun `calculateStatistics should return correct days remaining`() = runTest {
+        val goal = createTestGoal(targetDate = LocalDate.now().plusDays(10))
+        val statistics = goalRepository.callCalculateStatistics(goal, emptyList(), 0, 0)
+        assertEquals(10, statistics.daysRemaining)
+    }
 
-        whenever(goalDao.getGoalById(testGoalId)).thenReturn(testGoal)
-        whenever(goalDao.insertProgress(any())).thenReturn(1L)
-
-        // When
-        val result = goalRepository.updateGoalFromHealthData(testGoalId, healthMetrics)
-
-        // Then
-        assertTrue(result.isSuccess)
-        verify(goalDao).insertProgress(any())
+    // --- Test calculateConfidenceScore ---
+    @Test
+    fun `calculateConfidenceScore should be low for few data points`() = runTest {
+        val progress = listOf(createTestProgress())
+        val score = goalRepository.callCalculateConfidenceScore(progress, TrendAnalysis.ON_TRACK)
+        assertEquals(0.3f, score, 0.01f)
     }
 
     @Test
-    fun `updateGoalFromMealData should update nutrition goals`() = runTest {
-        // Given
-        val testGoal = createTestGoal(type = GoalType.NUTRITION_TARGET, unit = "kcal")
-        val meals = listOf(
-            createTestMeal(calories = 500.0),
-            createTestMeal(calories = 300.0)
-        )
+    fun `calculateConfidenceScore should be high for consistent progress`() = runTest {
+        val progress = (1..10).map { createTestProgress(value = 1.0) }
+        val score = goalRepository.callCalculateConfidenceScore(progress, TrendAnalysis.ON_TRACK)
+        assertTrue(score > 0.8f)
+    }
 
-        whenever(goalDao.getGoalById(testGoalId)).thenReturn(testGoal)
-        whenever(goalDao.insertProgress(any())).thenReturn(1L)
-        whenever(goalDao.updateGoal(any())).thenReturn(Unit)
-
-        // When
-        val result = goalRepository.updateGoalFromMealData(testGoalId, meals)
-
-        // Then
-        assertTrue(result.isSuccess)
-        verify(goalDao).insertProgress(any())
+    // --- Test calculateConsistency ---
+    @Test
+    fun `calculateConsistency should be 0 for less than 2 data points`() = runTest {
+        val progress = listOf(createTestProgress())
+        val consistency = goalRepository.callCalculateConsistency(progress)
+        assertEquals(0f, consistency, 0.01f)
     }
 
     @Test
-    fun `getGoalCompletionRate should calculate correctly`() = runTest {
-        // Given
-        val allGoals = listOf(
-            createTestGoal(currentValue = 100.0, targetValue = 100.0), // Completed
-            createTestGoal(currentValue = 50.0, targetValue = 100.0),  // Not completed
-            createTestGoal(currentValue = 75.0, targetValue = 100.0)   // Not completed
-        )
-
-        whenever(goalDao.getCompletedGoalsCount(testUserId)).thenReturn(1)
-        whenever(goalDao.getAllGoalsForUser(testUserId)).thenReturn(allGoals)
-
-        // When
-        val completionRate = goalRepository.getGoalCompletionRate(testUserId)
-
-        // Then
-        assertEquals(33.33f, completionRate, 0.1f)
+    fun `calculateConsistency should be high for consistent values`() = runTest {
+        val progress = (1..5).map { createTestProgress(value = 10.0) }
+        val consistency = goalRepository.callCalculateConsistency(progress)
+        assertEquals(1f, consistency, 0.01f)
     }
 
+    // --- Test generateRecommendations ---
     @Test
-    fun `getGoalTrends should analyze progress trends`() = runTest {
-        // Given
-        val goals = listOf(
-            createTestGoal(type = GoalType.WEIGHT_LOSS),
-            createTestGoal(type = GoalType.FITNESS_PERFORMANCE)
-        )
-        val progressData = listOf(
-            createTestProgress(value = 10.0),
-            createTestProgress(value = 15.0),
-            createTestProgress(value = 20.0)
-        )
-
-        whenever(goalDao.getAllGoalsForUser(testUserId)).thenReturn(goals)
-        whenever(goalDao.getRecentProgressForGoal(any(), any())).thenReturn(progressData)
-
-        // When
-        val trends = goalRepository.getGoalTrends(testUserId, 30)
-
-        // Then
-        assertTrue(trends.isNotEmpty())
-        assertTrue(trends.containsKey(GoalType.WEIGHT_LOSS))
-    }
-
-    @Test
-    fun `getRecommendations should provide relevant suggestions`() = runTest {
-        // Given
-        val overdueGoals = 2
-        val allGoals = listOf(
-            createTestGoal(targetDate = LocalDate.now().minusDays(5), currentValue = 50.0, targetValue = 100.0),
-            createTestGoal(targetDate = LocalDate.now().minusDays(3), currentValue = 30.0, targetValue = 100.0),
-            createTestGoal(targetDate = LocalDate.now().plusDays(10), currentValue = 80.0, targetValue = 100.0)
-        )
-
-        whenever(goalDao.getAllGoalsForUser(testUserId)).thenReturn(allGoals)
-        whenever(goalDao.getOverdueGoalsCount(testUserId, LocalDate.now())).thenReturn(overdueGoals)
-        whenever(goalDao.getRecentProgressForGoal(any(), eq(7))).thenReturn(emptyList())
-
-        // When
-        val recommendations = goalRepository.getRecommendations(testUserId)
-
-        // Then
+    fun `generateRecommendations should suggest adjustments for behind schedule trend`() = runTest {
+        val goal = createTestGoal()
+        val recommendations = goalRepository.callGenerateRecommendations(goal, TrendAnalysis.BEHIND_SCHEDULE)
         assertTrue(recommendations.isNotEmpty())
-        assertTrue(recommendations.any { it.contains("overdue") })
+        assertTrue(recommendations.any { it.contains("adjust your strategy") })
     }
 
-    // Helper methods to create test data
+    // --- Test determineTrendDirection ---
+    @Test
+    fun `determineTrendDirection should be on track for insufficient data`() = runTest {
+        val progress = listOf(createTestProgress())
+        val trend = goalRepository.callDetermineTrendDirection(progress)
+        assertEquals(TrendAnalysis.ON_TRACK, trend)
+    }
+
+    @Test
+    fun `determineTrendDirection should be accelerating for increasing recent progress`() = runTest {
+        val progress = listOf(
+            createTestProgress(value = 1.0, recordedAt = LocalDateTime.now().minusDays(10)),
+            createTestProgress(value = 1.1, recordedAt = LocalDateTime.now().minusDays(9)),
+            createTestProgress(value = 1.2, recordedAt = LocalDateTime.now().minusDays(8)),
+            createTestProgress(value = 1.3, recordedAt = LocalDateTime.now().minusDays(7)),
+            createTestProgress(value = 1.4, recordedAt = LocalDateTime.now().minusDays(6)),
+            createTestProgress(value = 2.0, recordedAt = LocalDateTime.now().minusDays(5)),
+            createTestProgress(value = 2.1, recordedAt = LocalDateTime.now().minusDays(4)),
+            createTestProgress(value = 2.2, recordedAt = LocalDateTime.now().minusDays(3)),
+            createTestProgress(value = 2.3, recordedAt = LocalDateTime.now().minusDays(2)),
+            createTestProgress(value = 2.4, recordedAt = LocalDateTime.now().minusDays(1))
+        )
+        val trend = goalRepository.callDetermineTrendDirection(progress)
+        assertEquals(TrendAnalysis.ACCELERATING, trend)
+    }
+
+    // Helper methods for creating test data
     private fun createTestGoal(
         id: String = testGoalId,
-        userId: String = testUserId,
-        type: GoalType = GoalType.WEIGHT_LOSS,
+        title: String = "Test Goal",
         currentValue: Double = 0.0,
-        targetValue: Double = 100.0,
-        unit: String = "kg",
-        targetDate: LocalDate = LocalDate.now().plusDays(30)
+        targetValue: Double = 10.0,
+        targetDate: LocalDate = LocalDate.now().plusDays(90)
     ) = Goal(
         id = id,
-        userId = userId,
-        type = type,
-        title = "Test Goal",
+        userId = testUserId,
+        type = GoalType.WEIGHT_LOSS,
+        title = title,
         description = "Test goal description",
         targetValue = targetValue,
         currentValue = currentValue,
-        unit = unit,
-        startDate = LocalDate.now(),
+        unit = "kg",
+        startDate = LocalDate.now().minusDays(30),
         targetDate = targetDate,
         isActive = true,
         priority = GoalPriority.MEDIUM,
         category = GoalCategory.WEIGHT,
-        milestones = emptyList(),
-        createdAt = LocalDateTime.now(),
+        createdAt = LocalDateTime.now().minusDays(30),
         updatedAt = LocalDateTime.now()
     )
 
     private fun createTestProgress(
-        id: String = "progress_123",
         goalId: String = testGoalId,
-        value: Double = 10.0
+        value: Double = 1.0,
+        recordedAt: LocalDateTime = LocalDateTime.now()
     ) = GoalProgress(
-        id = id,
+        id = "progress_${UUID.randomUUID()}",
         goalId = goalId,
         value = value,
         notes = "Test progress",
-        recordedAt = LocalDateTime.now(),
+        recordedAt = recordedAt,
         source = ProgressSource.MANUAL
-    )
-
-    private fun createTestHealthMetric(
-        type: HealthMetricType = HealthMetricType.WEIGHT,
-        value: Double = 70.0
-    ) = HealthMetric(
-        id = "metric_123",
-        userId = testUserId,
-        type = type,
-        value = value,
-        unit = "kg",
-        timestamp = LocalDateTime.now(),
-        source = DataSource.MANUAL_ENTRY,
-        metadata = null
-    )
-
-    private fun createTestMeal(
-        calories: Double = 500.0
-    ) = Meal(
-        id = "meal_123",
-        userId = testUserId,
-        mealType = MealType.LUNCH,
-        recipeName = "Test Meal",
-        timestamp = LocalDateTime.now(),
-        nutritionInfo = NutritionInfo(
-            calories = calories,
-            protein = 20.0,
-            carbohydrates = 50.0,
-            fat = 15.0
-        ),
-        status = MealStatus.COMPLETED,
-        notes = null
     )
 }

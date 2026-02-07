@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -9,12 +11,12 @@ plugins {
 
 android {
     namespace = "com.beaconledger.welltrack"
-    compileSdk = 36
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.beaconledger.welltrack"
-        minSdk = 26
-        targetSdk = 36
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
 
@@ -22,19 +24,19 @@ android {
         
         // Load environment variables from .env file
         val envFile = project.rootProject.file(".env")
-        val envProperties = java.util.Properties()
+        val envProperties = Properties()
         if (envFile.exists()) {
             envFile.inputStream().use { envProperties.load(it) }
         }
         
-        // Helper function to get environment variable with fallback
-        fun getEnvVar(key: String, defaultValue: String = ""): String {
-            return envProperties.getProperty(key) ?: System.getenv(key) ?: defaultValue
+        // Helper function to get environment variable
+        fun getEnvVar(key: String, defaultValue: String? = null): String {
+            return envProperties.getProperty(key) ?: System.getenv(key) ?: defaultValue ?: throw Exception("Environment variable $key not found. Please create a .env file in the root project directory and add the required environment variables.")
         }
         
         // Supabase configuration
-        buildConfigField("String", "SUPABASE_URL", "\"${getEnvVar("SUPABASE_URL", "https://nppjffhzkzfduulbbcih.supabase.co")}\"")
-        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${getEnvVar("SUPABASE_ANON_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wcGpmZmh6a3pmZHV1bGJiY2loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyMjQ2MTAsImV4cCI6MjA2NTgwMDYxMH0.OrwLcR8sXcsyMUVEAXgw2WNureeAKrwgrhrPGT6lgTU")}\"")
+        buildConfigField("String", "SUPABASE_URL", "\"${getEnvVar("SUPABASE_URL")}\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${getEnvVar("SUPABASE_ANON_KEY")}\"")
         
         // External API configuration
         buildConfigField("String", "GARMIN_CLIENT_ID", "\"${getEnvVar("GARMIN_CLIENT_ID")}\"")
@@ -114,7 +116,7 @@ android {
         compose = true
         buildConfig = true
     }
-    
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -192,7 +194,8 @@ dependencies {
 // Room for Local Database
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
-    // ksp("androidx.room:room-compiler:2.6.1") // Temporarily disabled
+    implementation("androidx.room:room-paging:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
 
 // Retrofit for Networking
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -209,9 +212,10 @@ dependencies {
     implementation("io.ktor:ktor-client-android:2.3.12")
     implementation("io.ktor:ktor-client-core:2.3.12")
     implementation("io.ktor:ktor-client-okhttp:2.3.12")
+    implementation("io.ktor:ktor-client-logging:2.3.12")
 
 // Health Connect
-    implementation("androidx.health.connect:connect-client:1.1.0-rc03")
+    implementation("androidx.health.connect:connect-client:1.1.0-alpha11")
 
 // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.6")
@@ -221,6 +225,13 @@ dependencies {
 
 // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+// Material Icons Extended (for all Material icons)
+    implementation("androidx.compose.material:material-icons-extended:1.7.6")
+
+// Paging Library (for pagination support)
+    implementation("androidx.paging:paging-runtime:3.3.5")
+    implementation("androidx.paging:paging-compose:3.3.5")
 
 // Image Loading
     implementation("io.coil-kt:coil-compose:2.5.0")

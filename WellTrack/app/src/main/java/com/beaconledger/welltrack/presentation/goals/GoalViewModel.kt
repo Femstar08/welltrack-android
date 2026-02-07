@@ -11,9 +11,12 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
 
+import com.beaconledger.welltrack.domain.usecase.ProfileContextUseCase
+
 @HiltViewModel
 class GoalViewModel @Inject constructor(
-    private val goalUseCase: GoalUseCase
+    private val goalUseCase: GoalUseCase,
+    private val profileContextUseCase: ProfileContextUseCase
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(GoalUiState())
@@ -33,7 +36,8 @@ class GoalViewModel @Inject constructor(
     val goalOverview: StateFlow<GoalOverview> = _goalOverview.asStateFlow()
 
     // Current user ID - this would come from authentication
-    private val currentUserId = "current_user_id" // TODO: Get from auth
+    private val currentUserId: String
+        get() = profileContextUseCase.requireCurrentUserId()
     
     fun loadGoals() {
         viewModelScope.launch {

@@ -20,4 +20,13 @@ interface CollaborativeMealPrepDao {
 
     @Delete
     suspend fun deleteCollaborativeMealPrep(collaborativeMealPrep: CollaborativeMealPrep)
+
+    @Query("SELECT * FROM collaborative_meal_prep WHERE familyGroupId = :groupId")
+    fun getCollaborativeMealPrep(groupId: String): Flow<List<CollaborativeMealPrep>>
+
+    @Query("SELECT * FROM collaborative_meal_prep WHERE assignedTo = :userId")
+    fun getMealPrepAssignedToUser(userId: String): Flow<List<CollaborativeMealPrep>>
+
+    @Query("UPDATE collaborative_meal_prep SET status = :status WHERE id = :prepId")
+    suspend fun updateMealPrepStatus(prepId: String, status: String)
 }

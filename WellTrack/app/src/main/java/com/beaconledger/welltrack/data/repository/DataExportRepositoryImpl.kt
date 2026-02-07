@@ -133,7 +133,7 @@ class DataExportRepositoryImpl @Inject constructor(
         return dataExportManager.exportUserDataToJson(userId, request)
     }
     
-    override suspend fun generateHealthReport(userId: String, dateRange: DateRange): Result<HealthReport> = withContext(Dispatchers.IO) {
+    override suspend fun generateHealthReport(userId: String, dateRange: ExportDateRange): Result<HealthReport> = withContext(Dispatchers.IO) {
         try {
             // This would typically involve complex data aggregation and analysis
             // For now, returning a simplified implementation
@@ -162,7 +162,7 @@ class DataExportRepositoryImpl @Inject constructor(
                     sleepQuality = null,
                     stressLevels = null
                 ),
-                supplementAdherence = SupplementAdherence(
+                supplementAdherence = ExportSupplementAdherence(
                     totalSupplements = 0,
                     adherenceRate = 0f,
                     missedDoses = 0,
@@ -180,7 +180,7 @@ class DataExportRepositoryImpl @Inject constructor(
         }
     }
     
-    override suspend fun generatePdfHealthReport(userId: String, dateRange: DateRange): Result<File> {
+    override suspend fun generatePdfHealthReport(userId: String, dateRange: ExportDateRange): Result<File> {
         return generateHealthReport(userId, dateRange).fold(
             onSuccess = { healthReport ->
                 val fileName = "health_report_${userId.take(8)}_${System.currentTimeMillis()}.pdf"
@@ -262,7 +262,16 @@ class DataExportRepositoryImpl @Inject constructor(
                 ShareMethod.SECURE_LINK -> {
                     // Implement secure link generation
                 }
-                ShareMethod.HEALTHCARE_PROVIDER_PORTAL -> {
+                ShareMethod.FILE_SHARE -> {
+                    // Implement file sharing
+                }
+                ShareMethod.BLUETOOTH -> {
+                    // Implement Bluetooth transfer
+                }
+                ShareMethod.USB_TRANSFER -> {
+                    // Implement USB transfer
+                }
+                ShareMethod.HEALTHCARE_PROVIDER -> {
                     // Implement healthcare provider integration
                 }
             }
@@ -325,10 +334,10 @@ class DataExportRepositoryImpl @Inject constructor(
         }
     }
     
-    private fun getDefaultDateRange(): DateRange {
+    private fun getDefaultDateRange(): ExportDateRange {
         val endDate = LocalDateTime.now()
         val startDate = endDate.minusMonths(3)
-        return DateRange(startDate, endDate)
+        return ExportDateRange(startDate, endDate)
     }
     
     private fun getExportDirectory(): File {

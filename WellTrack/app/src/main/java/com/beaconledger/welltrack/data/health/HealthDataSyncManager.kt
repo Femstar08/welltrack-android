@@ -1,6 +1,7 @@
 package com.beaconledger.welltrack.data.health
 
 import android.content.Context
+import com.beaconledger.welltrack.data.cache.HealthDataCacheManager
 import com.beaconledger.welltrack.data.cache.OfflineCacheManager
 import com.beaconledger.welltrack.data.database.dao.HealthMetricDao
 import com.beaconledger.welltrack.data.model.*
@@ -34,6 +35,7 @@ class HealthDataSyncManager @Inject constructor(
     private val healthMetricDao: HealthMetricDao,
     private val syncService: SyncService,
     private val offlineCacheManager: OfflineCacheManager,
+    private val healthDataCacheManager: HealthDataCacheManager,
     private val healthDataConflictResolver: HealthDataConflictResolver,
     private val debugLogger: HealthSyncDebugLogger
 ) {
@@ -121,8 +123,8 @@ class HealthDataSyncManager @Inject constructor(
         
         val results = syncTasks.awaitAll()
         val allMetrics = results.flatMap { it.metrics }
-        val platformStatuses = results.map { it.platformStatus }
-        
+        val platformStatuses = results.flatMap { it.platformStatuses }
+
         PlatformSyncResult(
             metrics = allMetrics,
             platformStatuses = platformStatuses,
@@ -375,7 +377,7 @@ class HealthDataSyncManager @Inject constructor(
         metrics: List<HealthMetric>
     ) {
         try {
-            offlineCacheManager.cacheHealthMetrics(userId, metrics)
+            healthDataCacheManager.cacheHealthMetrics(userId, metrics)
         } catch (e: Exception) {
             // Log error but don't fail the sync
         }

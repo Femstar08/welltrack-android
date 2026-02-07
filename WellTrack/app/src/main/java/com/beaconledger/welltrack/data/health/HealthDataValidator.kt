@@ -249,13 +249,31 @@ class HealthDataValidator @Inject constructor() {
                     warnings.add("${metric.type} data typically comes from Garmin or manual entry")
                 }
             }
-            in listOf(
-                HealthMetricType.TESTOSTERONE, HealthMetricType.ESTRADIOL, HealthMetricType.CORTISOL,
-                HealthMetricType.VITAMIN_D3, HealthMetricType.VITAMIN_B12, HealthMetricType.HBA1C
-            ) -> {
+            HealthMetricType.TESTOSTERONE, HealthMetricType.ESTRADIOL, HealthMetricType.CORTISOL,
+            HealthMetricType.VITAMIN_D3, HealthMetricType.VITAMIN_B12, HealthMetricType.HBA1C,
+            HealthMetricType.THYROID_TSH, HealthMetricType.THYROID_T3, HealthMetricType.THYROID_T4,
+            HealthMetricType.VITAMIN_B6, HealthMetricType.FOLATE, HealthMetricType.IRON,
+            HealthMetricType.FERRITIN, HealthMetricType.ZINC, HealthMetricType.MAGNESIUM,
+            HealthMetricType.OMEGA_3, HealthMetricType.NITRIC_OXIDE,
+            HealthMetricType.LIPID_PANEL_TOTAL_CHOLESTEROL, HealthMetricType.LIPID_PANEL_HDL,
+            HealthMetricType.LIPID_PANEL_LDL, HealthMetricType.LIPID_PANEL_TRIGLYCERIDES,
+            HealthMetricType.RBC_COUNT, HealthMetricType.HEMOGLOBIN -> {
                 if (metric.source != DataSource.BLOOD_TEST && metric.source != DataSource.MANUAL_ENTRY) {
                     warnings.add("Biomarker ${metric.type} should typically come from blood tests or manual entry")
                 }
+            }
+            // Fitness metrics - typically from Health Connect, Garmin, or Samsung Health
+            HealthMetricType.STEPS, HealthMetricType.ACTIVE_MINUTES, HealthMetricType.HEART_RATE,
+            HealthMetricType.WEIGHT, HealthMetricType.CALORIES_BURNED, HealthMetricType.BLOOD_PRESSURE,
+            HealthMetricType.BLOOD_GLUCOSE, HealthMetricType.BODY_COMPOSITION,
+            HealthMetricType.SLEEP_DURATION, HealthMetricType.EXERCISE_DURATION,
+            HealthMetricType.HYDRATION, HealthMetricType.VO2_MAX,
+            HealthMetricType.BODY_FAT_PERCENTAGE, HealthMetricType.MUSCLE_MASS,
+            HealthMetricType.STRESS_SCORE -> {
+                // These are acceptable from multiple sources, no specific warning needed
+            }
+            HealthMetricType.CUSTOM_HABIT -> {
+                // Custom habits can come from any source
             }
         }
     }
@@ -368,8 +386,9 @@ class HealthDataValidator @Inject constructor() {
             else {
                 try {
                     // Parse and re-serialize to clean up formatting
-                    val jsonElement = kotlinx.serialization.json.Json.parseToJsonElement(meta)
-                    kotlinx.serialization.json.Json.encodeToString(jsonElement)
+                    val json = kotlinx.serialization.json.Json
+                    val jsonElement = json.parseToJsonElement(meta)
+                    json.encodeToString(kotlinx.serialization.json.JsonElement.serializer(), jsonElement)
                 } catch (e: Exception) {
                     meta // Return original if parsing fails
                 }

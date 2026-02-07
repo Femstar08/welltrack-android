@@ -4,6 +4,9 @@ import com.beaconledger.welltrack.data.database.dao.HealthMetricDao
 import com.beaconledger.welltrack.data.health.HealthConnectManager
 import com.beaconledger.welltrack.data.model.HealthMetric
 import com.beaconledger.welltrack.data.model.HealthMetricType
+import androidx.paging.PagingData
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import com.beaconledger.welltrack.domain.repository.HealthConnectRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -195,5 +198,17 @@ class HealthConnectRepositoryImpl @Inject constructor(
         ).first()
         
         return metrics.sumOf { it.value }
+    }
+
+    override fun getPagedHealthMetrics(userId: String): Flow<PagingData<HealthMetric>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20, // Define your page size
+                enablePlaceholders = false // Set to true if you want placeholders
+            ),
+            pagingSourceFactory = {
+                healthMetricDao.getPagedHealthMetrics(userId)
+            }
+        ).flow
     }
 }

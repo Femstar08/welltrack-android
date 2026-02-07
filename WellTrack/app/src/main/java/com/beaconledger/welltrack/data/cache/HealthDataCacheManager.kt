@@ -1,5 +1,7 @@
 package com.beaconledger.welltrack.data.cache
 
+import android.content.Context
+import android.content.SharedPreferences
 import com.beaconledger.welltrack.data.model.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,8 +19,12 @@ import javax.inject.Singleton
  */
 @Singleton
 class HealthDataCacheManager @Inject constructor(
-    private val offlineCacheManager: OfflineCacheManager
+    private val context: Context
 ) {
+
+    private val sharedPreferences: SharedPreferences by lazy {
+        context.getSharedPreferences("health_data_cache", Context.MODE_PRIVATE)
+    }
     
     companion object {
         private const val HEALTH_DATA_CACHE_PREFIX = "health_data_"
@@ -46,7 +52,7 @@ class HealthDataCacheManager @Inject constructor(
             cacheEntries.forEach { entry ->
                 val cacheKey = generateCacheKey(userId, entry.healthMetric.type, entry.healthMetric.id)
                 val serializedEntry = json.encodeToString(entry)
-                offlineCacheManager.put(cacheKey, serializedEntry)
+                sharedPreferences.edit().putString(cacheKey, serializedEntry).apply()
             }
             
             // Update cache metadata
@@ -76,14 +82,14 @@ class HealthDataCacheManager @Inject constructor(
             val cachedMetrics = mutableListOf<HealthMetric>()
             
             for (keyPattern in cacheKeys) {
-                val matchingKeys = offlineCacheManager.getKeysMatching(keyPattern)
-                
+                val matchingKeys = getKeysMatching(keyPattern)
+
                 for (key in matchingKeys) {
-                    val cachedData = offlineCacheManager.get(key)
+                    val cachedData = sharedPreferences.getString(key, null)
                     if (cachedData != null) {
                         try {
                             val cacheEntry = json.decodeFromString<HealthDataCacheEntry>(cachedData)
-                            
+
                             // Check if entry is expired
                             if (includeExpired || !isCacheEntryExpired(cacheEntry)) {
                                 // Verify data integrity
@@ -91,15 +97,15 @@ class HealthDataCacheManager @Inject constructor(
                                     cachedMetrics.add(cacheEntry.healthMetric)
                                 } else {
                                     // Remove corrupted entry
-                                    offlineCacheManager.remove(key)
+                                    sharedPreferences.edit().remove(key).apply()
                                 }
                             } else {
                                 // Remove expired entry
-                                offlineCacheManager.remove(key)
+                                sharedPreferences.edit().remove(key).apply()
                             }
                         } catch (e: Exception) {
                             // Remove invalid entry
-                            offlineCacheManager.remove(key)
+                            sharedPreferences.edit().remove(key).apply()
                         }
                     }
                 }
@@ -138,7 +144,7 @@ class HealthDataCacheManager @Inject constructor(
             queueItems.forEach { item ->
                 val queueKey = generateSyncQueueKey(userId, item.id)
                 val serializedItem = json.encodeToString(item)
-                offlineCacheManager.put(queueKey, serializedItem)
+                sharedPreferences.edit().putString(queueKey, serializedItem).apply()
             }
             
             Result.success(Unit)
@@ -157,27 +163,27 @@ class HealthDataCacheManager @Inject constructor(
     ): List<HealthSyncQueueItem> {
         return try {
             val queueKeyPattern = generateSyncQueueKeyPattern(userId)
-            val matchingKeys = offlineCacheManager.getKeysMatching(queueKeyPattern)
-            
+            val matchingKeys = getKeysMatching(queueKeyPattern)
+
             val queueItems = mutableListOf<HealthSyncQueueItem>()
-            
+
             for (key in matchingKeys) {
-                val cachedData = offlineCacheManager.get(key)
+                val cachedData = sharedPreferences.getString(key, null)
                 if (cachedData != null) {
                     try {
                         val queueItem = json.decodeFromString<HealthSyncQueueItem>(cachedData)
-                        
+
                         // Apply filters
                         val matchesPlatform = platform == null || queueItem.targetPlatform == platform
                         val matchesPriority = priority == null || queueItem.priority == priority
                         val notExceededRetries = queueItem.retryCount < queueItem.maxRetries
-                        
+
                         if (matchesPlatform && matchesPriority && notExceededRetries) {
                             queueItems.add(queueItem)
                         }
                     } catch (e: Exception) {
                         // Remove invalid queue item
-                        offlineCacheManager.remove(key)
+                        sharedPreferences.edit().remove(key).apply()
                     }
                 }
             }
@@ -198,7 +204,7 @@ class HealthDataCacheManager @Inject constructor(
     suspend fun removeSyncQueueItem(userId: String, itemId: String): Result<Unit> {
         return try {
             val queueKey = generateSyncQueueKey(userId, itemId)
-            offlineCacheManager.remove(queueKey)
+            sharedPreferences.edit().remove(queueKey).apply()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -215,21 +221,21 @@ class HealthDataCacheManager @Inject constructor(
     ): Result<Unit> {
         return try {
             val queueKey = generateSyncQueueKey(userId, itemId)
-            val cachedData = offlineCacheManager.get(queueKey)
-            
+            val cachedData = sharedPreferences.getString(queueKey, null)
+
             if (cachedData != null) {
                 val queueItem = json.decodeFromString<HealthSyncQueueItem>(cachedData)
                 val updatedItem = queueItem.copy(retryCount = queueItem.retryCount + 1)
-                
+
                 if (updatedItem.retryCount < updatedItem.maxRetries) {
                     val serializedItem = json.encodeToString(updatedItem)
-                    offlineCacheManager.put(queueKey, serializedItem)
+                    sharedPreferences.edit().putString(queueKey, serializedItem).apply()
                 } else {
                     // Remove item if max retries exceeded
-                    offlineCacheManager.remove(queueKey)
+                    sharedPreferences.edit().remove(queueKey).apply()
                 }
             }
-            
+
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -242,26 +248,26 @@ class HealthDataCacheManager @Inject constructor(
     suspend fun getCacheStatistics(userId: String): HealthCacheStatistics {
         return try {
             val healthDataKeys = getAllCacheKeysForUser(userId)
-            val syncQueueKeys = offlineCacheManager.getKeysMatching(generateSyncQueueKeyPattern(userId))
-            
+            val syncQueueKeys = getKeysMatching(generateSyncQueueKeyPattern(userId))
+
             var totalCachedMetrics = 0
             var expiredMetrics = 0
             var totalCacheSize = 0L
             var oldestCacheEntry: LocalDateTime? = null
-            
+
             for (key in healthDataKeys) {
-                val cachedData = offlineCacheManager.get(key)
+                val cachedData = sharedPreferences.getString(key, null)
                 if (cachedData != null) {
                     totalCacheSize += cachedData.length
-                    
+
                     try {
                         val cacheEntry = json.decodeFromString<HealthDataCacheEntry>(cachedData)
                         totalCachedMetrics++
-                        
+
                         if (isCacheEntryExpired(cacheEntry)) {
                             expiredMetrics++
                         }
-                        
+
                         if (oldestCacheEntry == null || cacheEntry.cachedAt.isBefore(oldestCacheEntry)) {
                             oldestCacheEntry = cacheEntry.cachedAt
                         }
@@ -302,17 +308,17 @@ class HealthDataCacheManager @Inject constructor(
             var removedCount = 0
             
             for (key in healthDataKeys) {
-                val cachedData = offlineCacheManager.get(key)
+                val cachedData = sharedPreferences.getString(key, null)
                 if (cachedData != null) {
                     try {
                         val cacheEntry = json.decodeFromString<HealthDataCacheEntry>(cachedData)
                         if (isCacheEntryExpired(cacheEntry)) {
-                            offlineCacheManager.remove(key)
+                            sharedPreferences.edit().remove(key).apply()
                             removedCount++
                         }
                     } catch (e: Exception) {
                         // Remove invalid entries
-                        offlineCacheManager.remove(key)
+                        sharedPreferences.edit().remove(key).apply()
                         removedCount++
                     }
                 }
@@ -330,12 +336,14 @@ class HealthDataCacheManager @Inject constructor(
     suspend fun clearUserCache(userId: String): Result<Unit> {
         return try {
             val healthDataKeys = getAllCacheKeysForUser(userId)
-            val syncQueueKeys = offlineCacheManager.getKeysMatching(generateSyncQueueKeyPattern(userId))
-            
+            val syncQueueKeys = getKeysMatching(generateSyncQueueKeyPattern(userId))
+
+            val editor = sharedPreferences.edit()
             (healthDataKeys + syncQueueKeys).forEach { key ->
-                offlineCacheManager.remove(key)
+                editor.remove(key)
             }
-            
+            editor.apply()
+
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -417,8 +425,8 @@ class HealthDataCacheManager @Inject constructor(
         return "${SYNC_QUEUE_CACHE_PREFIX}${userId}_*"
     }
     
-    private suspend fun getAllCacheKeysForUser(userId: String): List<String> {
-        return offlineCacheManager.getKeysMatching("${HEALTH_DATA_CACHE_PREFIX}${userId}_*")
+    private fun getAllCacheKeysForUser(userId: String): List<String> {
+        return getKeysMatching("${HEALTH_DATA_CACHE_PREFIX}${userId}_*")
     }
     
     private suspend fun updateCacheMetadata(userId: String, newEntriesCount: Int) {
@@ -428,7 +436,18 @@ class HealthDataCacheManager @Inject constructor(
             "lastUpdated" to LocalDateTime.now().toString(),
             "newEntriesCount" to newEntriesCount.toString()
         )
-        offlineCacheManager.put(metadataKey, json.encodeToString(metadata))
+        sharedPreferences.edit().putString(metadataKey, json.encodeToString(metadata)).apply()
+    }
+
+    /**
+     * Gets keys matching a pattern (supports wildcards *)
+     */
+    private fun getKeysMatching(pattern: String): List<String> {
+        val allKeys = sharedPreferences.all.keys
+        val regex = pattern.replace("*", ".*").toRegex()
+        return allKeys.filter { key ->
+            regex.matches(key)
+        }
     }
     
     private suspend fun getOfflineSyncQueueStatus(userId: String): OfflineSyncQueueStatus {

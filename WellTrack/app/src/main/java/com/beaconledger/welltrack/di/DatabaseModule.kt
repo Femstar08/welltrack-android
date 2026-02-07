@@ -21,7 +21,7 @@ object DatabaseModule {
         return Room.databaseBuilder(
             context,
             WellTrackDatabase::class.java,
-            WellTrackDatabase.DATABASE_NAME
+            DATABASE_NAME
         ).build()
     }
 
@@ -52,7 +52,7 @@ object DatabaseModule {
 
     @Provides
     fun provideProfileDao(database: WellTrackDatabase): ProfileDao {
-        return database.profileDao()
+        return database.userProfileDao()
     }
 
     @Provides
@@ -82,7 +82,7 @@ object DatabaseModule {
 
     @Provides
     fun providePantryDao(database: WellTrackDatabase): com.beaconledger.welltrack.data.database.dao.PantryDao {
-        return database.pantryDao()
+        return database.pantryItemDao()
     }
 
     @Provides

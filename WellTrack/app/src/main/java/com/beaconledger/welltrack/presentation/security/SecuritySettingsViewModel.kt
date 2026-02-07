@@ -257,7 +257,7 @@ class SecuritySettingsViewModel @Inject constructor(
                             showMessage("Data deleted successfully")
                             if (dataType == null) {
                                 // Full account deletion - logout user
-                                authRepository.logout()
+                                authRepository.signOut()
                             }
                         }
                         is SecureDataDeletionManager.DeletionResult.PartialSuccess -> {

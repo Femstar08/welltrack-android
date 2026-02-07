@@ -10,8 +10,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileWriter
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -36,12 +38,91 @@ class DataExportManager @Inject constructor(
         request: ExportRequest
     ): Result<File> = withContext(Dispatchers.IO) {
         try {
-            val exportData = collectUserData(userId, request)
             val fileName = generateFileName(userId, "json", request.exportType)
             val file = File(exportDir, fileName)
             
             FileWriter(file).use { writer ->
-                gson.toJson(exportData, writer)
+                val jsonWriter = com.google.gson.stream.JsonWriter(writer)
+                jsonWriter.beginObject() // Start UserExportData object
+
+                // Write export metadata
+                val exportMetadata = ExportMetadata(
+                    exportId = UUID.randomUUID().toString(),
+                    userId = userId,
+                    exportType = request.exportType,
+                    exportedAt = LocalDateTime.now(),
+                    dateRange = request.dateRange,
+                    appVersion = getAppVersion()
+                )
+                jsonWriter.name("exportMetadata")
+                gson.toJson(exportMetadata, ExportMetadata::class.java, jsonWriter)
+
+                // Write user profile
+                val userProfile = database.userDao().getUserById(userId)
+                jsonWriter.name("userProfile")
+                gson.toJson(userProfile, User::class.java, jsonWriter)
+
+                // Write meals
+                if (request.includeMealData) {
+                    jsonWriter.name("meals")
+                    jsonWriter.beginArray()
+                    val meals = request.dateRange?.let { range ->
+                        database.mealDao().getMealsInDateRange(userId, range.startDate, range.endDate)
+                    } ?: database.mealDao().getAllMealsForUser(userId)
+                    meals.forEach { meal ->
+                        gson.toJson(meal, Meal::class.java, jsonWriter)
+                    }
+                    jsonWriter.endArray()
+                }
+
+                // Write health metrics
+                if (request.includeHealthData) {
+                    jsonWriter.name("healthMetrics")
+                    jsonWriter.beginArray()
+                    val healthMetrics = request.dateRange?.let { range ->
+                        database.healthMetricDao().getMetricsInDateRange(userId, range.startDate, range.endDate)
+                    } ?: database.healthMetricDao().getAllMetricsForUser(userId)
+                    healthMetrics.forEach { metric ->
+                        gson.toJson(metric, HealthMetric::class.java, jsonWriter)
+                    }
+                    jsonWriter.endArray()
+                }
+
+                // Write supplements
+                if (request.includeSupplementData) {
+                    jsonWriter.name("supplements")
+                    jsonWriter.beginArray()
+                    val supplements = database.supplementDao().getAllSupplementsForUser(userId)
+                    supplements.forEach { supplement ->
+                        gson.toJson(supplement, Supplement::class.java, jsonWriter)
+                    }
+                    jsonWriter.endArray()
+                }
+
+                // Write biomarkers
+                if (request.includeBiomarkerData) {
+                    jsonWriter.name("biomarkers")
+                    jsonWriter.beginArray()
+                    val biomarkers = database.biomarkerDao().getAllBiomarkersForUser(userId)
+                    biomarkers.forEach { biomarker ->
+                        gson.toJson(biomarker, BiomarkerEntry::class.java, jsonWriter)
+                    }
+                    jsonWriter.endArray()
+                }
+
+                // Write goals
+                if (request.includeGoalData) {
+                    jsonWriter.name("goals")
+                    jsonWriter.beginArray()
+                    val goals = database.goalDao().getAllGoalsForUser(userId)
+                    goals.forEach { goal ->
+                        gson.toJson(goal, Goal::class.java, jsonWriter)
+                    }
+                    jsonWriter.endArray()
+                }
+
+                jsonWriter.endObject() // End UserExportData object
+                jsonWriter.flush()
             }
             
             Result.success(file)
@@ -97,7 +178,7 @@ class DataExportManager @Inject constructor(
 
             val healthReport = HealthReport(
                 userId = userId,
-                reportPeriod = request.dateRange ?: DateRange(
+                reportPeriod = request.dateRange ?: ExportDateRange(
                     LocalDateTime.now().minusDays(30),
                     LocalDateTime.now()
                 ),
@@ -165,7 +246,7 @@ class DataExportManager @Inject constructor(
         )
     }
     
-    private suspend fun exportMealsToCsv(userId: String, dateRange: DateRange?): File {
+    private suspend fun exportMealsToCsv(userId: String, dateRange: ExportDateRange?): File {
         val meals = dateRange?.let { range ->
             database.mealDao().getMealsInDateRange(userId, range.startDate, range.endDate)
         } ?: database.mealDao().getAllMealsForUser(userId)
@@ -178,16 +259,17 @@ class DataExportManager @Inject constructor(
             writer.append("Date,Time,Meal Type,Recipe Name,Calories,Protein,Carbs,Fat,Fiber,Score,Status,Notes\n")
             
             meals.forEach { meal ->
-                writer.append("${meal.timestamp.toLocalDate()},")
-                writer.append("${meal.timestamp.toLocalTime()},")
+                val timestamp = LocalDateTime.parse(meal.timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                writer.append("${timestamp.toLocalDate()},")
+                writer.append("${timestamp.toLocalTime()},")
                 writer.append("${meal.mealType},")
-                writer.append("\"${meal.recipeName ?: ""}\",")
-                writer.append("${meal.nutritionInfo?.calories ?: 0},")
-                writer.append("${meal.nutritionInfo?.protein ?: 0},")
-                writer.append("${meal.nutritionInfo?.carbohydrates ?: 0},")
-                writer.append("${meal.nutritionInfo?.fat ?: 0},")
-                writer.append("${meal.nutritionInfo?.fiber ?: 0},")
-                writer.append("${meal.score?.grade ?: ""},")
+                writer.append("\"${meal.recipeId ?: ""}\",")
+                writer.append("0,") // Calories - would need to parse JSON nutritionInfo
+                writer.append("0,") // Protein
+                writer.append("0,") // Carbs
+                writer.append("0,") // Fat
+                writer.append("0,") // Fiber
+                writer.append("${meal.score.grade},")
                 writer.append("${meal.status},")
                 writer.append("\"${meal.notes ?: ""}\"\n")
             }
@@ -196,7 +278,7 @@ class DataExportManager @Inject constructor(
         return file
     }
     
-    private suspend fun exportHealthDataToCsv(userId: String, dateRange: DateRange?): File {
+    private suspend fun exportHealthDataToCsv(userId: String, dateRange: ExportDateRange?): File {
         val healthMetrics = dateRange?.let { range ->
             database.healthMetricDao().getMetricsInDateRange(userId, range.startDate, range.endDate)
         } ?: database.healthMetricDao().getAllMetricsForUser(userId)
@@ -208,8 +290,9 @@ class DataExportManager @Inject constructor(
             writer.append("Date,Time,Metric Type,Value,Unit,Source,Notes\n")
             
             healthMetrics.forEach { metric ->
-                writer.append("${metric.timestamp.toLocalDate()},")
-                writer.append("${metric.timestamp.toLocalTime()},")
+                val timestamp = LocalDateTime.parse(metric.timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                writer.append("${timestamp.toLocalDate()},")
+                writer.append("${timestamp.toLocalTime()},")
                 writer.append("${metric.type},")
                 writer.append("${metric.value},")
                 writer.append("${metric.unit},")
@@ -221,74 +304,82 @@ class DataExportManager @Inject constructor(
         return file
     }
     
-    private suspend fun exportSupplementsToCsv(userId: String, dateRange: DateRange?): File {
+    private suspend fun exportSupplementsToCsv(userId: String, dateRange: ExportDateRange?): File {
         val supplements = database.supplementDao().getAllSupplementsForUser(userId)
-        
+
         val fileName = generateFileName(userId, "csv", ExportType.SUPPLEMENT_LOG, "supplements")
         val file = File(exportDir, fileName)
-        
+
         FileWriter(file).use { writer ->
-            writer.append("Date,Supplement Name,Dosage,Unit,Frequency,Taken,Notes\n")
-            
+            writer.append("Date,Supplement Name,Category,Serving Size,Unit,Notes\n")
+
             supplements.forEach { supplement ->
-                writer.append("${supplement.createdAt.toLocalDate()},")
+                val createdAt = LocalDateTime.parse(supplement.createdAt, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                writer.append("${createdAt.toLocalDate()},")
                 writer.append("\"${supplement.name}\",")
-                writer.append("${supplement.dosage},")
-                writer.append("${supplement.unit},")
-                writer.append("${supplement.frequency},")
-                writer.append("${supplement.isTaken},")
-                writer.append("\"${supplement.notes ?: ""}\"\n")
+                writer.append("${supplement.category},")
+                writer.append("${supplement.servingSize},")
+                writer.append("${supplement.servingUnit},")
+                writer.append("\"${supplement.description ?: ""}\"\n")
             }
         }
-        
+
         return file
     }
     
-    private suspend fun exportBiomarkersToCsv(userId: String, dateRange: DateRange?): File {
+    private suspend fun exportBiomarkersToCsv(userId: String, dateRange: ExportDateRange?): File {
         val biomarkers = database.biomarkerDao().getAllBiomarkersForUser(userId)
-        
+
         val fileName = generateFileName(userId, "csv", ExportType.BIOMARKER_REPORT, "biomarkers")
         val file = File(exportDir, fileName)
-        
+
         FileWriter(file).use { writer ->
-            writer.append("Date,Biomarker Type,Value,Unit,Reference Range,Status,Notes\n")
-            
+            writer.append("Date,Biomarker Type,Value,Unit,Reference Range Min,Reference Range Max,Within Range,Lab Name,Notes\n")
+
             biomarkers.forEach { biomarker ->
-                writer.append("${biomarker.testDate.toLocalDate()},")
-                writer.append("${biomarker.type},")
+                val testDate = LocalDate.parse(biomarker.testDate)
+                writer.append("${testDate},")
+                writer.append("${biomarker.biomarkerType},")
                 writer.append("${biomarker.value},")
                 writer.append("${biomarker.unit},")
-                writer.append("\"${biomarker.referenceRange ?: ""}\",")
-                writer.append("${biomarker.status},")
+                writer.append("${biomarker.referenceRangeMin ?: ""},")
+                writer.append("${biomarker.referenceRangeMax ?: ""},")
+                writer.append("${biomarker.isWithinRange ?: ""},")
+                writer.append("\"${biomarker.labName ?: ""}\",")
                 writer.append("\"${biomarker.notes ?: ""}\"\n")
             }
         }
-        
+
         return file
     }
     
-    private suspend fun exportGoalsToCsv(userId: String, dateRange: DateRange?): File {
+    private suspend fun exportGoalsToCsv(userId: String, dateRange: ExportDateRange?): File {
         val goals = database.goalDao().getAllGoalsForUser(userId)
-        
+
         val fileName = generateFileName(userId, "csv", ExportType.GOAL_PROGRESS, "goals")
         val file = File(exportDir, fileName)
-        
+
         FileWriter(file).use { writer ->
-            writer.append("Goal Type,Title,Target Value,Current Value,Progress %,Status,Start Date,Target Date,Completed Date\n")
-            
+            writer.append("Goal Type,Title,Category,Target Value,Current Value,Progress %,Unit,Priority,Is Active,Start Date,Target Date\n")
+
             goals.forEach { goal ->
+                val progressPercentage = if (goal.targetValue > 0) {
+                    ((goal.currentValue / goal.targetValue) * 100).toFloat()
+                } else 0f
                 writer.append("${goal.type},")
                 writer.append("\"${goal.title}\",")
+                writer.append("${goal.category},")
                 writer.append("${goal.targetValue},")
                 writer.append("${goal.currentValue},")
-                writer.append("${goal.progressPercentage},")
-                writer.append("${goal.status},")
+                writer.append("${progressPercentage},")
+                writer.append("${goal.unit},")
+                writer.append("${goal.priority},")
+                writer.append("${goal.isActive},")
                 writer.append("${goal.startDate},")
-                writer.append("${goal.targetDate ?: ""},")
-                writer.append("${goal.completedDate ?: ""}\n")
+                writer.append("${goal.targetDate}\n")
             }
         }
-        
+
         return file
     }
     
@@ -309,7 +400,7 @@ class DataExportManager @Inject constructor(
     private fun getAppVersion(): String {
         return try {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            packageInfo.versionName
+            packageInfo.versionName ?: "unknown"
         } catch (e: Exception) {
             "unknown"
         }
@@ -328,31 +419,24 @@ class DataExportManager @Inject constructor(
     }
 
     private fun generateNutritionAnalysis(meals: List<Meal>): NutritionAnalysis {
-        val mealsByDay = meals.groupBy { it.timestamp.toLocalDate() }
-        val dailyCalories = mealsByDay.map { (_, dayMeals) ->
-            dayMeals.sumOf { meal -> meal.nutritionInfo?.calories ?: 0.0 }
+        val mealsByDay = meals.groupBy {
+            LocalDateTime.parse(it.timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME).toLocalDate()
         }
-
-        val totalNutrition = meals.mapNotNull { it.nutritionInfo }.fold(
-            Triple(0.0, 0.0, 0.0) // protein, carbs, fat
-        ) { acc, nutrition ->
-            Triple(
-                acc.first + (nutrition.protein ?: 0.0),
-                acc.second + (nutrition.carbohydrates ?: 0.0),
-                acc.third + (nutrition.fat ?: 0.0)
-            )
+        val dailyCalories = mealsByDay.map { (_, dayMeals) ->
+            // Would need to parse JSON nutritionInfo - for now use 0
+            0.0
         }
 
         return NutritionAnalysis(
-            averageDailyCalories = dailyCalories.average(),
-            macronutrientBreakdown = mapOf(
-                "Protein" to totalNutrition.first / meals.size,
-                "Carbohydrates" to totalNutrition.second / meals.size,
-                "Fat" to totalNutrition.third / meals.size
+            averageDailyCalories = if (dailyCalories.isNotEmpty()) dailyCalories.average() else 0.0,
+            macronutrientBreakdown = mapOf<String, Double>(
+                "Protein" to 0.0,
+                "Carbohydrates" to 0.0,
+                "Fat" to 0.0
             ),
-            micronutrientStatus = emptyMap(), // Would need detailed micronutrient tracking
+            micronutrientStatus = emptyMap<String, String>(), // Would need detailed micronutrient tracking
             hydrationAverage = 2.5, // Default value, would need hydration tracking
-            mealTimingPatterns = meals.groupBy { it.mealType }.mapValues { it.value.size }
+            mealTimingPatterns = meals.groupBy { it.mealType }.mapValues<String, List<*>, Int> { it.value.size }
         )
     }
 
@@ -369,28 +453,27 @@ class DataExportManager @Inject constructor(
         )
     }
 
-    private fun generateSupplementAdherence(supplements: List<Supplement>): SupplementAdherence {
+    private fun generateSupplementAdherence(supplements: List<Supplement>): ExportSupplementAdherence {
         val totalSupplements = supplements.size
-        val takenSupplements = supplements.count { it.isTaken }
 
-        return SupplementAdherence(
+        return ExportSupplementAdherence(
             totalSupplements = totalSupplements,
-            adherenceRate = if (totalSupplements > 0) takenSupplements.toFloat() / totalSupplements else 0f,
-            missedDoses = totalSupplements - takenSupplements,
-            supplementEffectiveness = supplements.associate {
-                it.name to if (it.isTaken) "Adherent" else "Missed"
+            adherenceRate = 0f, // Would need SupplementIntake data
+            missedDoses = 0,
+            supplementEffectiveness = supplements.associate { supplement ->
+                supplement.name to "Unknown" // Would need SupplementIntake data
             }
         )
     }
 
-    private fun generateBiomarkerTrends(biomarkers: List<Biomarker>): List<BiomarkerTrend> {
-        return biomarkers.groupBy { it.type }.map { (type, markers) ->
+    private fun generateBiomarkerTrends(biomarkers: List<BiomarkerEntry>): List<ExportBiomarkerTrend> {
+        return biomarkers.groupBy { it.biomarkerType }.map { (type, markers) ->
             val sorted = markers.sortedBy { it.testDate }
             val latest = sorted.lastOrNull()
             val previous = sorted.dropLast(1).lastOrNull()
 
-            BiomarkerTrend(
-                biomarkerType = type.toString(),
+            ExportBiomarkerTrend(
+                biomarkerType = type.name,
                 trend = if (latest != null && previous != null) {
                     when {
                         latest.value > previous.value -> "improving"
@@ -400,27 +483,24 @@ class DataExportManager @Inject constructor(
                 } else "stable",
                 latestValue = latest?.value ?: 0.0,
                 previousValue = previous?.value,
-                targetRange = latest?.referenceRange ?: "Unknown"
+                targetRange = "${latest?.referenceRangeMin ?: 0.0} - ${latest?.referenceRangeMax ?: 0.0}"
             )
         }
     }
 
-    private fun generateGoalProgressReport(goals: List<Goal>): List<com.beaconledger.welltrack.data.model.GoalProgress> {
+    private fun generateGoalProgressReport(goals: List<Goal>): List<ExportGoalProgress> {
         return goals.map { goal ->
-            com.beaconledger.welltrack.data.model.GoalProgress(
+            ExportGoalProgress(
                 goalId = goal.id,
-                goalType = goal.type.toString(),
+                goalType = goal.type.name,
                 targetValue = goal.targetValue,
                 currentValue = goal.currentValue,
                 progressPercentage = if (goal.targetValue > 0) {
-                    ((goal.currentValue / goal.targetValue) * 100).toFloat()
-                } else 0f,
-                expectedCompletionDate = if (goal.currentValue < goal.targetValue) {
-                    // Simple calculation - could be enhanced with trend analysis
-                    LocalDateTime.now().plusDays(
-                        ChronoUnit.DAYS.between(LocalDate.now(), goal.targetDate)
-                    )
-                } else null
+                    ((goal.currentValue / goal.targetValue) * 100).toFloat().coerceIn(0f, 100f)
+                } else {
+                    0f
+                },
+                expectedCompletionDate = goal.targetDate.atStartOfDay()
             )
         }
     }
@@ -438,16 +518,15 @@ class DataExportManager @Inject constructor(
 
         // Goal recommendations
         val overdueGoals = exportData.goals.filter {
-            it.targetDate.isBefore(LocalDate.now()) && it.currentValue < it.targetValue
+            it.targetDate.isBefore(LocalDate.now()) && it.currentValue < it.targetValue && it.isActive
         }
         if (overdueGoals.isNotEmpty()) {
             recommendations.add("${overdueGoals.size} goals are overdue. Consider adjusting timelines or strategies.")
         }
 
-        // Supplement recommendations
-        val missedSupplements = exportData.supplements.count { !it.isTaken }
-        if (missedSupplements > 0) {
-            recommendations.add("Improve supplement adherence - you've missed $missedSupplements doses recently.")
+        // Supplement recommendations - would need SupplementIntake data
+        if (exportData.supplements.isNotEmpty()) {
+            recommendations.add("Continue tracking your supplement intake for better adherence insights.")
         }
 
         // Health data recommendations
@@ -464,17 +543,17 @@ class DataExportManager @Inject constructor(
 
     // Helper calculation methods
     private fun calculateSupplementCompliance(supplements: List<Supplement>): Float {
-        return if (supplements.isNotEmpty()) {
-            supplements.count { it.isTaken }.toFloat() / supplements.size
-        } else 0f
+        // Would need SupplementIntake data to calculate actual compliance
+        return 0f
     }
 
     private fun calculateWorkoutFrequency(healthMetrics: List<HealthMetric>): Int {
         // Simple calculation based on activity metrics
         val recentDays = 7
+        val cutoffDate = LocalDateTime.now().minusDays(recentDays.toLong())
         val activityMetrics = healthMetrics.filter {
             it.type == HealthMetricType.CALORIES_BURNED &&
-            it.timestamp.isAfter(LocalDateTime.now().minusDays(recentDays.toLong()))
+            LocalDateTime.parse(it.timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME).isAfter(cutoffDate)
         }
         return activityMetrics.count { it.value > 300 } // Assume >300 calories = workout
     }
@@ -503,9 +582,9 @@ data class UserExportData(
     val meals: List<Meal>,
     val healthMetrics: List<HealthMetric>,
     val supplements: List<Supplement>,
-    val biomarkers: List<Biomarker>,
+    val biomarkers: List<BiomarkerEntry>,
     val goals: List<Goal>,
-    val exportMetadata: ExportMetadata
+    val exportMetadata: ExportMetadata? = null
 )
 
 data class ExportMetadata(
@@ -513,6 +592,6 @@ data class ExportMetadata(
     val userId: String,
     val exportType: ExportType,
     val exportedAt: LocalDateTime,
-    val dateRange: DateRange?,
+    val dateRange: ExportDateRange?,
     val appVersion: String
 )

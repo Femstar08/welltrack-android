@@ -3,7 +3,7 @@ package com.beaconledger.welltrack.data.remote
 import com.beaconledger.welltrack.config.EnvironmentConfig
 import com.beaconledger.welltrack.data.model.*
 import io.github.jan.supabase.createSupabaseClient
-import io.github.jan.supabase.gotrue.GoTrue
+import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.storage.Storage
 import javax.inject.Inject
@@ -16,18 +16,18 @@ import javax.inject.Singleton
 class SupabaseClient @Inject constructor(
     private val environmentConfig: EnvironmentConfig
 ) {
-    
+
     private val supabase by lazy {
         createSupabaseClient(
             supabaseUrl = environmentConfig.supabaseUrl,
             supabaseKey = environmentConfig.supabaseAnonKey
         ) {
-            install(GoTrue)
+            install(Auth)
             install(Postgrest)
             install(Storage)
         }
     }
-    
+
     val auth get() = supabase.auth
     val database get() = supabase.postgrest
     val storage get() = supabase.storage

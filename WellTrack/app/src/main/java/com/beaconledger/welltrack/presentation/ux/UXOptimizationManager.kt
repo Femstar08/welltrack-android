@@ -108,6 +108,7 @@ fun EnhancedNavigationManager(
 }
 
 // Seamless Screen Transitions
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SeamlessTransition(
     targetState: String,

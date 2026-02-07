@@ -1,0 +1,30 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    
+    <!-- Samsung Health icon representation -->
+    <!-- Note: This is a simplified representation. In production, use official Samsung Health icon assets -->
+    
+    <path
+        android:fillColor="#1428A0"
+        android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2zM12,20c-4.41,0 -8,-3.59 -8,-8s3.59,-8 8,-8 8,3.59 8,8 -3.59,8 -8,8z"/>
+    
+    <path
+        android:fillColor="#1428A0"
+        android:pathData="M12,6c-3.31,0 -6,2.69 -6,6 0,1.66 0.67,3.16 1.76,4.24l1.41,-1.41C8.67,14.33 8.2,13.2 8.2,12c0,-2.1 1.7,-3.8 3.8,-3.8s3.8,1.7 3.8,3.8c0,1.2 -0.47,2.33 -1.17,2.83l1.41,1.41C16.33,15.16 17,13.66 17,12c0,-3.31 -2.69,-6 -6,-6z"/>
+    
+    <path
+        android:fillColor="#1428A0"
+        android:pathData="M12,12m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"/>
+    
+    <!-- Heart symbol overlay -->
+    <path
+        android:fillColor="#FF4444"
+        android:pathData="M12,21.35l-1.45,-1.32C5.4,15.36 2,12.28 2,8.5 2,5.42 4.42,3 7.5,3c1.74,0 3.41,0.81 4.5,2.09C13.09,3.81 14.76,3 16.5,3 19.58,3 22,5.42 22,8.5c0,3.78 -3.4,6.86 -8.55,11.54L12,21.35z"
+        android:scaleX="0.4"
+        android:scaleY="0.4"
+        android:translateX="7.2"
+        android:translateY="7.2"/>
+</vector>

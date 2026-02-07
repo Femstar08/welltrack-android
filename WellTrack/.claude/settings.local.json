@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew:*)",
+      "Bash(export:*)",
+      "Read(//usr/**)",
+      "Bash(find:*)",
+      "Read(///**)",
+      "Bash(xargs:*)",
+      "Bash(if grep -q \"data_deletion_records\" app/src/main/java/com/beaconledger/welltrack/data/database/migrations/Migration_2_3.kt)",
+      "Bash(then echo \"✅ DataDeletionRecord table migration added\")",
+      "Bash(else echo \"❌ Migration missing\")",
+      "Bash(fi)",
+      "Bash(if grep -q \"@HiltAndroidApp\" app/src/main/java/com/beaconledger/welltrack/WellTrackApplication.kt)",
+      "Bash(then echo \"✅ Hilt properly configured\")",
+      "Bash(else echo \"❌ Hilt setup issue\")",
+      "Bash(if grep -q \"health.connect.client\" app/build.gradle.kts)",
+      "Bash(then echo \"✅ Health Connect integrated\")",
+      "Bash(else echo \"❌ Health Connect missing\")",
+      "Bash(if [ -d \"app/src/main/java/com/beaconledger/welltrack/accessibility\" ])",
+      "Bash(then echo \"✅ Accessibility components present\")",
+      "Bash(else echo \"❌ Accessibility missing\")",
+      "Bash(while read file)",
+      "Bash(do echo \"✅ $file has proper imports\")",
+      "Bash(done)",
+      "Bash(chmod:*)",
+      "Bash(tee:*)",
+      "Bash(apt list:*)",
+      "Bash(dpkg -l)",
+      "Bash(java:*)",
+      "Bash(cmd.exe:*)",
+      "Bash(timeout:*)",
+      "Bash(bash gradlew :app:compileDebugKotlin --no-daemon)",
+      "Read(//mnt/c/**)",
+      "Bash(\"/mnt/c/Program Files/Android/Android Studio/jbr/bin/java\" -version)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -384,7 +384,7 @@ data class GoalOverview(
     val goalsByCategory: Map<GoalCategory, Int>,
     val recentProgress: List<GoalProgress>,
     val upcomingMilestones: List<GoalMilestone>,
-    val trends: Map<GoalType, TrendAnalysis>,
+    val trends: Map<GoalType, GoalTrend>,
     val recommendations: List<String>
 )
 

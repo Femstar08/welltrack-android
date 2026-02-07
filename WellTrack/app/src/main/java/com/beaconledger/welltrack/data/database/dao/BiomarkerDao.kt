@@ -61,7 +61,7 @@ interface BiomarkerDao {
     suspend fun insertBiomarkerEntries(entries: List<BiomarkerEntry>)
     
     @Update
-    suspend fun updateBiomarkerEntry(entry: BiomarkerEntry)
+    suspend fun updateBiomarker(entry: BiomarkerEntry)
     
     @Delete
     suspend fun deleteBiomarkerEntry(entry: BiomarkerEntry)
@@ -118,6 +118,9 @@ interface BiomarkerDao {
     
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBiomarker(biomarker: BiomarkerEntry)
+
+    @Query("SELECT * FROM biomarker_entries WHERE userId = :userId AND biomarkerType = :type AND testDate = :testDate")
+    suspend fun getBiomarkerByTypeAndDate(userId: String, type: BiomarkerType, testDate: String): BiomarkerEntry?
 }
 
 data class BiomarkerTypeCount(

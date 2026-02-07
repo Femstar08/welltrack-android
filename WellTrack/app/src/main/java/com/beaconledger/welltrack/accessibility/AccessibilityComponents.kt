@@ -9,10 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.*
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -118,7 +116,6 @@ fun AccessibleTextField(
                 color = MaterialTheme.colorScheme.error,
                 fontSize = (12 * accessibilitySettings.fontScale).sp,
                 modifier = Modifier.semantics {
-                    this.role = Role.Text
                     this.contentDescription = "Error: $errorMessage"
                 }
             )
@@ -132,7 +129,6 @@ fun AccessibleTextField(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = (12 * accessibilitySettings.fontScale).sp,
                 modifier = Modifier.semantics {
-                    this.role = Role.Text
                     this.contentDescription = "Help: $helperText"
                 }
             )
@@ -348,7 +344,7 @@ fun AccessibleAlert(
             MaterialTheme.colorScheme.onTertiaryContainer
         )
         AlertType.ERROR -> Triple(
-            Icons.Default.Error,
+            Icons.Filled.Error,
             MaterialTheme.colorScheme.errorContainer,
             MaterialTheme.colorScheme.onErrorContainer
         )
@@ -363,7 +359,6 @@ fun AccessibleAlert(
         modifier = modifier
             .fillMaxWidth()
             .semantics {
-                this.role = Role.Text
                 this.contentDescription = buildString {
                     append("${type.name.lowercase()} alert")
                     title?.let { append(", $it") }
@@ -418,7 +413,7 @@ fun AccessibleAlert(
                         }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Check, // Using Check as close icon
+                        imageVector = Icons.Default.Close,
                         contentDescription = null
                     )
                 }

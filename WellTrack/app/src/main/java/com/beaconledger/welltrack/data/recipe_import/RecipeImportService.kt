@@ -19,99 +19,99 @@ class RecipeImportService @Inject constructor(
     private val nutritionCalculator: NutritionCalculator
 ) {
 
-    suspend fun importFromUrl(url: String): Flow<ImportProgress> = flow {
-        emit(ImportProgress.Started("Connecting to website..."))
+    suspend fun importFromUrl(url: String): Flow<RecipeImportState> = flow {
+        emit(RecipeImportState.Started("Connecting to website..."))
         
         try {
-            emit(ImportProgress.InProgress(25, "Downloading recipe content..."))
+            emit(RecipeImportState.InProgress(25, "Downloading recipe content..."))
             
             val parseResult = urlParser.parseRecipeFromUrl(url)
             if (parseResult.isFailure) {
-                emit(ImportProgress.Failed("Failed to parse recipe from URL: ${parseResult.exceptionOrNull()?.message}"))
+                emit(RecipeImportState.Failed("Failed to parse recipe from URL: ${parseResult.exceptionOrNull()?.message}"))
                 return@flow
             }
             
             val parsedRecipe = parseResult.getOrThrow()
-            emit(ImportProgress.InProgress(50, "Validating recipe data..."))
+            emit(RecipeImportState.InProgress(50, "Validating recipe data..."))
             
             val validationResult = validator.validateParsedRecipe(parsedRecipe)
-            emit(ImportProgress.InProgress(75, "Calculating nutrition information..."))
+            emit(RecipeImportState.InProgress(75, "Calculating nutrition information..."))
             
             val recipe = convertToRecipe(parsedRecipe)
-            emit(ImportProgress.InProgress(90, "Finalizing import..."))
+            emit(RecipeImportState.InProgress(90, "Finalizing import..."))
             
-            emit(ImportProgress.Success(
+            emit(RecipeImportState.Success(
                 recipe = recipe,
                 validationResult = validationResult,
                 source = ImportSource.URL
             ))
             
         } catch (e: Exception) {
-            emit(ImportProgress.Failed("Import failed: ${e.message}"))
+            emit(RecipeImportState.Failed("Import failed: ${e.message}"))
         }
     }
 
-    suspend fun importFromImage(imageUri: Uri): Flow<ImportProgress> = flow {
-        emit(ImportProgress.Started("Processing image..."))
+    suspend fun importFromImage(imageUri: Uri): Flow<RecipeImportState> = flow {
+        emit(RecipeImportState.Started("Processing image..."))
         
         try {
-            emit(ImportProgress.InProgress(20, "Analyzing image content..."))
+            emit(RecipeImportState.InProgress(20, "Analyzing image content..."))
             
             val parseResult = ocrParser.parseRecipeFromImage(imageUri)
             if (parseResult.isFailure) {
-                emit(ImportProgress.Failed("Failed to scan recipe from image: ${parseResult.exceptionOrNull()?.message}"))
+                emit(RecipeImportState.Failed("Failed to scan recipe from image: ${parseResult.exceptionOrNull()?.message}"))
                 return@flow
             }
             
             val parsedRecipe = parseResult.getOrThrow()
-            emit(ImportProgress.InProgress(60, "Validating scanned data..."))
+            emit(RecipeImportState.InProgress(60, "Validating scanned data..."))
             
             val validationResult = validator.validateParsedRecipe(parsedRecipe)
-            emit(ImportProgress.InProgress(80, "Calculating nutrition information..."))
+            emit(RecipeImportState.InProgress(80, "Calculating nutrition information..."))
             
             val recipe = convertToRecipe(parsedRecipe)
-            emit(ImportProgress.InProgress(95, "Finalizing import..."))
+            emit(RecipeImportState.InProgress(95, "Finalizing import..."))
             
-            emit(ImportProgress.Success(
+            emit(RecipeImportState.Success(
                 recipe = recipe,
                 validationResult = validationResult,
-                source = ImportSource.OCR
+                source = ImportSource.PHOTO_OCR
             ))
             
         } catch (e: Exception) {
-            emit(ImportProgress.Failed("Import failed: ${e.message}"))
+            emit(RecipeImportState.Failed("Import failed: ${e.message}"))
         }
     }
 
-    suspend fun importFromBitmap(bitmap: Bitmap): Flow<ImportProgress> = flow {
-        emit(ImportProgress.Started("Processing image..."))
+    suspend fun importFromBitmap(bitmap: Bitmap): Flow<RecipeImportState> = flow {
+        emit(RecipeImportState.Started("Processing image..."))
         
         try {
-            emit(ImportProgress.InProgress(20, "Scanning text from image..."))
+            emit(RecipeImportState.InProgress(20, "Scanning text from image..."))
             
             val parseResult = ocrParser.parseRecipeFromBitmap(bitmap)
             if (parseResult.isFailure) {
-                emit(ImportProgress.Failed("Failed to scan recipe from image: ${parseResult.exceptionOrNull()?.message}"))
+                emit(RecipeImportState.Failed("Failed to scan recipe from image: ${parseResult.exceptionOrNull()?.message}"))
                 return@flow
             }
             
             val parsedRecipe = parseResult.getOrThrow()
-            emit(ImportProgress.InProgress(60, "Validating scanned data..."))
+            emit(RecipeImportState.InProgress(60, "Validating scanned data..."))
             
             val validationResult = validator.validateParsedRecipe(parsedRecipe)
-            emit(ImportProgress.InProgress(80, "Calculating nutrition information..."))
+            emit(RecipeImportState.InProgress(80, "Calculating nutrition information..."))
             
             val recipe = convertToRecipe(parsedRecipe)
-            emit(ImportProgress.InProgress(95, "Finalizing import..."))
+            emit(RecipeImportState.InProgress(95, "Finalizing import..."))
             
-            emit(ImportProgress.Success(
+            emit(RecipeImportState.Success(
                 recipe = recipe,
                 validationResult = validationResult,
-                source = ImportSource.OCR
+                source = ImportSource.PHOTO_OCR
             ))
             
         } catch (e: Exception) {
-            emit(ImportProgress.Failed("Import failed: ${e.message}"))
+            emit(RecipeImportState.Failed("Import failed: ${e.message}"))
         }
     }
 
@@ -150,23 +150,18 @@ class RecipeImportService @Inject constructor(
     }
 }
 
-sealed class ImportProgress {
-    data class Started(val message: String) : ImportProgress()
-    data class InProgress(val percentage: Int, val message: String) : ImportProgress()
+sealed class RecipeImportState {
+    data class Started(val message: String) : RecipeImportState()
+    data class InProgress(val percentage: Int, val message: String) : RecipeImportState()
     data class Success(
         val recipe: Recipe,
         val validationResult: ValidationResult,
         val source: ImportSource
-    ) : ImportProgress()
-    data class Failed(val error: String) : ImportProgress()
+    ) : RecipeImportState()
+    data class Failed(val error: String) : RecipeImportState()
 }
 
-enum class ImportSource {
-    URL,
-    OCR
-}
-
-data class ImportResult(
+data class RecipeImportResult(
     val recipe: Recipe,
     val ingredients: List<Ingredient>,
     val validationResult: ValidationResult,

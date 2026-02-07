@@ -20,4 +20,14 @@ interface FamilyGroupDao {
 
     @Delete
     suspend fun deleteFamilyGroup(familyGroup: FamilyGroup)
+
+    @Query("""
+        SELECT fg.* FROM family_groups fg
+        INNER JOIN family_members fm ON fg.id = fm.familyGroupId
+        WHERE fm.userId = :userId AND fg.isActive = 1
+    """)
+    fun getFamilyGroupsForUser(userId: String): Flow<List<FamilyGroup>>
+
+    @Query("UPDATE family_groups SET isActive = 0 WHERE id = :groupId")
+    suspend fun deactivateFamilyGroup(groupId: String)
 }

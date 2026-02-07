@@ -2,6 +2,7 @@ package com.beaconledger.welltrack.data.security
 
 import android.content.Context
 import com.beaconledger.welltrack.data.database.WellTrackDatabase
+import androidx.room.withTransaction
 import com.beaconledger.welltrack.data.remote.SupabaseClient
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -90,14 +91,14 @@ class SecureDataDeletionManager @Inject constructor(
     
     private suspend fun deleteLocalUserData(userId: String) {
         // Delete all user-related data from local database
-        database.runInTransaction {
+        database.withTransaction {
             // Delete in order to respect foreign key constraints
             database.mealDao().deleteAllMealsForUser(userId)
             database.recipeDao().deleteAllRecipesForUser(userId)
             database.healthMetricDao().deleteAllHealthMetricsForUser(userId)
             database.supplementDao().deleteAllSupplementsForUser(userId)
             database.biomarkerDao().deleteAllBiomarkersForUser(userId)
-            database.pantryDao().deleteAllPantryItemsForUser(userId)
+            database.pantryItemDao().deleteAllPantryItemsForUser(userId)
             database.shoppingListDao().deleteAllShoppingListsForUser(userId)
             database.mealPlanDao().deleteAllMealPlansForUser(userId)
             database.notificationDao().deleteAllNotificationsForUser(userId)
@@ -234,7 +235,7 @@ class SecureDataDeletionManager @Inject constructor(
                         supabaseClient.deleteBiomarkersForUser(userId)
                     }
                     DataType.PANTRY -> {
-                        database.pantryDao().deleteAllPantryItemsForUser(userId)
+                        database.pantryItemDao().deleteAllPantryItemsForUser(userId)
                         supabaseClient.deletePantryItemsForUser(userId)
                     }
                 }

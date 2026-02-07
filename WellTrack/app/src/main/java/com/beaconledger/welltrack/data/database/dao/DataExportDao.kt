@@ -23,7 +23,7 @@ interface DataExportDao {
     suspend fun getLatestExportByType(userId: String, type: ExportType): DataExport?
     
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertExport(export: DataExport): Long
+    suspend fun insertExport(export: DataExport)
     
     @Update
     suspend fun updateExport(export: DataExport)

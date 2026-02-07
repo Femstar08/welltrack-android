@@ -2,7 +2,7 @@ package com.beaconledger.welltrack.presentation.accessibility
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.beaconledger.welltrack.data.repository.UserPreferencesRepository
+import com.beaconledger.welltrack.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -13,7 +13,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class AccessibilitySettingsViewModel @Inject constructor(
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val userRepository: UserRepository
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(AccessibilitySettingsUiState())
@@ -26,17 +26,27 @@ class AccessibilitySettingsViewModel @Inject constructor(
     private fun loadAccessibilitySettings() {
         viewModelScope.launch {
             // Load user preferences for accessibility settings
-            // This would typically come from a repository
-            _uiState.value = AccessibilitySettingsUiState(
-                highContrastEnabled = false, // Load from preferences
-                reduceAnimationsEnabled = false,
-                largeTextEnabled = false,
-                screenReaderOptimizationEnabled = true,
-                audioDescriptionsEnabled = false,
-                largeTouchTargetsEnabled = false,
-                reduceMotionEnabled = false,
-                simplifiedUIEnabled = false,
-                extendedTimeoutsEnabled = false
+            userRepository.getUserPreferences("current_user_id").fold(
+                onSuccess = { preferences ->
+                    val accessibility = preferences.accessibilitySettings
+                    _uiState.value = AccessibilitySettingsUiState(
+                        highContrastEnabled = accessibility.highContrastEnabled,
+                        reduceAnimationsEnabled = accessibility.reduceAnimationsEnabled,
+                        largeTextEnabled = accessibility.largeTextEnabled,
+                        screenReaderOptimizationEnabled = accessibility.screenReaderOptimizationEnabled,
+                        audioDescriptionsEnabled = accessibility.audioDescriptionsEnabled,
+                        largeTouchTargetsEnabled = accessibility.largeTouchTargetsEnabled,
+                        reduceMotionEnabled = accessibility.reduceMotionEnabled,
+                        simplifiedUIEnabled = accessibility.simplifiedUIEnabled,
+                        extendedTimeoutsEnabled = accessibility.extendedTimeoutsEnabled
+                    )
+                },
+                onFailure = { error ->
+                    // Handle error - use default settings
+                    _uiState.value = AccessibilitySettingsUiState(
+                        error = error.message
+                    )
+                }
             )
         }
     }
@@ -132,8 +142,32 @@ class AccessibilitySettingsViewModel @Inject constructor(
     }
     
     private suspend fun saveAccessibilitySettings(settings: AccessibilitySettingsUiState) {
-        // Save to user preferences repository
-        // This would typically save to local storage or sync with backend
+        // Get current preferences and update accessibility settings
+        userRepository.getUserPreferences("current_user_id").fold(
+            onSuccess = { currentPreferences ->
+                val newAccessibilitySettings = com.beaconledger.welltrack.data.model.AccessibilitySettings(
+                    highContrastEnabled = settings.highContrastEnabled,
+                    reduceAnimationsEnabled = settings.reduceAnimationsEnabled,
+                    largeTextEnabled = settings.largeTextEnabled,
+                    screenReaderOptimizationEnabled = settings.screenReaderOptimizationEnabled,
+                    audioDescriptionsEnabled = settings.audioDescriptionsEnabled,
+                    largeTouchTargetsEnabled = settings.largeTouchTargetsEnabled,
+                    reduceMotionEnabled = settings.reduceMotionEnabled,
+                    simplifiedUIEnabled = settings.simplifiedUIEnabled,
+                    extendedTimeoutsEnabled = settings.extendedTimeoutsEnabled
+                )
+
+                val updatedPreferences = currentPreferences.copy(
+                    accessibilitySettings = newAccessibilitySettings
+                )
+
+                userRepository.updateUserPreferences("current_user_id", updatedPreferences)
+            },
+            onFailure = { error ->
+                // Handle error
+                _uiState.value = _uiState.value.copy(error = error.message)
+            }
+        )
     }
 }
 

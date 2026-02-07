@@ -215,7 +215,7 @@ fun GoalProgressCard(
             goalWithProgress.prediction?.let { prediction ->
                 Spacer(modifier = Modifier.height(12.dp))
                 TrendIndicator(
-                    trend = prediction.trendAnalysis,
+                    trend = prediction.GoalTrend,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -448,36 +448,36 @@ fun MilestoneProgressIndicator(
 
 @Composable
 fun TrendIndicator(
-    trend: TrendAnalysis,
+    trend: GoalTrend,
     modifier: Modifier = Modifier
 ) {
     val (icon, color, text) = when (trend) {
-        TrendAnalysis.ON_TRACK -> Triple(
+        GoalTrend.ON_TRACK -> Triple(
             Icons.Default.TrendingFlat,
             MaterialTheme.colorScheme.primary,
             "On Track"
         )
-        TrendAnalysis.AHEAD_OF_SCHEDULE -> Triple(
+        GoalTrend.AHEAD_OF_SCHEDULE -> Triple(
             Icons.Default.TrendingUp,
             MaterialTheme.colorScheme.tertiary,
             "Ahead"
         )
-        TrendAnalysis.BEHIND_SCHEDULE -> Triple(
+        GoalTrend.BEHIND_SCHEDULE -> Triple(
             Icons.Default.TrendingDown,
             MaterialTheme.colorScheme.error,
             "Behind"
         )
-        TrendAnalysis.STAGNANT -> Triple(
+        GoalTrend.STAGNANT -> Triple(
             Icons.Default.Remove,
             MaterialTheme.colorScheme.outline,
             "Stagnant"
         )
-        TrendAnalysis.DECLINING -> Triple(
+        GoalTrend.DECLINING -> Triple(
             Icons.Default.TrendingDown,
             MaterialTheme.colorScheme.error,
             "Declining"
         )
-        TrendAnalysis.ACCELERATING -> Triple(
+        GoalTrend.ACCELERATING -> Triple(
             Icons.Default.TrendingUp,
             MaterialTheme.colorScheme.tertiary,
             "Accelerating"

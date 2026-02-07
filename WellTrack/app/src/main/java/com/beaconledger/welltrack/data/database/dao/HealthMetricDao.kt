@@ -3,6 +3,7 @@ package com.beaconledger.welltrack.data.database.dao
 import androidx.room.*
 import com.beaconledger.welltrack.data.model.HealthMetric
 import com.beaconledger.welltrack.data.model.HealthMetricType
+import androidx.paging.PagingSource
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -10,6 +11,9 @@ interface HealthMetricDao {
     
     @Query("SELECT * FROM health_metrics WHERE userId = :userId ORDER BY timestamp DESC")
     fun getAllHealthMetrics(userId: String): Flow<List<HealthMetric>>
+
+    @Query("SELECT * FROM health_metrics WHERE userId = :userId ORDER BY timestamp DESC")
+    fun getPagedHealthMetrics(userId: String): PagingSource<Int, HealthMetric>
     
     @Query("""
         SELECT * FROM health_metrics 
@@ -188,4 +192,7 @@ interface HealthMetricDao {
 
     @Update
     suspend fun updateMetric(healthMetric: HealthMetric)
+
+    @Update
+    suspend fun updateHealthMetrics(healthMetrics: List<HealthMetric>)
 }

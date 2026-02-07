@@ -10,6 +10,7 @@ import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.first
 import java.io.File
 import java.io.FileWriter
 import java.time.LocalDateTime
@@ -137,8 +138,8 @@ class DataPortabilityManager @Inject constructor(
         val healthMetrics = database.healthMetricDao().getAllMetricsForUser(userId)
         val supplements = database.supplementDao().getAllSupplementsForUser(userId)
         val biomarkers = database.biomarkerDao().getAllBiomarkersForUser(userId)
-        val goals = database.goalDao().getAllGoalsForUser(userId)
-        val auditLogs = database.auditLogDao().getAuditLogsForUser(userId)
+        val goals = database.goalDao().getAllGoalsForUser(userId) // This is the suspend version that returns List
+        val auditLogs = database.auditLogDao().getAuditLogsForUser(userId, limit = 1000)
         
         return GdprExportData(
             exportMetadata = GdprExportMetadata(
@@ -152,8 +153,8 @@ class DataPortabilityManager @Inject constructor(
             ),
             personalData = GdprPersonalData(
                 userProfile = user,
-                accountCreationDate = user?.createdAt,
-                lastLoginDate = user?.lastLoginAt,
+                accountCreationDate = user?.createdAt?.let { LocalDateTime.parse(it) },
+                lastLoginDate = null, // lastLoginAt field doesn't exist in User model
                 preferences = getUserPreferences(userId),
                 consentRecords = getConsentRecords(userId)
             ),
@@ -201,8 +202,8 @@ class DataPortabilityManager @Inject constructor(
                 ),
                 personalCharacteristics = CcpaPersonalCharacteristics(
                     age = user?.age,
-                    healthGoals = user?.fitnessGoals?.map { it.name },
-                    dietaryRestrictions = user?.dietaryRestrictions?.map { it.name }
+                    healthGoals = null, // fitnessGoals not available in User model
+                    dietaryRestrictions = null // dietaryRestrictions not available in User model
                 ),
                 healthInformation = getHealthInformationSummary(userId),
                 geolocationData = getGeolocationData(userId),
@@ -384,8 +385,8 @@ enum class DeletionStatus {
     COMPLETED,
     FAILED
 }
-//
- Additional data models for GDPR compliance
+
+// Additional data models for GDPR compliance
 data class GdprExportMetadata(
     val exportId: String,
     val userId: String,
@@ -408,7 +409,7 @@ data class GdprHealthData(
     val meals: List<Meal>,
     val healthMetrics: List<HealthMetric>,
     val supplements: List<Supplement>,
-    val biomarkers: List<Biomarker>,
+    val biomarkers: List<BiomarkerEntry>,
     val goals: List<Goal>
 )
 

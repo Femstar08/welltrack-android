@@ -120,19 +120,23 @@ interface SupplementDao {
     @Query("DELETE FROM supplement_intakes WHERE userId = :userId")
     suspend fun deleteAllSupplementIntakes(userId: String)
     
-    @Query("DELETE FROM supplements WHERE userId = :userId")
-    suspend fun deleteAllSupplementsForUser(userId: String)
-    
-    @Query("SELECT * FROM supplements WHERE userId = :userId")
+    @Query("DELETE FROM user_supplements WHERE userId = :userId")
+    suspend fun deleteAllUserSupplementsForUser(userId: String)
+
+    @Query("""
+        SELECT s.* FROM supplements s
+        INNER JOIN user_supplements us ON s.id = us.supplementId
+        WHERE us.userId = :userId
+    """)
     suspend fun getAllSupplementsForUser(userId: String): List<Supplement>
 
     // Additional methods for import functionality
-    @Query("SELECT * FROM supplements WHERE userId = :userId AND name = :name AND DATE(createdAt) = DATE(:date)")
-    suspend fun getSupplementByNameAndDate(userId: String, name: String, date: java.time.LocalDateTime): Supplement?
-
-    @Update
-    suspend fun updateSupplement(supplement: Supplement)
+    @Query("SELECT * FROM supplements WHERE name = :name AND DATE(createdAt) = DATE(:date)")
+    suspend fun getSupplementByNameAndDate(name: String, date: String): Supplement?
     
+    @Query("DELETE FROM supplements WHERE id IN (SELECT supplementId FROM user_supplements WHERE userId = :userId)")
+    suspend fun deleteAllSupplementsForUser(userId: String)
+
     // Analytics and Reporting
     @Query("""
         SELECT 

@@ -53,7 +53,7 @@ class DataExportUseCase @Inject constructor(
     
     suspend fun exportHealthReportAsPdf(
         userId: String,
-        dateRange: DateRange? = null
+        dateRange: ExportDateRange? = null
     ): Result<String> {
         val actualDateRange = dateRange ?: getDefaultDateRange()
         
@@ -74,7 +74,7 @@ class DataExportUseCase @Inject constructor(
     
     suspend fun exportMealHistoryAsCsv(
         userId: String,
-        dateRange: DateRange? = null
+        dateRange: ExportDateRange? = null
     ): Result<String> {
         val request = ExportRequest(
             userId = userId,
@@ -93,7 +93,7 @@ class DataExportUseCase @Inject constructor(
     
     suspend fun exportSupplementLogAsCsv(
         userId: String,
-        dateRange: DateRange? = null
+        dateRange: ExportDateRange? = null
     ): Result<String> {
         val request = ExportRequest(
             userId = userId,
@@ -188,7 +188,7 @@ class DataExportUseCase @Inject constructor(
     // Sharing and Healthcare Provider Integration
     suspend fun shareHealthReportWithProvider(
         userId: String,
-        dateRange: DateRange,
+        dateRange: ExportDateRange,
         shareMethod: ShareMethod = ShareMethod.SECURE_LINK
     ): Result<String> {
         // Generate health report
@@ -225,7 +225,7 @@ class DataExportUseCase @Inject constructor(
     
     suspend fun generateHealthcareProviderReport(
         userId: String,
-        dateRange: DateRange,
+        dateRange: ExportDateRange,
         includeRecommendations: Boolean = false
     ): Result<File> {
         return dataExportRepository.generatePdfHealthReport(userId, dateRange)
@@ -236,7 +236,7 @@ class DataExportUseCase @Inject constructor(
         userId: String,
         exportType: ExportType,
         format: ExportFormat,
-        dateRange: DateRange? = null,
+        dateRange: ExportDateRange? = null,
         includeHealthData: Boolean = true,
         includeMealData: Boolean = true,
         includeSupplementData: Boolean = true,
@@ -256,10 +256,10 @@ class DataExportUseCase @Inject constructor(
         )
     }
     
-    private fun getDefaultDateRange(): DateRange {
+    private fun getDefaultDateRange(): ExportDateRange {
         val endDate = LocalDateTime.now()
         val startDate = endDate.minusMonths(3)
-        return DateRange(startDate, endDate)
+        return ExportDateRange(startDate, endDate)
     }
     
     // Validation Methods

@@ -49,6 +49,6 @@ interface GoalRepository {
     // Statistics and insights
     suspend fun getGoalCompletionRate(userId: String): Float
     suspend fun getOverdueGoalsCount(userId: String): Int
-    suspend fun getGoalTrends(userId: String, period: Int = 30): Map<GoalType, TrendAnalysis>
+    suspend fun getGoalTrends(userId: String, period: Int = 30): Map<GoalType, GoalTrend>
     suspend fun getRecommendations(userId: String): List<String>
 }

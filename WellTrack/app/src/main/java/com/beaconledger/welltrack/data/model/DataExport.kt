@@ -14,7 +14,7 @@ data class DataExport(
     val status: ExportStatus,
     val filePath: String?,
     val fileSize: Long?,
-    val dateRange: DateRange?,
+    val dateRange: ExportDateRange?,
     val includeHealthData: Boolean,
     val includeMealData: Boolean,
     val includeSupplementData: Boolean,
@@ -50,7 +50,7 @@ enum class ExportStatus {
     CANCELLED
 }
 
-data class DateRange(
+data class ExportDateRange(
     val startDate: LocalDateTime,
     val endDate: LocalDateTime
 )
@@ -59,7 +59,7 @@ data class ExportRequest(
     val userId: String,
     val exportType: ExportType,
     val format: ExportFormat,
-    val dateRange: DateRange?,
+    val dateRange: ExportDateRange?,
     val includeHealthData: Boolean = true,
     val includeMealData: Boolean = true,
     val includeSupplementData: Boolean = true,
@@ -91,13 +91,13 @@ enum class MergeStrategy {
 
 data class HealthReport(
     val userId: String,
-    val reportPeriod: DateRange,
+    val reportPeriod: ExportDateRange,
     val summary: HealthSummary,
     val nutritionAnalysis: NutritionAnalysis,
     val fitnessMetrics: FitnessMetrics,
-    val supplementAdherence: SupplementAdherence,
-    val biomarkerTrends: List<BiomarkerTrend>,
-    val goalProgress: List<GoalProgress>,
+    val supplementAdherence: ExportSupplementAdherence,
+    val biomarkerTrends: List<ExportBiomarkerTrend>,
+    val goalProgress: List<ExportGoalProgress>,
     val recommendations: List<String>,
     val generatedAt: LocalDateTime
 )
@@ -127,14 +127,14 @@ data class FitnessMetrics(
     val stressLevels: Float?
 )
 
-data class SupplementAdherence(
+data class ExportSupplementAdherence(
     val totalSupplements: Int,
     val adherenceRate: Float,
     val missedDoses: Int,
     val supplementEffectiveness: Map<String, String>
 )
 
-data class BiomarkerTrend(
+data class ExportBiomarkerTrend(
     val biomarkerType: String,
     val trend: String, // "improving", "stable", "declining"
     val latestValue: Double,
@@ -142,7 +142,7 @@ data class BiomarkerTrend(
     val targetRange: String
 )
 
-data class GoalProgress(
+data class ExportGoalProgress(
     val goalId: String,
     val goalType: String,
     val targetValue: Double,
@@ -150,3 +150,6 @@ data class GoalProgress(
     val progressPercentage: Float,
     val expectedCompletionDate: LocalDateTime?
 )
+
+// ExportMetadata and UserExportData are defined in data.export.DataExportManager
+// to avoid duplicate class definitions

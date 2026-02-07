@@ -19,7 +19,7 @@ interface DataDeletionDao {
     suspend fun getPendingDeletions(status: DeletionStatus, currentDate: LocalDateTime): List<DataDeletionRecord>
     
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertDeletionRecord(record: DataDeletionRecord): Long
+    suspend fun insertDeletionRecord(record: DataDeletionRecord)
     
     @Update
     suspend fun updateDeletionRecord(record: DataDeletionRecord)

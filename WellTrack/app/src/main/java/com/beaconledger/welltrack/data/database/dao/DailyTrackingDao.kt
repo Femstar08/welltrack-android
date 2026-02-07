@@ -65,6 +65,9 @@ interface DailyTrackingDao {
     
     @Query("SELECT * FROM daily_tracking_entries WHERE id = :id")
     suspend fun getDailyTrackingById(id: String): DailyTrackingEntry?
+
+    @Query("DELETE FROM daily_tracking_entries WHERE userId = :userId")
+    suspend fun deleteAllDailyTrackingForUser(userId: String)
 }
 
 data class DailyCompletionSummary(

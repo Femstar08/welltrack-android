@@ -20,8 +20,8 @@ interface DataExportRepository {
     suspend fun createFullBackup(userId: String): Result<File>
     
     // Health Reports
-    suspend fun generateHealthReport(userId: String, dateRange: DateRange): Result<HealthReport>
-    suspend fun generatePdfHealthReport(userId: String, dateRange: DateRange): Result<File>
+    suspend fun generateHealthReport(userId: String, dateRange: ExportDateRange): Result<HealthReport>
+    suspend fun generatePdfHealthReport(userId: String, dateRange: ExportDateRange): Result<File>
     
     // Import Operations
     suspend fun importData(request: ImportRequest): Result<Unit>
@@ -43,22 +43,6 @@ interface DataExportRepository {
     suspend fun generateShareableLink(exportId: String, expirationHours: Int): Result<String>
 }
 
-data class ImportPreview(
-    val recordCount: Int,
-    val dataTypes: List<String>,
-    val dateRange: DateRange?,
-    val conflicts: List<ImportConflict>,
-    val warnings: List<String>
-)
-
-data class ImportConflict(
-    val recordId: String,
-    val conflictType: String,
-    val existingValue: String,
-    val newValue: String,
-    val recommendedAction: String
-)
-
 data class BackupValidation(
     val isValid: Boolean,
     val version: String,
@@ -68,10 +52,3 @@ data class BackupValidation(
     val missingTables: List<String>,
     val errors: List<String>
 )
-
-enum class ShareMethod {
-    EMAIL,
-    CLOUD_STORAGE,
-    SECURE_LINK,
-    HEALTHCARE_PROVIDER_PORTAL
-}

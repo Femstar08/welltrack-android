@@ -6,7 +6,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.beaconledger.welltrack.accessibility.AccessibilitySettings
+import com.beaconledger.welltrack.accessibility.UIAccessibilitySettings
 import com.beaconledger.welltrack.accessibility.AccessibilityUtils
 
 // Set of Material typography styles to start with
@@ -121,7 +121,7 @@ val Typography = Typography(
 /**
  * Extension function to create accessibility-friendly typography
  */
-fun Typography.toAccessible(accessibilitySettings: AccessibilitySettings): Typography {
+fun Typography.toAccessible(accessibilitySettings: UIAccessibilitySettings): Typography {
     val fontScale = accessibilitySettings.fontScale
     
     return Typography(

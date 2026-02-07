@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.pow
 
 /**
  * Utility functions for accessibility compliance and WCAG 2.1 AA standards
@@ -36,10 +37,10 @@ object AccessibilityUtils {
      * Calculate relative luminance of a color
      */
     private fun calculateRelativeLuminance(color: Color): Double {
-        val r = if (color.red <= 0.03928) color.red / 12.92 else kotlin.math.pow((color.red + 0.055) / 1.055, 2.4)
-        val g = if (color.green <= 0.03928) color.green / 12.92 else kotlin.math.pow((color.green + 0.055) / 1.055, 2.4)
-        val b = if (color.blue <= 0.03928) color.blue / 12.92 else kotlin.math.pow((color.blue + 0.055) / 1.055, 2.4)
-        
+        val r = if (color.red <= 0.03928) color.red / 12.92 else ((color.red + 0.055) / 1.055).pow(2.4)
+        val g = if (color.green <= 0.03928) color.green / 12.92 else ((color.green + 0.055) / 1.055).pow(2.4)
+        val b = if (color.blue <= 0.03928) color.blue / 12.92 else ((color.blue + 0.055) / 1.055).pow(2.4)
+
         return 0.2126 * r + 0.7152 * g + 0.0722 * b
     }
     
@@ -176,7 +177,7 @@ fun TextStyle.isLargeText(): Boolean {
  * Get accessible text style with proper sizing
  */
 @Composable
-fun TextStyle.toAccessible(accessibilitySettings: AccessibilitySettings): TextStyle {
+fun TextStyle.toAccessible(accessibilitySettings: UIAccessibilitySettings): TextStyle {
     return this.copy(
         fontSize = AccessibilityUtils.getAccessibleTextSize(this.fontSize, accessibilitySettings.fontScale)
     )

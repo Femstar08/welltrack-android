@@ -154,12 +154,12 @@ class BiomarkerRepositoryImpl @Inject constructor(
         }
     }
     
-    override suspend fun updateBiomarkerEntry(entry: BiomarkerEntry): Result<Unit> {
+    override suspend fun updateBiomarker(entry: BiomarkerEntry): Result<Unit> {
         return try {
             val entryWithRange = entry.copy(
                 isWithinRange = checkIfWithinRange(entry)
             )
-            biomarkerDao.updateBiomarkerEntry(entryWithRange)
+            biomarkerDao.updateBiomarker(entryWithRange)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

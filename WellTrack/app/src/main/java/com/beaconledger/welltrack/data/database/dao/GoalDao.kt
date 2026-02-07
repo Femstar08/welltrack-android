@@ -13,7 +13,7 @@ interface GoalDao {
     fun getActiveGoalsForUser(userId: String): Flow<List<Goal>>
     
     @Query("SELECT * FROM goals WHERE userId = :userId ORDER BY createdAt DESC")
-    fun getAllGoalsForUser(userId: String): Flow<List<Goal>>
+    fun getAllGoalsForUserFlow(userId: String): Flow<List<Goal>>
     
     @Query("SELECT * FROM goals WHERE id = :goalId")
     suspend fun getGoalById(goalId: String): Goal?
@@ -25,10 +25,16 @@ interface GoalDao {
     fun getGoalsByCategory(userId: String, category: GoalCategory): Flow<List<Goal>>
     
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertGoal(goal: Goal): Long
+    suspend fun insertGoal(goal: Goal)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllGoals(goals: List<Goal>)
     
     @Update
     suspend fun updateGoal(goal: Goal)
+
+    @Update
+    suspend fun updateAllGoals(goals: List<Goal>)
     
     @Query("UPDATE goals SET isActive = 0 WHERE id = :goalId")
     suspend fun deactivateGoal(goalId: String)
@@ -47,10 +53,16 @@ interface GoalDao {
     suspend fun getProgressInDateRange(goalId: String, startDate: LocalDate): List<GoalProgress>
     
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertProgress(progress: GoalProgress): Long
+    suspend fun insertProgress(progress: GoalProgress)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllProgress(progress: List<GoalProgress>)
     
     @Update
     suspend fun updateProgress(progress: GoalProgress)
+
+    @Update
+    suspend fun updateAllProgress(progress: List<GoalProgress>)
     
     @Delete
     suspend fun deleteProgress(progress: GoalProgress)
@@ -69,10 +81,16 @@ interface GoalDao {
     suspend fun getTotalMilestonesCount(goalId: String): Int
     
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMilestone(milestone: GoalMilestone): Long
+    suspend fun insertMilestone(milestone: GoalMilestone)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllMilestones(milestones: List<GoalMilestone>)
     
     @Update
     suspend fun updateMilestone(milestone: GoalMilestone)
+
+    @Update
+    suspend fun updateAllMilestones(milestones: List<GoalMilestone>)
     
     @Delete
     suspend fun deleteMilestone(milestone: GoalMilestone)
@@ -82,19 +100,19 @@ interface GoalDao {
     suspend fun getLatestPredictionForGoal(goalId: String): GoalPrediction?
     
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPrediction(prediction: GoalPrediction): Long
+    suspend fun insertPrediction(prediction: GoalPrediction)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllPredictions(predictions: List<GoalPrediction>)
     
     @Update
     suspend fun updatePrediction(prediction: GoalPrediction)
+
+    @Update
+    suspend fun updateAllPredictions(predictions: List<GoalPrediction>)
     
-    // Complex queries for goal with related data
-    @Transaction
-    @Query("SELECT * FROM goals WHERE id = :goalId")
-    suspend fun getGoalWithProgress(goalId: String): GoalWithProgress?
-    
-    @Transaction
-    @Query("SELECT * FROM goals WHERE userId = :userId AND isActive = 1")
-    suspend fun getActiveGoalsWithProgress(userId: String): List<GoalWithProgress>
+    // Note: Complex queries with related data are handled in the repository layer
+    // to avoid Room relationship mapping complexity
     
     // Statistics queries
     @Query("""
@@ -136,4 +154,13 @@ interface GoalDao {
 
     @Query("SELECT * FROM goal_milestones WHERE id = :milestoneId")
     suspend fun getMilestoneById(milestoneId: String): GoalMilestone?
+
+    // Complex queries for goals with related data
+    @Transaction
+    @Query("SELECT * FROM goals WHERE id = :goalId")
+    suspend fun getGoalWithProgress(goalId: String): GoalWithProgress?
+
+    @Transaction
+    @Query("SELECT * FROM goals WHERE userId = :userId AND isActive = 1 ORDER BY priority DESC")
+    suspend fun getActiveGoalsWithProgress(userId: String): List<GoalWithProgress>
 }

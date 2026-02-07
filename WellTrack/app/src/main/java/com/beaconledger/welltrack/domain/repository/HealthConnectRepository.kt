@@ -107,4 +107,9 @@ interface HealthConnectRepository {
      * Get total hydration for a specific date
      */
     suspend fun getHydrationTotal(userId: String, date: LocalDate): Double
+
+    /**
+     * Get paginated health metrics for a user.
+     */
+    fun getPagedHealthMetrics(userId: String): Flow<PagingData<HealthMetric>>
 }

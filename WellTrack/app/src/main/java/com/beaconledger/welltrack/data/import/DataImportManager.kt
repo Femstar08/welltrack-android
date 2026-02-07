@@ -3,6 +3,8 @@ package com.beaconledger.welltrack.data.import
 import android.content.Context
 import com.beaconledger.welltrack.data.model.*
 import com.beaconledger.welltrack.data.database.WellTrackDatabase
+import com.beaconledger.welltrack.data.export.UserExportData
+import com.beaconledger.welltrack.data.export.ExportMetadata
 import com.beaconledger.welltrack.domain.repository.ImportConflict
 import com.beaconledger.welltrack.domain.repository.ImportPreview
 import com.google.gson.Gson
@@ -13,6 +15,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileReader
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -144,11 +147,17 @@ class DataImportManager @Inject constructor(
                 
                 val dateRange = exportData.exportMetadata.dateRange
                 
+                val dateRangePair = dateRange?.let {
+                    Pair(it.startDate, it.endDate)
+                } ?: Pair(null, null)
+
                 Result.success(ImportPreview(
+                    fileName = file.name,
+                    fileSize = file.length(),
+                    dataType = "Full Backup",
                     recordCount = recordCount,
-                    dataTypes = dataTypes,
-                    dateRange = dateRange,
-                    conflicts = emptyList(), // TODO: Implement conflict detection
+                    dateRange = dateRangePair,
+                    conflicts = emptyList(), // TODO: Implement actual conflict detection logic here
                     warnings = emptyList()
                 ))
             }
@@ -166,14 +175,23 @@ class DataImportManager @Inject constructor(
                     val minDate = healthData.minByOrNull { it.timestamp }?.timestamp
                     val maxDate = healthData.maxByOrNull { it.timestamp }?.timestamp
                     if (minDate != null && maxDate != null) {
-                        DateRange(minDate, maxDate)
+                        com.beaconledger.welltrack.data.model.ExportDateRange(
+                            LocalDateTime.parse(minDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                            LocalDateTime.parse(maxDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                        )
                     } else null
                 } else null
                 
+                val dateRangePair = dateRange?.let {
+                    Pair(it.startDate, it.endDate)
+                } ?: Pair(null, null)
+
                 Result.success(ImportPreview(
+                    fileName = file.name,
+                    fileSize = file.length(),
+                    dataType = "Health Metrics",
                     recordCount = healthData.size,
-                    dataTypes = listOf("Health Metrics"),
-                    dateRange = dateRange,
+                    dateRange = dateRangePair,
                     conflicts = emptyList(),
                     warnings = emptyList()
                 ))
@@ -192,14 +210,23 @@ class DataImportManager @Inject constructor(
                     val minDate = mealData.minByOrNull { it.timestamp }?.timestamp
                     val maxDate = mealData.maxByOrNull { it.timestamp }?.timestamp
                     if (minDate != null && maxDate != null) {
-                        DateRange(minDate, maxDate)
+                        com.beaconledger.welltrack.data.model.ExportDateRange(
+                            LocalDateTime.parse(minDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                            LocalDateTime.parse(maxDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                        )
                     } else null
                 } else null
                 
+                val dateRangePair = dateRange?.let {
+                    Pair(it.startDate, it.endDate)
+                } ?: Pair(null, null)
+
                 Result.success(ImportPreview(
+                    fileName = file.name,
+                    fileSize = file.length(),
+                    dataType = "Meals",
                     recordCount = mealData.size,
-                    dataTypes = listOf("Meals"),
-                    dateRange = dateRange,
+                    dateRange = dateRangePair,
                     conflicts = emptyList(),
                     warnings = emptyList()
                 ))
@@ -215,9 +242,11 @@ class DataImportManager @Inject constructor(
                 val supplementData = gson.fromJson(reader, Array<Supplement>::class.java)
                 
                 Result.success(ImportPreview(
+                    fileName = file.name,
+                    fileSize = file.length(),
+                    dataType = "Supplements",
                     recordCount = supplementData.size,
-                    dataTypes = listOf("Supplements"),
-                    dateRange = null,
+                    dateRange = Pair(null, null),
                     conflicts = emptyList(),
                     warnings = emptyList()
                 ))
@@ -229,7 +258,71 @@ class DataImportManager @Inject constructor(
     
     private suspend fun importFullBackup(file: File, request: ImportRequest) {
         FileReader(file).use { reader ->
-            val exportData = gson.fromJson(reader, UserExportData::class.java)
+            val jsonReader = com.google.gson.stream.JsonReader(reader)
+            jsonReader.beginObject() // Start parsing UserExportData object
+
+            var exportMetadata: ExportMetadata? = null
+            var userProfile: UserProfile? = null
+
+            val meals = mutableListOf<Meal>()
+            val healthMetrics = mutableListOf<HealthMetric>()
+            val supplements = mutableListOf<Supplement>()
+            val biomarkers = mutableListOf<BiomarkerEntry>()
+            val goals = mutableListOf<Goal>()
+
+            while (jsonReader.hasNext()) {
+                when (jsonReader.nextName()) {
+                    "exportMetadata" -> exportMetadata = gson.fromJson(jsonReader, ExportMetadata::class.java)
+                    "userProfile" -> userProfile = gson.fromJson(jsonReader, UserProfile::class.java)
+                    "meals" -> {
+                        jsonReader.beginArray()
+                        while (jsonReader.hasNext()) {
+                            meals.add(gson.fromJson(jsonReader, Meal::class.java))
+                        }
+                        jsonReader.endArray()
+                    }
+                    "healthMetrics" -> {
+                        jsonReader.beginArray()
+                        while (jsonReader.hasNext()) {
+                            healthMetrics.add(gson.fromJson(jsonReader, HealthMetric::class.java))
+                        }
+                        jsonReader.endArray()
+                    }
+                    "supplements" -> {
+                        jsonReader.beginArray()
+                        while (jsonReader.hasNext()) {
+                            supplements.add(gson.fromJson(jsonReader, Supplement::class.java))
+                        }
+                        jsonReader.endArray()
+                    }
+                    "biomarkers" -> {
+                        jsonReader.beginArray()
+                        while (jsonReader.hasNext()) {
+                            biomarkers.add(gson.fromJson(jsonReader, BiomarkerEntry::class.java))
+                        }
+                        jsonReader.endArray()
+                    }
+                    "goals" -> {
+                        jsonReader.beginArray()
+                        while (jsonReader.hasNext()) {
+                            goals.add(gson.fromJson(jsonReader, Goal::class.java))
+                        }
+                        jsonReader.endArray()
+                    }
+                    else -> jsonReader.skipValue()
+                }
+            }
+            jsonReader.endObject() // End parsing UserExportData object
+
+            val exportData = UserExportData(
+                exportMetadata = exportMetadata,
+                userProfile = userProfile,
+                meals = meals,
+                healthMetrics = healthMetrics,
+                supplements = supplements,
+                biomarkers = biomarkers,
+                goals = goals
+            )
             
             when (request.mergeStrategy) {
                 MergeStrategy.REPLACE_ALL -> {
@@ -244,18 +337,31 @@ class DataImportManager @Inject constructor(
                     mergeWithConflictResolution(request.userId, exportData)
                 }
             }
+            // Explicitly clear large lists to free up memory after import
+            meals.clear()
+            healthMetrics.clear()
+            supplements.clear()
+            biomarkers.clear()
+            goals.clear()
         }
     }
     
     private suspend fun importHealthData(file: File, request: ImportRequest) {
         val healthData = when (file.extension.lowercase()) {
             "json" -> {
-                FileReader(file).use { reader ->
-                    gson.fromJson(reader, Array<HealthMetric>::class.java).toList()
+                val healthMetrics = mutableListOf<HealthMetric>()
+                FileReader(file).use { fileReader ->
+                    val jsonReader = com.google.gson.stream.JsonReader(fileReader)
+                    jsonReader.beginArray()
+                    while (jsonReader.hasNext()) {
+                        healthMetrics.add(gson.fromJson(jsonReader, HealthMetric::class.java))
+                    }
+                    jsonReader.endArray()
                 }
+                healthMetrics
             }
             "csv" -> {
-                importHealthDataFromCsv(file)
+                importHealthDataFromCsv(file, request.userId)
             }
             else -> throw Exception("Unsupported file format for health data import")
         }
@@ -263,36 +369,32 @@ class DataImportManager @Inject constructor(
         when (request.mergeStrategy) {
             MergeStrategy.REPLACE_ALL -> {
                 database.healthMetricDao().deleteAllMetricsForUser(request.userId)
+                val updatedHealthData = healthData.map { metric ->
+                    metric.copy(id = java.util.UUID.randomUUID().toString(), userId = request.userId)
+                }
+                database.healthMetricDao().insertHealthMetrics(updatedHealthData)
             }
-            else -> {}
-        }
-
-        healthData.forEach { metric ->
-            val updatedMetric = metric.copy(
-                id = java.util.UUID.randomUUID().toString(),
-                userId = request.userId
-            )
-
-            when (request.mergeStrategy) {
-                MergeStrategy.REPLACE_ALL -> {
-                    database.healthMetricDao().insertMetric(updatedMetric)
+            MergeStrategy.MERGE_NEW_ONLY -> {
+                val newMetrics = healthData.filter { metric ->
+                    val metricTimestamp = LocalDateTime.parse(metric.timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                    database.healthMetricDao().getMetricByTypeAndTimestamp(request.userId, metric.type, metricTimestamp) == null
+                }.map { metric ->
+                    metric.copy(id = java.util.UUID.randomUUID().toString(), userId = request.userId)
                 }
-                MergeStrategy.MERGE_NEW_ONLY -> {
+                database.healthMetricDao().insertHealthMetrics(newMetrics)
+            }
+            MergeStrategy.MERGE_WITH_CONFLICT_RESOLUTION -> {
+                val metricsToInsert = mutableListOf<HealthMetric>()
+                val metricsToUpdate = mutableListOf<HealthMetric>()
+
+                healthData.forEach { metric ->
+                    val metricTimestamp = LocalDateTime.parse(metric.timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                     val existing = database.healthMetricDao().getMetricByTypeAndTimestamp(
-                        request.userId, metric.type, metric.timestamp
-                    )
-                    if (existing == null) {
-                        database.healthMetricDao().insertMetric(updatedMetric)
-                    }
-                }
-                MergeStrategy.MERGE_WITH_CONFLICT_RESOLUTION -> {
-                    val existing = database.healthMetricDao().getMetricByTypeAndTimestamp(
-                        request.userId, metric.type, metric.timestamp
+                        request.userId, metric.type, metricTimestamp
                     )
                     if (existing != null) {
-                        // Resolve conflict by choosing source with higher priority
-                        val sourcePriority = mapOf(
-                            DataSource.GARMIN_CONNECT to 3,
+                        val sourcePriority = mapOf<DataSource, Int>(
+                            DataSource.GARMIN to 3,
                             DataSource.HEALTH_CONNECT to 2,
                             DataSource.SAMSUNG_HEALTH to 2,
                             DataSource.MANUAL_ENTRY to 1
@@ -302,25 +404,34 @@ class DataImportManager @Inject constructor(
                         val importedPriority = sourcePriority[metric.source] ?: 0
 
                         if (importedPriority >= existingPriority) {
-                            database.healthMetricDao().updateMetric(updatedMetric.copy(id = existing.id))
+                            metricsToUpdate.add(metric.copy(id = existing.id, userId = request.userId))
                         }
                     } else {
-                        database.healthMetricDao().insertMetric(updatedMetric)
+                        metricsToInsert.add(metric.copy(id = java.util.UUID.randomUUID().toString(), userId = request.userId))
                     }
                 }
+                if (metricsToInsert.isNotEmpty()) database.healthMetricDao().insertHealthMetrics(metricsToInsert)
+                if (metricsToUpdate.isNotEmpty()) database.healthMetricDao().updateHealthMetrics(metricsToUpdate)
             }
         }
     }
-    
+
     private suspend fun importMealData(file: File, request: ImportRequest) {
         val mealData = when (file.extension.lowercase()) {
             "json" -> {
-                FileReader(file).use { reader ->
-                    gson.fromJson(reader, Array<Meal>::class.java).toList()
+                val meals = mutableListOf<Meal>()
+                FileReader(file).use { fileReader ->
+                    val jsonReader = com.google.gson.stream.JsonReader(fileReader)
+                    jsonReader.beginArray()
+                    while (jsonReader.hasNext()) {
+                        meals.add(gson.fromJson(jsonReader, Meal::class.java))
+                    }
+                    jsonReader.endArray()
                 }
+                meals
             }
             "csv" -> {
-                importMealsFromCsv(file)
+                importMealsFromCsv(file, request.userId)
             }
             else -> throw Exception("Unsupported file format for meal data import")
         }
@@ -328,82 +439,85 @@ class DataImportManager @Inject constructor(
         when (request.mergeStrategy) {
             MergeStrategy.REPLACE_ALL -> {
                 database.mealDao().deleteAllMealsForUser(request.userId)
+                val updatedMealData = mealData.map { meal ->
+                    meal.copy(id = java.util.UUID.randomUUID().toString(), userId = request.userId)
+                }
+                database.mealDao().insertAllMeals(updatedMealData)
             }
-            else -> {}
-        }
-
-        mealData.forEach { meal ->
-            val updatedMeal = meal.copy(
-                id = java.util.UUID.randomUUID().toString(),
-                userId = request.userId
-            )
-
-            when (request.mergeStrategy) {
-                MergeStrategy.REPLACE_ALL -> {
-                    database.mealDao().insertMeal(updatedMeal)
+            MergeStrategy.MERGE_NEW_ONLY -> {
+                val newMeals = mealData.filter { meal ->
+                    val mealTimestamp = LocalDateTime.parse(meal.timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                    database.mealDao().getMealByTimestamp(request.userId, mealTimestamp) == null
+                }.map { meal ->
+                    meal.copy(id = java.util.UUID.randomUUID().toString(), userId = request.userId)
                 }
-                MergeStrategy.MERGE_NEW_ONLY -> {
+                database.mealDao().insertAllMeals(newMeals)
+            }
+            MergeStrategy.MERGE_WITH_CONFLICT_RESOLUTION -> {
+                val mealsToInsert = mutableListOf<Meal>()
+                val mealsToUpdate = mutableListOf<Meal>()
+
+                mealData.forEach { meal ->
+                    val mealTimestamp = LocalDateTime.parse(meal.timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                     val existing = database.mealDao().getMealByTimestamp(
-                        request.userId, meal.timestamp
-                    )
-                    if (existing == null) {
-                        database.mealDao().insertMeal(updatedMeal)
-                    }
-                }
-                MergeStrategy.MERGE_WITH_CONFLICT_RESOLUTION -> {
-                    val existing = database.mealDao().getMealByTimestamp(
-                        request.userId, meal.timestamp
+                        request.userId, mealTimestamp
                     )
                     if (existing != null) {
-                        // Merge nutrition info if one has better data
                         val mergedNutrition = when {
-                            meal.nutritionInfo != null && existing.nutritionInfo == null -> meal.nutritionInfo
-                            meal.nutritionInfo == null && existing.nutritionInfo != null -> existing.nutritionInfo
-                            meal.nutritionInfo != null && existing.nutritionInfo != null -> {
+                            meal.nutritionInfo.isNotEmpty() && existing.nutritionInfo.isEmpty() -> meal.nutritionInfo
+                            meal.nutritionInfo.isEmpty() && existing.nutritionInfo.isNotEmpty() -> existing.nutritionInfo
+                            meal.nutritionInfo.isNotEmpty() && existing.nutritionInfo.isNotEmpty() -> {
                                 // Prefer imported data for nutrition info
                                 meal.nutritionInfo
                             }
-                            else -> null
+                            else -> "{}"
                         }
 
-                        val mergedMeal = updatedMeal.copy(
+                        mealsToUpdate.add(meal.copy(
                             id = existing.id,
                             nutritionInfo = mergedNutrition,
                             notes = listOfNotNull(existing.notes, meal.notes).joinToString("; ")
-                        )
-                        database.mealDao().updateMeal(mergedMeal)
+                        ))
                     } else {
-                        database.mealDao().insertMeal(updatedMeal)
+                        mealsToInsert.add(meal.copy(id = java.util.UUID.randomUUID().toString(), userId = request.userId))
                     }
                 }
+                if (mealsToInsert.isNotEmpty()) database.mealDao().insertAllMeals(mealsToInsert)
+                if (mealsToUpdate.isNotEmpty()) database.mealDao().updateAllMeals(mealsToUpdate)
             }
         }
     }
-    
+
     private suspend fun importSupplementData(file: File, request: ImportRequest) {
         val supplementData = when (file.extension.lowercase()) {
             "json" -> {
-                FileReader(file).use { reader ->
-                    gson.fromJson(reader, Array<Supplement>::class.java).toList()
+                val supplements = mutableListOf<Supplement>()
+                FileReader(file).use { fileReader ->
+                    val jsonReader = com.google.gson.stream.JsonReader(fileReader)
+                    jsonReader.beginArray()
+                    while (jsonReader.hasNext()) {
+                        supplements.add(gson.fromJson(jsonReader, Supplement::class.java))
+                    }
+                    jsonReader.endArray()
                 }
+                supplements
             }
             "csv" -> {
-                importSupplementsFromCsv(file)
+                importSupplementsFromCsv(file, request.userId)
             }
             else -> throw Exception("Unsupported file format for supplement data import")
         }
 
         when (request.mergeStrategy) {
             MergeStrategy.REPLACE_ALL -> {
-                database.supplementDao().deleteAllSupplementsForUser(request.userId)
+                database.supplementDao().deleteAllUserSupplementsForUser(request.userId)
             }
             else -> {}
         }
 
         supplementData.forEach { supplement ->
             val updatedSupplement = supplement.copy(
-                id = java.util.UUID.randomUUID().toString(),
-                userId = request.userId
+                id = java.util.UUID.randomUUID().toString()
             )
 
             when (request.mergeStrategy) {
@@ -412,7 +526,7 @@ class DataImportManager @Inject constructor(
                 }
                 MergeStrategy.MERGE_NEW_ONLY -> {
                     val existing = database.supplementDao().getSupplementByNameAndDate(
-                        request.userId, supplement.name, supplement.createdAt
+                        supplement.name, supplement.createdAt
                     )
                     if (existing == null) {
                         database.supplementDao().insertSupplement(updatedSupplement)
@@ -420,13 +534,12 @@ class DataImportManager @Inject constructor(
                 }
                 MergeStrategy.MERGE_WITH_CONFLICT_RESOLUTION -> {
                     val existing = database.supplementDao().getSupplementByNameAndDate(
-                        request.userId, supplement.name, supplement.createdAt
+                        supplement.name, supplement.createdAt
                     )
                     if (existing != null) {
-                        // Prefer "taken" status if either record shows taken
+                        // Update existing supplement with merged data
                         val resolvedSupplement = updatedSupplement.copy(
-                            id = existing.id,
-                            isTaken = existing.isTaken || supplement.isTaken
+                            id = existing.id
                         )
                         database.supplementDao().updateSupplement(resolvedSupplement)
                     } else {
@@ -436,11 +549,11 @@ class DataImportManager @Inject constructor(
             }
         }
     }
-    
+
     private suspend fun clearUserData(userId: String) {
         database.mealDao().deleteAllMealsForUser(userId)
         database.healthMetricDao().deleteAllMetricsForUser(userId)
-        database.supplementDao().deleteAllSupplementsForUser(userId)
+        database.supplementDao().deleteAllUserSupplementsForUser(userId)
         database.biomarkerDao().deleteAllBiomarkersForUser(userId)
         database.goalDao().deleteAllGoalsForUser(userId)
     }
@@ -449,36 +562,139 @@ class DataImportManager @Inject constructor(
         exportData.meals.forEach { meal ->
             database.mealDao().insertMeal(meal.copy(userId = userId))
         }
-        
+
         exportData.healthMetrics.forEach { metric ->
             database.healthMetricDao().insertHealthMetric(metric.copy(userId = userId))
         }
-        
+
         exportData.supplements.forEach { supplement ->
-            database.supplementDao().insertSupplement(supplement.copy(userId = userId))
+            database.supplementDao().insertSupplement(supplement)
         }
-        
+
         exportData.biomarkers.forEach { biomarker ->
             database.biomarkerDao().insertBiomarker(biomarker.copy(userId = userId))
         }
-        
+
         exportData.goals.forEach { goal ->
             database.goalDao().insertGoal(goal.copy(userId = userId))
         }
     }
     
     private suspend fun insertNewData(userId: String, exportData: UserExportData) {
-        // Implementation for merge new only strategy
-        insertAllData(userId, exportData) // Simplified for now
+        exportData.meals.forEach { meal ->
+            val existing = database.mealDao().getMealByTimestamp(userId, LocalDateTime.parse(meal.timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+            if (existing == null) {
+                database.mealDao().insertMeal(meal.copy(userId = userId))
+            }
+        }
+
+        exportData.healthMetrics.forEach { metric ->
+            val existing = database.healthMetricDao().getMetricByTypeAndTimestamp(userId, metric.type, LocalDateTime.parse(metric.timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+            if (existing == null) {
+                database.healthMetricDao().insertHealthMetric(metric.copy(userId = userId))
+            }
+        }
+
+        exportData.supplements.forEach { supplement ->
+            val existing = database.supplementDao().getSupplementByNameAndDate(supplement.name, supplement.createdAt)
+            if (existing == null) {
+                database.supplementDao().insertSupplement(supplement)
+            }
+        }
+
+        exportData.biomarkers.forEach { biomarker ->
+            val existing = database.biomarkerDao().getBiomarkerByTypeAndDate(userId, biomarker.biomarkerType, biomarker.testDate)
+            if (existing == null) {
+                database.biomarkerDao().insertBiomarker(biomarker.copy(userId = userId))
+            }
+        }
+
+        exportData.goals.forEach { goal ->
+            val existing = database.goalDao().getGoalById(goal.id)
+            if (existing == null) {
+                database.goalDao().insertGoal(goal.copy(userId = userId))
+            }
+        }
     }
     
     private suspend fun mergeWithConflictResolution(userId: String, exportData: UserExportData) {
-        // Implementation for conflict resolution strategy
-        insertAllData(userId, exportData) // Simplified for now
+        // Meals
+        exportData.meals.forEach { meal ->
+            val existing = database.mealDao().getMealByTimestamp(userId, LocalDateTime.parse(meal.timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+            if (existing != null) {
+                val mergedNutrition = when {
+                    meal.nutritionInfo.isNotEmpty() && existing.nutritionInfo.isEmpty() -> meal.nutritionInfo
+                    meal.nutritionInfo.isEmpty() && existing.nutritionInfo.isNotEmpty() -> existing.nutritionInfo
+                    meal.nutritionInfo.isNotEmpty() && existing.nutritionInfo.isNotEmpty() -> meal.nutritionInfo // Prefer imported
+                    else -> "{}"
+                }
+                val mergedMeal = meal.copy(
+                    id = existing.id,
+                    userId = userId,
+                    nutritionInfo = mergedNutrition,
+                    notes = listOfNotNull(existing.notes, meal.notes).joinToString("; ")
+                )
+                database.mealDao().updateMeal(mergedMeal)
+            } else {
+                database.mealDao().insertMeal(meal.copy(userId = userId))
+            }
+        }
+
+        // Health Metrics (reusing existing logic from importHealthData)
+        exportData.healthMetrics.forEach { metric ->
+            val metricTimestamp = LocalDateTime.parse(metric.timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            val existing = database.healthMetricDao().getMetricByTypeAndTimestamp(userId, metric.type, metricTimestamp)
+            if (existing != null) {
+                val sourcePriority = mapOf(
+                    DataSource.GARMIN to 3,
+                    DataSource.HEALTH_CONNECT to 2,
+                    DataSource.SAMSUNG_HEALTH to 2,
+                    DataSource.MANUAL_ENTRY to 1
+                )
+                val existingPriority = sourcePriority[existing.source] ?: 0
+                val importedPriority = sourcePriority[metric.source] ?: 0
+
+                if (importedPriority >= existingPriority) {
+                    database.healthMetricDao().updateMetric(metric.copy(id = existing.id, userId = userId))
+                }
+            } else {
+                database.healthMetricDao().insertHealthMetric(metric.copy(userId = userId))
+            }
+        }
+
+        // Supplements
+        exportData.supplements.forEach { supplement ->
+            val existing = database.supplementDao().getSupplementByNameAndDate(supplement.name, supplement.createdAt)
+            if (existing != null) {
+                database.supplementDao().updateSupplement(supplement.copy(id = existing.id))
+            } else {
+                database.supplementDao().insertSupplement(supplement)
+            }
+        }
+
+        // Biomarkers
+        exportData.biomarkers.forEach { biomarker ->
+            val existing = database.biomarkerDao().getBiomarkerByTypeAndDate(userId, biomarker.biomarkerType, biomarker.testDate)
+            if (existing != null) {
+                database.biomarkerDao().updateBiomarker(biomarker.copy(id = existing.id, userId = userId))
+            } else {
+                database.biomarkerDao().insertBiomarker(biomarker.copy(userId = userId))
+            }
+        }
+
+        // Goals
+        exportData.goals.forEach { goal ->
+            val existing = database.goalDao().getGoalById(goal.id)
+            if (existing != null) {
+                database.goalDao().updateGoal(goal.copy(userId = userId))
+            } else {
+                database.goalDao().insertGoal(goal.copy(userId = userId))
+            }
+        }
     }
 
     // CSV import helper methods
-    private fun importHealthDataFromCsv(file: File): List<HealthMetric> {
+    private fun importHealthDataFromCsv(file: File, userId: String): List<HealthMetric> {
         val lines = file.readLines()
         if (lines.isEmpty()) return emptyList()
 
@@ -494,11 +710,11 @@ class DataImportManager @Inject constructor(
 
                 HealthMetric(
                     id = java.util.UUID.randomUUID().toString(),
-                    userId = "", // Will be set during import
+                    userId = userId,
                     type = HealthMetricType.valueOf(valueMap["Metric Type"] ?: "STEPS"),
                     value = valueMap["Value"]?.toDoubleOrNull() ?: 0.0,
                     unit = valueMap["Unit"] ?: "",
-                    timestamp = parseDateTime(valueMap["Date"], valueMap["Time"]) ?: LocalDateTime.now(),
+                    timestamp = (parseDateTime(valueMap["Date"], valueMap["Time"]) ?: LocalDateTime.now()).toString(),
                     source = DataSource.valueOf(valueMap["Source"] ?: "MANUAL_ENTRY"),
                     metadata = valueMap["Notes"]
                 )
@@ -508,7 +724,7 @@ class DataImportManager @Inject constructor(
         }
     }
 
-    private fun importMealsFromCsv(file: File): List<Meal> {
+    private fun importMealsFromCsv(file: File, userId: String): List<Meal> {
         val lines = file.readLines()
         if (lines.isEmpty()) return emptyList()
 
@@ -524,17 +740,18 @@ class DataImportManager @Inject constructor(
 
                 Meal(
                     id = java.util.UUID.randomUUID().toString(),
-                    userId = "", // Will be set during import
+                    userId = userId,
+                    recipeId = valueMap["Recipe Name"]?.takeIf { it.isNotBlank() },
+                    timestamp = (parseDateTime(valueMap["Date"], valueMap["Time"]) ?: LocalDateTime.now()).toString(),
                     mealType = MealType.valueOf(valueMap["Meal Type"] ?: "LUNCH"),
-                    recipeName = valueMap["Recipe Name"],
-                    timestamp = parseDateTime(valueMap["Date"], valueMap["Time"]) ?: LocalDateTime.now(),
-                    nutritionInfo = NutritionInfo(
-                        calories = valueMap["Calories"]?.toDoubleOrNull(),
-                        protein = valueMap["Protein"]?.toDoubleOrNull(),
-                        carbohydrates = valueMap["Carbs"]?.toDoubleOrNull(),
-                        fat = valueMap["Fat"]?.toDoubleOrNull(),
-                        fiber = valueMap["Fiber"]?.toDoubleOrNull()
-                    ),
+                    nutritionInfo = gson.toJson(mapOf(
+                        "calories" to valueMap["Calories"]?.toDoubleOrNull(),
+                        "protein" to valueMap["Protein"]?.toDoubleOrNull(),
+                        "carbohydrates" to valueMap["Carbs"]?.toDoubleOrNull(),
+                        "fat" to valueMap["Fat"]?.toDoubleOrNull(),
+                        "fiber" to valueMap["Fiber"]?.toDoubleOrNull()
+                    )),
+                    score = MealScore.C, // Default score
                     status = MealStatus.valueOf(valueMap["Status"] ?: "PLANNED"),
                     notes = valueMap["Notes"]?.takeIf { it.isNotBlank() }
                 )
@@ -544,7 +761,7 @@ class DataImportManager @Inject constructor(
         }
     }
 
-    private fun importSupplementsFromCsv(file: File): List<Supplement> {
+    private fun importSupplementsFromCsv(file: File, userId: String): List<Supplement> {
         val lines = file.readLines()
         if (lines.isEmpty()) return emptyList()
 
@@ -560,14 +777,17 @@ class DataImportManager @Inject constructor(
 
                 Supplement(
                     id = java.util.UUID.randomUUID().toString(),
-                    userId = "", // Will be set during import
                     name = valueMap["Supplement Name"] ?: "",
-                    dosage = valueMap["Dosage"]?.toDoubleOrNull() ?: 0.0,
-                    unit = valueMap["Unit"] ?: "mg",
-                    frequency = SupplementFrequency.valueOf(valueMap["Frequency"] ?: "DAILY"),
-                    isTaken = valueMap["Taken"]?.toBooleanStrictOrNull() ?: false,
-                    notes = valueMap["Notes"]?.takeIf { it.isNotBlank() },
-                    createdAt = parseDateTime(valueMap["Date"], null) ?: LocalDateTime.now()
+                    brand = null,
+                    description = valueMap["Notes"]?.takeIf { it.isNotBlank() },
+                    servingSize = valueMap["Dosage"] ?: "1",
+                    servingUnit = valueMap["Unit"] ?: "mg",
+                    nutritionalInfo = "{}",
+                    barcode = null,
+                    imageUrl = null,
+                    category = SupplementCategory.OTHER,
+                    createdAt = (parseDateTime(valueMap["Date"], null) ?: LocalDateTime.now()).toString(),
+                    updatedAt = (parseDateTime(valueMap["Date"], null) ?: LocalDateTime.now()).toString()
                 )
             } catch (e: Exception) {
                 null // Skip invalid lines

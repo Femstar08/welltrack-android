@@ -84,7 +84,7 @@ class DataExportViewModel @Inject constructor(
         }
     }
     
-    fun exportHealthReportAsPdf(userId: String, dateRange: DateRange? = null) {
+    fun exportHealthReportAsPdf(userId: String, dateRange: ExportDateRange? = null) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             
@@ -106,7 +106,7 @@ class DataExportViewModel @Inject constructor(
         }
     }
     
-    fun exportMealHistoryAsCsv(userId: String, dateRange: DateRange? = null) {
+    fun exportMealHistoryAsCsv(userId: String, dateRange: ExportDateRange? = null) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             
@@ -349,7 +349,7 @@ class DataExportViewModel @Inject constructor(
     // Healthcare Provider Sharing
     fun shareHealthReportWithProvider(
         userId: String,
-        dateRange: DateRange
+        dateRange: ExportDateRange
     ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)

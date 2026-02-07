@@ -141,7 +141,7 @@ class AnalyticsRepositoryImpl @Inject constructor(
     }
 
     override fun getTrendAnalysis(userId: String, metric: String, days: Int): Flow<TrendAnalysis> {
-        // Stub implementation
+        // Stub implementation - returns basic TrendAnalysis data class
         return flowOf(
             TrendAnalysis(
                 metric = metric,

@@ -2,6 +2,7 @@ package com.beaconledger.welltrack.data.database
 
 import androidx.room.TypeConverter
 import com.beaconledger.welltrack.data.model.*
+import com.beaconledger.welltrack.data.compliance.DeletionStatus
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -417,13 +418,13 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromTrendAnalysis(trend: TrendAnalysis): String {
+    fun fromTrendAnalysisEnum(trend: com.beaconledger.welltrack.data.model.GoalTrend): String {
         return trend.name
     }
 
     @TypeConverter
-    fun toTrendAnalysis(trendString: String): TrendAnalysis {
-        return TrendAnalysis.valueOf(trendString)
+    fun toTrendAnalysisEnum(trendString: String): com.beaconledger.welltrack.data.model.GoalTrend {
+        return com.beaconledger.welltrack.data.model.GoalTrend.valueOf(trendString)
     }
 
     @TypeConverter
@@ -450,5 +451,140 @@ class Converters {
                 order = parts[4].toInt()
             )
         }
+    }
+
+    // Accessibility Settings converter
+    @TypeConverter
+    fun fromAccessibilitySettings(settings: AccessibilitySettings): String {
+        return "${settings.highContrastEnabled}," +
+                "${settings.reduceAnimationsEnabled}," +
+                "${settings.largeTextEnabled}," +
+                "${settings.screenReaderOptimizationEnabled}," +
+                "${settings.audioDescriptionsEnabled}," +
+                "${settings.largeTouchTargetsEnabled}," +
+                "${settings.reduceMotionEnabled}," +
+                "${settings.simplifiedUIEnabled}," +
+                "${settings.extendedTimeoutsEnabled}"
+    }
+
+    @TypeConverter
+    fun toAccessibilitySettings(settingsString: String): AccessibilitySettings {
+        val parts = settingsString.split(",")
+        return AccessibilitySettings(
+            highContrastEnabled = parts[0].toBoolean(),
+            reduceAnimationsEnabled = parts[1].toBoolean(),
+            largeTextEnabled = parts[2].toBoolean(),
+            screenReaderOptimizationEnabled = parts[3].toBoolean(),
+            audioDescriptionsEnabled = parts[4].toBoolean(),
+            largeTouchTargetsEnabled = parts[5].toBoolean(),
+            reduceMotionEnabled = parts[6].toBoolean(),
+            simplifiedUIEnabled = parts[7].toBoolean(),
+            extendedTimeoutsEnabled = parts[8].toBoolean()
+        )
+    }
+
+    @TypeConverter
+    fun fromDateRange(dateRange: ExportDateRange?): String? {
+        return dateRange?.let { "${it.startDate}|${it.endDate}" }
+    }
+
+    @TypeConverter
+    fun toDateRange(dateRangeString: String?): ExportDateRange? {
+        return dateRangeString?.let {
+            val parts = it.split("|")
+            if (parts.size == 2) {
+                ExportDateRange(
+                    startDate = LocalDateTime.parse(parts[0]),
+                    endDate = LocalDateTime.parse(parts[1])
+                )
+            } else null
+        }
+    }
+
+    @TypeConverter
+    fun fromStringStringMap(map: Map<String, String>): String {
+        return map.entries.joinToString(",") { "${it.key}:${it.value}" }
+    }
+
+    @TypeConverter
+    fun toStringStringMap(mapString: String): Map<String, String> {
+        return if (mapString.isEmpty()) {
+            emptyMap()
+        } else {
+            mapString.split(",").associate {
+                val parts = it.split(":")
+                if (parts.size == 2) parts[0] to parts[1] else parts[0] to ""
+            }
+        }
+    }
+
+    @TypeConverter
+    fun fromStringIntMap(map: Map<String, Int>): String {
+        return map.entries.joinToString(",") { "${it.key}:${it.value}" }
+    }
+
+    @TypeConverter
+    fun toStringIntMap(mapString: String): Map<String, Int> {
+        return if (mapString.isEmpty()) {
+            emptyMap()
+        } else {
+            mapString.split(",").associate {
+                val parts = it.split(":")
+                if (parts.size == 2) parts[0] to (parts[1].toIntOrNull() ?: 0) else parts[0] to 0
+            }
+        }
+    }
+
+    // Data Export converters
+    @TypeConverter
+    fun fromExportType(type: ExportType): String {
+        return type.name
+    }
+
+    @TypeConverter
+    fun toExportType(typeString: String): ExportType {
+        return ExportType.valueOf(typeString)
+    }
+
+    @TypeConverter
+    fun fromExportFormat(format: ExportFormat): String {
+        return format.name
+    }
+
+    @TypeConverter
+    fun toExportFormat(formatString: String): ExportFormat {
+        return ExportFormat.valueOf(formatString)
+    }
+
+    @TypeConverter
+    fun fromExportStatus(status: ExportStatus): String {
+        return status.name
+    }
+
+    @TypeConverter
+    fun toExportStatus(statusString: String): ExportStatus {
+        return ExportStatus.valueOf(statusString)
+    }
+
+    // Notification converters
+    @TypeConverter
+    fun fromNotificationType(type: NotificationType): String {
+        return type.name
+    }
+
+    @TypeConverter
+    fun toNotificationType(typeString: String): NotificationType {
+        return NotificationType.valueOf(typeString)
+    }
+
+    // Data Deletion converters
+    @TypeConverter
+    fun fromDeletionStatus(status: DeletionStatus): String {
+        return status.name
+    }
+
+    @TypeConverter
+    fun toDeletionStatus(statusString: String): DeletionStatus {
+        return DeletionStatus.valueOf(statusString)
     }
 }

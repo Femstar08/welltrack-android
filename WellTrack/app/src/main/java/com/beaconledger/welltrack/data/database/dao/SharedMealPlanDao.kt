@@ -20,4 +20,7 @@ interface SharedMealPlanDao {
 
     @Delete
     suspend fun deleteSharedMealPlan(sharedMealPlan: SharedMealPlan)
+
+    @Query("UPDATE shared_meal_plans SET isActive = 0 WHERE id = :planId")
+    suspend fun deactivateSharedMealPlan(planId: String)
 }

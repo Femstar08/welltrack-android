@@ -129,5 +129,8 @@ interface CostBudgetDao {
         ORDER BY date ASC
     """)
     suspend fun getDailySpendingTrend(userId: String, startDate: LocalDate, endDate: LocalDate): List<DailySpending>
+
+    @Query("DELETE FROM budget_settings WHERE userId = :userId")
+    suspend fun deleteAllCostBudgetsForUser(userId: String)
 }
 

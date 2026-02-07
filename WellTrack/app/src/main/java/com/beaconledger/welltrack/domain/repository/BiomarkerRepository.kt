@@ -22,7 +22,7 @@ interface BiomarkerRepository {
     fun getBiomarkerEntriesInDateRange(userId: String, startDate: String, endDate: String): Flow<List<BiomarkerEntry>>
     suspend fun saveBiomarkerEntry(entry: BiomarkerEntry): Result<String>
     suspend fun saveBiomarkerEntries(entries: List<BiomarkerEntry>): Result<Unit>
-    suspend fun updateBiomarkerEntry(entry: BiomarkerEntry): Result<Unit>
+    suspend fun updateBiomarker(entry: BiomarkerEntry): Result<Unit>
     suspend fun deleteBiomarkerEntry(entryId: String): Result<Unit>
     
     // Test Sessions

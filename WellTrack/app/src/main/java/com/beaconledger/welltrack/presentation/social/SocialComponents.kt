@@ -79,7 +79,7 @@ fun FamilyGroupCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Default.Group,
+                    imageVector = Icons.Default.People,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(16.dp)
@@ -375,7 +375,7 @@ fun CollaborativeMealPrepCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Default.AccessTime,
+                    imageVector = Icons.Default.Schedule,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(16.dp)
@@ -471,7 +471,7 @@ fun SharedAchievementCard(
                 }
             }
             
-            if (achievement.shareMessage != null) {
+            if (!achievement.shareMessage.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = achievement.shareMessage,

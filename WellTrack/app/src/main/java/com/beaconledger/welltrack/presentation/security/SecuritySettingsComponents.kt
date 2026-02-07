@@ -90,7 +90,7 @@ fun DataManagementSettings(
             onClick = onExportData,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Icon(Icons.Default.Download, contentDescription = null)
+            Icon(Icons.Default.CloudDownload, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
             Text("Export My Data")
         }

@@ -178,7 +178,7 @@ class HealthConnectManager @Inject constructor(
                     endZoneOffset = ZoneId.systemDefault().rules.getOffset(timestamp)
                 )
             }
-            
+
             HealthMetricType.WEIGHT -> {
                 WeightRecord(
                     weight = androidx.health.connect.client.units.Mass.kilograms(metric.value),
@@ -201,7 +201,7 @@ class HealthConnectManager @Inject constructor(
                     endZoneOffset = ZoneId.systemDefault().rules.getOffset(timestamp)
                 )
             }
-            
+
             HealthMetricType.HYDRATION -> {
                 HydrationRecord(
                     volume = androidx.health.connect.client.units.Volume.liters(metric.value),
@@ -211,11 +211,11 @@ class HealthConnectManager @Inject constructor(
                     endZoneOffset = ZoneId.systemDefault().rules.getOffset(timestamp)
                 )
             }
-            
+
             HealthMetricType.SLEEP_DURATION -> {
                 val durationHours = metric.value
                 val sleepStart = timestamp.minusSeconds((durationHours * 3600).toLong())
-                
+
                 SleepSessionRecord(
                     startTime = sleepStart,
                     endTime = timestamp,
@@ -223,7 +223,7 @@ class HealthConnectManager @Inject constructor(
                     endZoneOffset = ZoneId.systemDefault().rules.getOffset(timestamp)
                 )
             }
-            
+
             HealthMetricType.BODY_FAT_PERCENTAGE -> {
                 BodyFatRecord(
                     percentage = androidx.health.connect.client.units.Percentage(metric.value),

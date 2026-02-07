@@ -243,7 +243,10 @@ private fun AppLockSettings(
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(timeoutOptions) { timeout ->
+                items(
+                    items = timeoutOptions,
+                    key = { it }
+                ) { timeout ->
                     FilterChip(
                         selected = timeout == timeoutMinutes,
                         onClick = { onTimeoutChanged(timeout) },

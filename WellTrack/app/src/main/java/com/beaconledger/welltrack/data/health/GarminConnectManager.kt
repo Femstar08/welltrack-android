@@ -32,8 +32,19 @@ class GarminConnectManager @Inject constructor(
     private val environmentConfig: EnvironmentConfig,
     private val secureConfigLoader: SecureConfigLoader
 ) {
-    private val client = OkHttpClient()
+    private val client: OkHttpClient
     private val baseUrl = "https://apis.garmin.com"
+
+    init {
+        val certificatePinner = CertificatePinner.Builder()
+            // TODO: Replace with the actual SHA-256 fingerprint of the apis.garmin.com certificate
+            .add("apis.garmin.com", "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")
+            .build()
+
+        client = OkHttpClient.Builder()
+            .certificatePinner(certificatePinner)
+            .build()
+    }
     
     // OAuth 2.0 PKCE configuration
     private var accessToken: String? = null

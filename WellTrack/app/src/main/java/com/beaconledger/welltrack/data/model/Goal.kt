@@ -1,7 +1,9 @@
 package com.beaconledger.welltrack.data.model
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 import androidx.room.TypeConverters
 import com.beaconledger.welltrack.data.database.Converters
 import java.time.LocalDate
@@ -64,7 +66,7 @@ data class GoalPrediction(
     val goalId: String,
     val predictedCompletionDate: LocalDate,
     val confidenceScore: Float, // 0.0 to 1.0
-    val trendAnalysis: TrendAnalysis,
+    val trendAnalysis: GoalTrend,
     val recommendedAdjustments: List<String>,
     val calculatedAt: LocalDateTime = LocalDateTime.now()
 )
@@ -100,13 +102,14 @@ enum class ProgressSource {
     MANUAL,
     HEALTH_CONNECT,
     GARMIN,
+    GARMIN_CONNECT,
     SAMSUNG_HEALTH,
     MEAL_LOGGING,
     HABIT_TRACKING,
     AUTOMATIC
 }
 
-enum class TrendAnalysis {
+enum class GoalTrend {
     ON_TRACK,
     AHEAD_OF_SCHEDULE,
     BEHIND_SCHEDULE,
@@ -116,17 +119,31 @@ enum class TrendAnalysis {
 }
 
 data class GoalWithProgress(
-    val goal: Goal,
+    @Embedded val goal: Goal,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "goalId"
+    )
     val progressEntries: List<GoalProgress>,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "goalId"
+    )
     val milestones: List<GoalMilestone>,
-    val prediction: GoalPrediction?
-)
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "goalId"
+    )
+    val predictions: List<GoalPrediction>
+) {
+    val prediction: GoalPrediction? get() = predictions.maxByOrNull { it.calculatedAt }
+}
 
 data class GoalStatistics(
     val completionPercentage: Float,
     val daysRemaining: Int,
     val averageDailyProgress: Double,
     val requiredDailyProgress: Double,
-    val trendDirection: TrendAnalysis,
+    val trendDirection: GoalTrend,
     val milestoneCompletionRate: Float
 )

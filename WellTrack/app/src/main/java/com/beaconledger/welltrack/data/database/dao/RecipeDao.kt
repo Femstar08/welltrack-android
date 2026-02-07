@@ -30,26 +30,29 @@ interface RecipeDao {
     @Query("DELETE FROM recipes WHERE id = :recipeId")
     suspend fun deleteRecipeById(recipeId: String)
     
-    @Query("SELECT * FROM recipes")
-    suspend fun getRecipesForUser(): List<Recipe>
-    
+    @Query("SELECT * FROM recipes ORDER BY createdAt DESC")
+    suspend fun getAllRecipesSync(): List<Recipe>
+
     @Query("""
-        SELECT DISTINCT r.* FROM recipes r 
-        INNER JOIN recipe_ingredients ri ON r.id = ri.recipeId 
-        WHERE ri.name LIKE '%' || :ingredientName || '%' 
-        ORDER BY r.rating DESC, r.createdAt DESC 
+        SELECT DISTINCT r.* FROM recipes r
+        INNER JOIN recipe_ingredients ri ON r.id = ri.recipeId
+        WHERE ri.name LIKE '%' || :ingredientName || '%'
+        ORDER BY r.rating DESC, r.createdAt DESC
         LIMIT :limit
     """)
     suspend fun getRecipesByIngredient(ingredientName: String, limit: Int = 10): List<Recipe>
-    
+
     @Query("""
-        SELECT DISTINCT r.* FROM recipes r 
-        INNER JOIN recipe_ingredients ri ON r.id = ri.recipeId 
-        WHERE ri.name LIKE '%' || :ingredientName || '%' 
+        SELECT DISTINCT r.* FROM recipes r
+        INNER JOIN recipe_ingredients ri ON r.id = ri.recipeId
+        WHERE ri.name LIKE '%' || :ingredientName || '%'
         ORDER BY r.rating DESC, r.createdAt DESC
     """)
     suspend fun findRecipesByIngredient(ingredientName: String): List<Recipe>
-    
-    @Query("DELETE FROM recipes WHERE userId = :userId")
+
+    @Query("DELETE FROM recipes")
+    suspend fun deleteAllRecipes()
+
+    @Query("DELETE FROM recipes")
     suspend fun deleteAllRecipesForUser(userId: String)
 }

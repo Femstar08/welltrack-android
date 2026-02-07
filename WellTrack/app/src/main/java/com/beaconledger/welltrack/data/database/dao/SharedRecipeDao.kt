@@ -20,4 +20,7 @@ interface SharedRecipeDao {
 
     @Delete
     suspend fun deleteSharedRecipe(sharedRecipe: SharedRecipe)
+
+    @Query("UPDATE shared_recipes SET isActive = 0 WHERE id = :recipeId")
+    suspend fun deactivateSharedRecipe(recipeId: String)
 }

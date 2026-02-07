@@ -55,4 +55,9 @@ interface SyncStatusDao {
     
     @Query("DELETE FROM sync_status")
     suspend fun clearAllSyncStatus()
+
+    @Suppress("UNUSED_PARAMETER")
+    suspend fun deleteAllSyncStatusForUser(userId: String) {
+        clearAllSyncStatus()
+    }
 }

@@ -283,7 +283,7 @@ class PdfReportGenerator @Inject constructor(
         }
     }
     
-    private fun drawSupplementAdherence(canvas: Canvas, supplements: SupplementAdherence) {
+    private fun drawSupplementAdherence(canvas: Canvas, supplements: ExportSupplementAdherence) {
         val headerPaint = Paint().apply {
             color = Color.BLACK
             textSize = 16f
@@ -302,17 +302,17 @@ class PdfReportGenerator @Inject constructor(
         
         canvas.drawText("Total Supplements: ${supplements.totalSupplements}", margin + 20f, yPosition, bodyPaint)
         yPosition += 25
-        
+
         canvas.drawText("Adherence Rate: ${"%.1f".format(supplements.adherenceRate * 100)}%", margin + 20f, yPosition, bodyPaint)
         yPosition += 25
-        
+
         canvas.drawText("Missed Doses: ${supplements.missedDoses}", margin + 20f, yPosition, bodyPaint)
         yPosition += 40
-        
+
         if (supplements.supplementEffectiveness.isNotEmpty()) {
             canvas.drawText("Supplement Effectiveness", margin.toFloat(), yPosition, headerPaint)
             yPosition += 30
-            
+
             supplements.supplementEffectiveness.forEach { (supplement, effectiveness) ->
                 canvas.drawText("• $supplement: $effectiveness", margin + 20f, yPosition, bodyPaint)
                 yPosition += 25
@@ -320,7 +320,7 @@ class PdfReportGenerator @Inject constructor(
         }
     }
     
-    private fun drawBiomarkerTrends(canvas: Canvas, biomarkers: List<BiomarkerTrend>) {
+    private fun drawBiomarkerTrends(canvas: Canvas, biomarkers: List<ExportBiomarkerTrend>) {
         val headerPaint = Paint().apply {
             color = Color.BLACK
             textSize = 16f
@@ -340,16 +340,16 @@ class PdfReportGenerator @Inject constructor(
         biomarkers.forEach { biomarker ->
             canvas.drawText("${biomarker.biomarkerType}:", margin + 20f, yPosition, headerPaint)
             yPosition += 20
-            
+
             canvas.drawText("  Current: ${biomarker.latestValue} (${biomarker.trend})", margin + 40f, yPosition, bodyPaint)
             yPosition += 20
-            
+
             canvas.drawText("  Target Range: ${biomarker.targetRange}", margin + 40f, yPosition, bodyPaint)
             yPosition += 30
         }
     }
     
-    private fun drawGoalProgress(canvas: Canvas, goals: List<GoalProgress>) {
+    private fun drawGoalProgress(canvas: Canvas, goals: List<ExportGoalProgress>) {
         val headerPaint = Paint().apply {
             color = Color.BLACK
             textSize = 16f
